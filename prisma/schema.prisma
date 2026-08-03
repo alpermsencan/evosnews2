@@ -1,0 +1,248 @@
+// Evos Gazete - Elektrikli Araç Haber Platformu
+// MongoDB + Prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String    @unique
+  description String?
+  color       String    @default("#e30613")
+  icon        String?
+  order       Int       @default(0)
+  isMainNav   Boolean   @default(false)
+  isSideNav   Boolean   @default(true)
+  href        String?
+  articles    Article[]
+  createdAt   DateTime  @default(now())
+
+  @@index([order])
+}
+
+model Author {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  slug      String    @unique
+  title     String?
+  bio       String?
+  avatar    String?
+  twitter   String?
+  articles  Article[]
+  createdAt DateTime  @default(now())
+}
+
+model Article {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  slug        String    @unique
+  spot        String
+  content     String
+  image       String
+  imageCredit String?
+  gallery     String[]  @default([])
+  tags        String[]  @default([])
+  categoryId  String    @db.ObjectId
+  category    Category  @relation(fields: [categoryId], references: [id])
+  authorId    String?   @db.ObjectId
+  author      Author?   @relation(fields: [authorId], references: [id])
+  isFeatured  Boolean   @default(false)
+  isBreaking  Boolean   @default(false)
+  isHeadline  Boolean   @default(false)
+  isVideo     Boolean   @default(false)
+  views       Int       @default(0)
+  readTime    Int       @default(3)
+  publishedAt DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  comments    Comment[]
+
+  @@index([categoryId, publishedAt])
+  @@index([publishedAt])
+  @@index([views])
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  articleId String   @db.ObjectId
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  name      String
+  body      String
+  likes     Int      @default(0)
+  approved  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([articleId, createdAt])
+}
+
+model Vehicle {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  brand        String
+  model        String
+  slug         String   @unique
+  year         Int
+  segment      String
+  bodyType     String
+  image        String
+  price        Int
+  otvRate      Int      @default(10)
+  rangeKm      Int
+  batteryKwh   Float
+  motorPowerKw Int
+  motorPowerHp Int
+  acceleration Float
+  topSpeed     Int
+  dcChargeKw   Int
+  chargeMin    Int
+  consumption  Float
+  trunkLiter   Int
+  driveType    String   @default("RWD")
+  warranty     String   @default("8 yıl / 160.000 km")
+  isFeatured   Boolean  @default(false)
+  rating       Float    @default(4.5)
+  pros         String[] @default([])
+  cons         String[] @default([])
+  description  String   @default("")
+  createdAt    DateTime @default(now())
+
+  @@index([brand])
+  @@index([price])
+}
+
+model ChargeStation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String   @unique
+  operator    String
+  city        String
+  district    String
+  address     String
+  lat         Float
+  lng         Float
+  socketCount Int
+  maxPowerKw  Int
+  socketTypes String[] @default([])
+  pricePerKwh Float
+  isFast      Boolean  @default(false)
+  is24h       Boolean  @default(true)
+  amenities   String[] @default([])
+  status      String   @default("aktif")
+  createdAt   DateTime @default(now())
+
+  @@index([city])
+  @@index([operator])
+}
+
+model Listing {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  slug          String   @unique
+  brand         String
+  model         String
+  year          Int
+  km            Int
+  price         Int
+  city          String
+  image         String
+  images        String[] @default([])
+  sellerType    String   @default("Galeri")
+  sellerName    String
+  batteryHealth Int      @default(95)
+  rangeKm       Int
+  color         String
+  damage        String   @default("Hasarsız")
+  isSponsored   Boolean  @default(false)
+  description   String   @default("")
+  createdAt     DateTime @default(now())
+
+  @@index([brand])
+  @@index([price])
+  @@index([city])
+}
+
+model CommunityPost {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  slug      String   @unique
+  body      String
+  author    String
+  avatar    String?
+  topic     String
+  likes     Int      @default(0)
+  replies   Int      @default(0)
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([topic])
+}
+
+model Ticker {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  label     String
+  value     String
+  unit      String?
+  changePct Float    @default(0)
+  order     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model PriceIndex {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  month        String
+  order        Int
+  avgEvPrice   Int
+  avgIcePrice  Int
+  acChargeCost Float
+  dcChargeCost Float
+  fuelCost     Float
+  batteryUsd   Int
+  evShare      Float
+  createdAt    DateTime @default(now())
+
+  @@index([order])
+}
+
+model OtvBracket {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  label       String
+  motorMaxKw  Int
+  priceMin    Int
+  priceMax    Int
+  rate        Int
+  order       Int      @default(0)
+  note        String?
+}
+
+model Poll {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  question  String
+  slug      String   @unique
+  options   String[]
+  votes     Int[]
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Subscriber {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  city      String?
+  createdAt DateTime @default(now())
+}
+
+model Lead {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  phone     String?
+  topic     String   @default("genel")
+  message   String
+  status    String   @default("yeni")
+  createdAt DateTime @default(now())
+}
