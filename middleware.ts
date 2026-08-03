@@ -1,18 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
+import { SESSION_COOKIE, verifySession } from "@/lib/session";
 
-const COOKIE = "evos_admin";
-const PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
+const ADMIN_COOKIE = "evos_admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
 
-export function middleware(req: NextRequest) {
+/** Giriş yapmış üye gerektiren alanlar */
+const MEMBER_PATHS = ["/hesabim", "/bildirimler"];
+
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Admin koruması
   if (pathname.startsWith("/admin") && pathname !== "/admin/giris") {
-    const token = req.cookies.get(COOKIE)?.value;
-    if (token !== PASSWORD) {
+    const token = req.cookies.get(ADMIN_COOKIE)?.value;
+    if (token !== ADMIN_PASSWORD) {
       const url = req.nextUrl.clone();
       url.pathname = "/admin/giris";
       url.searchParams.set("devam", pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Üye alanı koruması
+  if (MEMBER_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
+    const session = await verifySession(req.cookies.get(SESSION_COOKIE)?.value);
+    if (!session) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/giris";
+      url.searchParams.set("devam", pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Giriş yapmış üye tekrar giriş/kayıt sayfasına düşmesin
+  if (pathname === "/giris" || pathname === "/kayit") {
+    const session = await verifySession(req.cookies.get(SESSION_COOKIE)?.value);
+    if (session) {
+      const url = req.nextUrl.clone();
+      url.pathname = `/profil/${session.username}`;
+      url.search = "";
       return NextResponse.redirect(url);
     }
   }

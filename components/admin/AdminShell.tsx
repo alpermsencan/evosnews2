@@ -20,6 +20,7 @@ const NAV = [
   { href: "/admin/haberler", label: "Haberler", Icon: IconLayers },
   { href: "/admin/kategoriler", label: "Kategoriler", Icon: IconTag },
   { href: "/admin/yazarlar", label: "Yazarlar", Icon: IconUsers },
+  { href: "/admin/uyeler", label: "Üyeler", Icon: IconUsers },
   { href: "/admin/yorumlar", label: "Yorumlar", Icon: IconUsers },
   { href: "/admin/araclar", label: "Araçlar", Icon: IconCar },
   { href: "/admin/istasyonlar", label: "Şarj İstasyonları", Icon: IconBolt },

@@ -15,6 +15,8 @@ npm run dev
 
 `.env` içinde `DATABASE_URL` (MongoDB Atlas) tanımlıdır.
 Admin şifresi `ADMIN_PASSWORD` env değişkeni ile değiştirilebilir (varsayılan: `evos2026`).
+Üye oturumları `AUTH_SECRET` ile imzalanır — bu değeri değiştirirseniz açık tüm üye
+oturumları düşer.
 
 ## Yapı
 
@@ -54,6 +56,41 @@ prisma/
   seed.mjs                 Örnek veri
 middleware.ts              /admin koruması + layout ayrımı için x-pathname header'ı
 ```
+
+## Üyelik ve sosyal katman
+
+Okuyucular ücretsiz üye olup yorum yapar, beğenir, haber kaydeder, birbirini takip eder
+ve bildirim alır. Oturum, `AUTH_SECRET` ile imzalanan JWT'nin `evos_session` adlı
+httpOnly cookie'sinde tutulur; şifreler `bcryptjs` ile hash'lenir. Harici bir kimlik
+sağlayıcı (Google/Apple) yoktur — kimlik doğrulama e-posta + şifredir.
+
+| Sayfa | İşlev |
+|---|---|
+| `/kayit` | Ücretsiz üyelik (kullanıcı adı boşsa addan üretilir) |
+| `/giris` | E-posta **veya** kullanıcı adı + şifre ile giriş |
+| `/profil/[username]` | Herkese açık profil: bio, şehir, sayaçlar, beğendiği haberler, yorum akışı, takip et |
+| `/hesabim` | Profil düzenleme (Cloudinary avatar, bio, şehir, link) + şifre değiştirme |
+| `/hesabim/kaydedilenler` | Okuma listesi |
+| `/bildirimler` | Yanıt / beğeni / takip bildirimleri (açılışta okundu işaretlenir) |
+
+Neler yapılabilir:
+
+- **Yorum ve yanıt** — yorumlar tek seviye yanıt zinciri destekler; üye kendi yorumunu
+  siler (yanıtları da gider), yönetici hepsini siler.
+- **Beğeni** — hem haber hem yorum için aç/kapat; `ArticleLike` / `CommentLike`
+  tablolarında `(hedef, kullanıcı)` unique olduğu için mükerrer beğeni imkânsız.
+- **Kaydetme** — haber detayındaki *Kaydet* butonu okuma listesine ekler.
+- **Takip** — profilden takip et/bırak, takipçi sayacı anlık güncellenir.
+- **Bildirim** — yorumun yanıtlandığında/beğenildiğinde ve biri seni takip ettiğinde
+  düşer; header zilinde okunmamış sayısı görünür. Aynı kişinin aynı hedefteki okunmamış
+  bildirimi tekrarlanmaz (beğen/geri al gürültüsü engellenir).
+- **Moderasyon** — `/admin/uyeler`: rol (üye/editör/admin), askıya alma, silme. Askıya
+  alınan üye giriş yapamaz, yorum yazamaz ve profili 404 döner.
+
+Geriye dönük uyumluluk: üyelik öncesi yorumların `userId` alanı boştur; bu yorumlar
+`name` alanıyla görünmeye devam eder, yalnızca profil bağlantısı taşımaz. **Yeni yorum
+yazmak için giriş zorunludur** (anonim yorum kapalıdır). Bir üye silindiğinde yorumları
+anonim olarak korunur.
 
 ## Admin paneli
 
@@ -110,7 +147,17 @@ dokunulmadan çalışmaya devam eder**. Yeni içerikler HTML olarak saklanır ve
 |---|---|---|
 | GET/POST | `/api/articles` | Liste (kategori, arama, sayfalama, sıralama) / oluşturma |
 | GET/PUT/DELETE | `/api/articles/[id]` | Tekil haber |
-| POST/DELETE | `/api/upload` | Cloudinary görsel yükleme / silme (admin) |
+| POST/DELETE | `/api/upload` | Cloudinary görsel yükleme / silme (admin: her klasör, üye: yalnızca avatar) |
+| POST | `/api/account/register`, `/api/account/login`, `/api/account/logout` | Üyelik ve oturum |
+| GET | `/api/account/me` | Oturumdaki üye + sayaçlar |
+| GET/PUT | `/api/account/profile` | Profil bilgileri ve şifre değişimi |
+| GET | `/api/account/bookmarks` | Okuma listesi |
+| GET | `/api/users/[username]` | Herkese açık profil özeti |
+| POST | `/api/users/[username]/follow` | Takip et / bırak |
+| POST | `/api/articles/[id]/like`, `/api/articles/[id]/bookmark` | Haber beğeni / kaydetme |
+| GET/PUT | `/api/notifications` | Bildirim listesi / okundu işaretleme |
+| GET | `/api/admin/users` | Üye listesi (admin) |
+| PUT/DELETE | `/api/admin/users/[id]` | Rol, askıya alma, silme (admin) |
 | GET/POST/PUT/DELETE | `/api/categories`, `/api/categories/[id]` | Kategori |
 | GET/POST/DELETE | `/api/authors` | Yazar |
 | GET/POST/PUT/DELETE | `/api/comments`, `/api/comments/[id]`, `/api/comments/[id]/like` | Yorum |

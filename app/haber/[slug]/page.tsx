@@ -9,6 +9,8 @@ import NewsCard from "@/components/news/NewsCard";
 import MostRead from "@/components/news/MostRead";
 import SectionTitle from "@/components/news/SectionTitle";
 import CommentSection from "@/components/news/CommentSection";
+import ArticleActions from "@/components/news/ArticleActions";
+import { getCurrentUser } from "@/lib/auth";
 import { IconClock, IconEye } from "@/components/ui/Icons";
 
 export const dynamic = "force-dynamic";
@@ -43,10 +45,39 @@ export default async function ArticlePage({ params }: Props) {
     .update({ where: { id: article.id }, data: { views: { increment: 1 } } })
     .catch(() => {});
 
-  const [related, mostRead] = await Promise.all([
-    getRelated(article.categoryId, article.id, 4),
-    getMostRead(8),
-  ]);
+  const viewer = await getCurrentUser();
+
+  const [related, mostRead, likeCount, myLike, myBookmark, myCommentLikes] =
+    await Promise.all([
+      getRelated(article.categoryId, article.id, 4),
+      getMostRead(8),
+      prisma.articleLike.count({ where: { articleId: article.id } }),
+      viewer
+        ? prisma.articleLike.findUnique({
+            where: {
+              articleId_userId: { articleId: article.id, userId: viewer.id },
+            },
+          })
+        : null,
+      viewer
+        ? prisma.bookmark.findUnique({
+            where: {
+              articleId_userId: { articleId: article.id, userId: viewer.id },
+            },
+          })
+        : null,
+      viewer
+        ? prisma.commentLike.findMany({
+            where: {
+              userId: viewer.id,
+              commentId: { in: article.comments.map((c) => c.id) },
+            },
+            select: { commentId: true },
+          })
+        : [],
+    ]);
+
+  const likedCommentIds = new Set(myCommentLikes.map((l) => l.commentId));
 
   // Editörden gelen HTML; eski düz metin kayıtlar paragraflara dönüştürülür
   const contentHtml = contentToHtml(article.content);
@@ -137,6 +168,16 @@ export default async function ArticlePage({ params }: Props) {
             )}
           </figure>
 
+          <ArticleActions
+            articleId={article.id}
+            slug={article.slug}
+            title={article.title}
+            initialLikes={likeCount}
+            initialLiked={Boolean(myLike)}
+            initialBookmarked={Boolean(myBookmark)}
+            commentCount={article.comments.length}
+          />
+
           <div
             className="article-body px-4 py-5"
             dangerouslySetInnerHTML={{ __html: contentHtml }}
@@ -184,12 +225,16 @@ export default async function ArticlePage({ params }: Props) {
 
           <CommentSection
             articleId={article.id}
+            articleSlug={article.slug}
             initialComments={article.comments.map((c) => ({
               id: c.id,
               name: c.name,
               body: c.body,
               likes: c.likes,
               createdAt: c.createdAt.toISOString(),
+              parentId: c.parentId,
+              user: c.user,
+              likedByMe: likedCommentIds.has(c.id),
             }))}
           />
         </article>

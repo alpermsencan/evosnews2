@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { uploadToCloudinary } from "./ImageUpload";
+import { uploadToCloudinary } from "@/lib/uploadClient";
 
 /** Çoklu görsel alanı: mevcut URL'ler korunur, yenileri Cloudinary'ye yüklenir */
 export default function MultiImageUpload({

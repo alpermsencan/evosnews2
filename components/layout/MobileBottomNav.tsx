@@ -7,24 +7,32 @@ import {
   IconCar,
   IconHome,
   IconStore,
-  IconUsers,
+  IconUser,
 } from "@/components/ui/Icons";
+import { useSession } from "@/components/user/SessionProvider";
 
 const ITEMS = [
   { href: "/", label: "Anasayfa", Icon: IconHome },
   { href: "/araclar", label: "Araçlar", Icon: IconCar },
   { href: "/sarj-agi", label: "Şarj", Icon: IconBolt },
   { href: "/marketplace", label: "Market", Icon: IconStore },
-  { href: "/topluluk", label: "Topluluk", Icon: IconUsers },
 ];
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
+  const { user } = useSession();
+
+  const items = [
+    ...ITEMS,
+    user
+      ? { href: `/profil/${user.username}`, label: "Profilim", Icon: IconUser }
+      : { href: "/giris", label: "Giriş", Icon: IconUser },
+  ];
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white/95 backdrop-blur lg:hidden">
       <ul className="flex items-stretch">
-        {ITEMS.map(({ href, label, Icon }) => {
+        {items.map(({ href, label, Icon }) => {
           const active =
             href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (

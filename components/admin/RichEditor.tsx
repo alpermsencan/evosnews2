@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useMemo, useRef, useState } from "react";
 import type ReactQuillType from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import { uploadToCloudinary } from "./ImageUpload";
+import { uploadToCloudinary } from "@/lib/uploadClient";
 
 type QuillRef = { forwardedRef: React.RefObject<ReactQuillType | null> };
 

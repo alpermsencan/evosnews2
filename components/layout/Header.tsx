@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Sidebar from "./Sidebar";
+import NotificationBell from "@/components/user/NotificationBell";
+import UserMenu from "@/components/user/UserMenu";
 import { TOP_NAV } from "@/lib/nav";
 import {
-  IconBell,
   IconBolt,
   IconClose,
   IconMenu,
   IconSearch,
-  IconUser,
 } from "@/components/ui/Icons";
 
 export default function Header() {
@@ -97,21 +97,8 @@ export default function Header() {
               )}
             </button>
 
-            <button
-              aria-label="Bildirimler"
-              className="relative flex h-10 w-10 items-center justify-center rounded-md text-white transition hover:bg-white/15"
-            >
-              <IconBell className="h-6 w-6" />
-              <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[9px] font-black text-evos">
-                12
-              </span>
-            </button>
-              <Link href="/giris">     
-            <button className="flex h-9 shrink-0 items-center gap-1.5 rounded-md bg-black/25 px-2.5 text-sm font-bold text-white transition hover:bg-black/40 sm:h-10 sm:px-4">
-              <IconUser className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span>GİRİŞ</span>
-            </button>
-            </Link>  
+            <NotificationBell />
+            <UserMenu />
           </div>
         </div>
 

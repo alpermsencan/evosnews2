@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { fail, ok } from "@/lib/api";
+import { getRequestUser } from "@/lib/auth";
 import {
   destroyImage,
   isCloudinaryReady,
@@ -19,9 +20,14 @@ function isAdmin(req: NextRequest) {
   return req.cookies.get(COOKIE)?.value === PASSWORD;
 }
 
-/** POST /api/upload — FormData("file" veya "files") ile Cloudinary'ye görsel yükler */
+/**
+ * POST /api/upload — FormData("file" veya "files") ile Cloudinary'ye görsel yükler.
+ * Yönetici her klasöre yükleyebilir; üyeler yalnızca kendi avatarlarını (tek dosya).
+ */
 export async function POST(req: NextRequest) {
-  if (!isAdmin(req)) return fail("Yetkisiz işlem", 401);
+  const admin = isAdmin(req);
+  const member = admin ? null : await getRequestUser(req);
+  if (!admin && !member) return fail("Yetkisiz işlem", 401);
   if (!isCloudinaryReady)
     return fail(
       "Cloudinary yapılandırılmamış. .env dosyasına CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY ve CLOUDINARY_API_SECRET ekleyin.",
@@ -30,12 +36,17 @@ export async function POST(req: NextRequest) {
 
   try {
     const form = await req.formData();
-    const folder = String(form.get("folder") || "") || undefined;
+    // Üyeler klasör seçemez, hepsi avatar klasörüne düşer
+    const folder = admin
+      ? String(form.get("folder") || "") || undefined
+      : "evos/avatarlar";
 
     const raw = [...form.getAll("files"), ...form.getAll("file")];
     const files = raw.filter((f): f is File => f instanceof File && f.size > 0);
 
     if (files.length === 0) return fail("Dosya bulunamadı");
+    if (!admin && files.length > 1)
+      return fail("Aynı anda tek dosya yükleyebilirsiniz");
 
     for (const file of files) {
       if (!ALLOWED.includes(file.type))

@@ -72,7 +72,15 @@ export async function getArticleBySlug(slug: string) {
     include: {
       category: true,
       author: true,
-      comments: { where: { approved: true }, orderBy: { createdAt: "desc" } },
+      comments: {
+        where: { approved: true },
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: {
+            select: { id: true, name: true, username: true, avatar: true },
+          },
+        },
+      },
     },
   });
 }
