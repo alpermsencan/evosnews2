@@ -2,6 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { contentToHtml } from "@/lib/utils";
+import ImageUpload from "./ImageUpload";
+import MultiImageUpload from "./MultiImageUpload";
+import RichEditor from "./RichEditor";
 
 export type Field = {
   name: string;
@@ -9,22 +13,32 @@ export type Field = {
   type:
     | "text"
     | "textarea"
+    | "richtext"
     | "number"
     | "checkbox"
     | "select"
     | "tags"
     | "color"
     | "date"
-    | "url";
+    | "url"
+    | "image"
+    | "images";
   options?: { value: string; label: string }[];
   placeholder?: string;
   help?: string;
   rows?: number;
   required?: boolean;
   full?: boolean;
+  /** Cloudinary klasörü (image / images / richtext alanları için) */
+  folder?: string;
 };
 
 type Value = string | number | boolean | string[] | null | undefined;
+
+/** Quill boş içerikte "<p><br></p>" döndürür */
+function isEmptyHtml(html: string) {
+  return !html.replace(/<(p|br|div|span)[^>]*>/gi, "").replace(/<\/[^>]+>/g, "").replace(/&nbsp;|\s/g, "");
+}
 
 export default function EntityForm({
   fields,
@@ -46,8 +60,19 @@ export default function EntityForm({
     const base: Record<string, Value> = {};
     for (const f of fields) {
       const v = initial[f.name];
-      if (f.type === "tags") {
+      if (f.type === "images") {
+        // Mevcut görsel URL'leri olduğu gibi korunur
+        base[f.name] = Array.isArray(v)
+          ? (v as string[])
+          : String(v ?? "")
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean);
+      } else if (f.type === "tags") {
         base[f.name] = Array.isArray(v) ? (v as string[]).join(", ") : (v as string) ?? "";
+      } else if (f.type === "richtext") {
+        // Eski düz metin içerikler editörde paragraflara dönüştürülür
+        base[f.name] = contentToHtml(String(v ?? ""));
       } else if (f.type === "date" && v) {
         base[f.name] = new Date(v as string).toISOString().slice(0, 16);
       } else {
@@ -72,7 +97,9 @@ export default function EntityForm({
     const payload: Record<string, unknown> = {};
     for (const f of fields) {
       const v = values[f.name];
-      if (f.type === "tags") {
+      if (f.type === "images") {
+        payload[f.name] = Array.isArray(v) ? v : [];
+      } else if (f.type === "tags") {
         payload[f.name] = String(v ?? "")
           .split(",")
           .map((s) => s.trim())
@@ -81,9 +108,22 @@ export default function EntityForm({
         payload[f.name] = v === "" ? 0 : Number(v);
       } else if (f.type === "checkbox") {
         payload[f.name] = !!v;
+      } else if (f.type === "richtext") {
+        const html = String(v ?? "");
+        payload[f.name] = isEmptyHtml(html) ? "" : html;
       } else {
         payload[f.name] = v;
       }
+    }
+
+    // Zorunlu editör alanlarını tarayıcı doğrulaması yakalayamıyor
+    const missing = fields.find(
+      (f) => f.required && f.type === "richtext" && !payload[f.name]
+    );
+    if (missing) {
+      setError(`${missing.label} alanı zorunludur`);
+      setLoading(false);
+      return;
     }
 
     try {
@@ -104,82 +144,132 @@ export default function EntityForm({
     }
   };
 
+  const renderControl = (f: Field) => {
+    if (f.type === "image")
+      return (
+        <ImageUpload
+          value={String(values[f.name] ?? "")}
+          onChange={(url) => set(f.name, url)}
+          folder={f.folder}
+          placeholder={f.placeholder}
+        />
+      );
+
+    if (f.type === "images")
+      return (
+        <MultiImageUpload
+          value={(values[f.name] as string[]) ?? []}
+          onChange={(urls) => set(f.name, urls)}
+          folder={f.folder}
+        />
+      );
+
+    if (f.type === "richtext")
+      return (
+        <RichEditor
+          value={String(values[f.name] ?? "")}
+          onChange={(html) => set(f.name, html)}
+          placeholder={f.placeholder}
+          folder={f.folder}
+        />
+      );
+
+    if (f.type === "textarea")
+      return (
+        <textarea
+          required={f.required}
+          rows={f.rows ?? 5}
+          value={String(values[f.name] ?? "")}
+          onChange={(e) => set(f.name, e.target.value)}
+          placeholder={f.placeholder}
+          className="resize-y rounded-md border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-evos"
+        />
+      );
+
+    if (f.type === "select")
+      return (
+        <select
+          required={f.required}
+          value={String(values[f.name] ?? "")}
+          onChange={(e) => set(f.name, e.target.value)}
+          className="rounded-md border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-evos"
+        >
+          <option value="">Seçiniz</option>
+          {f.options?.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
+      );
+
+    if (f.type === "checkbox")
+      return (
+        <span className="flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2.5">
+          <input
+            type="checkbox"
+            checked={!!values[f.name]}
+            onChange={(e) => set(f.name, e.target.checked)}
+            className="h-4 w-4 accent-evos"
+          />
+          <span className="text-sm text-neutral-600">
+            {f.placeholder ?? "Aktif"}
+          </span>
+        </span>
+      );
+
+    return (
+      <input
+        required={f.required}
+        type={
+          f.type === "number"
+            ? "number"
+            : f.type === "date"
+            ? "datetime-local"
+            : f.type === "color"
+            ? "color"
+            : "text"
+        }
+        step={f.type === "number" ? "any" : undefined}
+        value={String(values[f.name] ?? "")}
+        onChange={(e) => set(f.name, e.target.value)}
+        placeholder={f.placeholder}
+        className="rounded-md border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-evos"
+      />
+    );
+  };
+
   return (
     <form
       onSubmit={submit}
       className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-5"
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {fields.map((f) => (
-          <label
-            key={f.name}
-            className={`flex flex-col gap-1.5 ${f.full ? "sm:col-span-2" : ""}`}
-          >
-            <span className="text-[11px] font-black tracking-wide text-neutral-500">
-              {f.label}
-              {f.required && <span className="text-evos"> *</span>}
-            </span>
+        {fields.map((f) => {
+          // Karmaşık alanlarda label sarmalamak tıklamaları bozar
+          const complex =
+            f.type === "image" || f.type === "images" || f.type === "richtext";
+          const Wrapper = complex ? "div" : "label";
+          const wide = f.full || complex;
 
-            {f.type === "textarea" ? (
-              <textarea
-                required={f.required}
-                rows={f.rows ?? 5}
-                value={String(values[f.name] ?? "")}
-                onChange={(e) => set(f.name, e.target.value)}
-                placeholder={f.placeholder}
-                className="resize-y rounded-md border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-evos"
-              />
-            ) : f.type === "select" ? (
-              <select
-                required={f.required}
-                value={String(values[f.name] ?? "")}
-                onChange={(e) => set(f.name, e.target.value)}
-                className="rounded-md border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-evos"
-              >
-                <option value="">Seçiniz</option>
-                {f.options?.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            ) : f.type === "checkbox" ? (
-              <span className="flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2.5">
-                <input
-                  type="checkbox"
-                  checked={!!values[f.name]}
-                  onChange={(e) => set(f.name, e.target.checked)}
-                  className="h-4 w-4 accent-evos"
-                />
-                <span className="text-sm text-neutral-600">
-                  {f.placeholder ?? "Aktif"}
-                </span>
+          return (
+            <Wrapper
+              key={f.name}
+              className={`flex flex-col gap-1.5 ${wide ? "sm:col-span-2" : ""}`}
+            >
+              <span className="text-[11px] font-black tracking-wide text-neutral-500">
+                {f.label}
+                {f.required && <span className="text-evos"> *</span>}
               </span>
-            ) : (
-              <input
-                required={f.required}
-                type={
-                  f.type === "number"
-                    ? "number"
-                    : f.type === "date"
-                    ? "datetime-local"
-                    : f.type === "color"
-                    ? "color"
-                    : "text"
-                }
-                step={f.type === "number" ? "any" : undefined}
-                value={String(values[f.name] ?? "")}
-                onChange={(e) => set(f.name, e.target.value)}
-                placeholder={f.placeholder}
-                className="rounded-md border border-neutral-300 px-3 py-2.5 text-sm outline-none focus:border-evos"
-              />
-            )}
 
-            {f.help && (
-              <span className="text-[11px] text-neutral-400">{f.help}</span>
-            )}
-          </label>
-        ))}
+              {renderControl(f)}
+
+              {f.help && (
+                <span className="text-[11px] text-neutral-400">{f.help}</span>
+              )}
+            </Wrapper>
+          );
+        })}
       </div>
 
       {error && (

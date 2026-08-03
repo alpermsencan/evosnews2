@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getArticleBySlug, getRelated, getMostRead } from "@/lib/queries";
-import { formatDate, timeAgo } from "@/lib/utils";
+import { contentToHtml, formatDate, timeAgo } from "@/lib/utils";
 import NewsCard from "@/components/news/NewsCard";
 import MostRead from "@/components/news/MostRead";
 import SectionTitle from "@/components/news/SectionTitle";
@@ -48,7 +48,8 @@ export default async function ArticlePage({ params }: Props) {
     getMostRead(8),
   ]);
 
-  const paragraphs = article.content.split("\n\n").filter(Boolean);
+  // Editörden gelen HTML; eski düz metin kayıtlar paragraflara dönüştürülür
+  const contentHtml = contentToHtml(article.content);
 
   return (
     <div className="flex flex-col gap-6 sm:pt-4">
@@ -136,11 +137,10 @@ export default async function ArticlePage({ params }: Props) {
             )}
           </figure>
 
-          <div className="article-body px-4 py-5">
-            {paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
+          <div
+            className="article-body px-4 py-5"
+            dangerouslySetInnerHTML={{ __html: contentHtml }}
+          />
 
           {/* Galeri */}
           {article.gallery.length > 0 && (

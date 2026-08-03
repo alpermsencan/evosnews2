@@ -88,9 +88,11 @@ export default function Sidebar({
               Dijital garajın ve takip listen seni bekliyor
             </span>
           </div>
-          <button className="shrink-0 rounded-md bg-evos px-3 py-1.5 text-xs font-bold text-white transition hover:bg-evos-dark">
-            GİRİŞ
-          </button>
+          <Link href="/giris">
+            <button className="shrink-0 rounded-md bg-evos px-3 py-1.5 text-xs font-bold text-white transition hover:bg-evos-dark">
+              GİRİŞ
+            </button>
+          </Link>
         </div>
 
         {/* Hızlı erişim */}

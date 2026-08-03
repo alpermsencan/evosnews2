@@ -50,6 +50,164 @@ body {
   }
 }
 
+/* Editörden gelen zengin içerik */
+.article-body h2,
+.article-body h3,
+.article-body h4 {
+  margin: 1.9rem 0 0.85rem;
+  font-weight: 900;
+  line-height: 1.25;
+  color: #14161a;
+}
+.article-body h2 {
+  font-size: 1.5rem;
+}
+.article-body h3 {
+  font-size: 1.25rem;
+}
+.article-body h4 {
+  font-size: 1.0625rem;
+}
+
+.article-body a {
+  color: var(--color-evos);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-body strong,
+.article-body b {
+  font-weight: 800;
+}
+.article-body em,
+.article-body i {
+  font-style: italic;
+}
+.article-body u {
+  text-decoration: underline;
+}
+.article-body s {
+  text-decoration: line-through;
+}
+
+.article-body ul,
+.article-body ol {
+  margin: 0 0 1.15rem 1.35rem;
+  line-height: 1.85;
+  font-size: 1.0625rem;
+  color: #23262b;
+}
+.article-body ul {
+  list-style: disc;
+}
+.article-body ol {
+  list-style: decimal;
+}
+.article-body li {
+  margin-bottom: 0.45rem;
+}
+
+.article-body blockquote {
+  margin: 1.5rem 0;
+  border-left: 4px solid var(--color-evos);
+  background: #fafafa;
+  padding: 0.85rem 1.15rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  font-style: italic;
+  color: #3a3f47;
+}
+.article-body blockquote p {
+  margin-bottom: 0;
+}
+
+.article-body pre,
+.article-body .ql-code-block-container {
+  margin: 1.4rem 0;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: #14161a;
+  padding: 1rem 1.15rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: #e6e8eb;
+  white-space: pre-wrap;
+}
+
+.article-body img,
+.article-body iframe,
+.article-body video {
+  display: block;
+  margin: 1.5rem auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+.article-body iframe {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+}
+
+/* Quill hizalama sınıfları */
+.article-body .ql-align-center {
+  text-align: center;
+}
+.article-body .ql-align-right {
+  text-align: right;
+}
+.article-body .ql-align-justify {
+  text-align: justify;
+}
+.article-body .ql-indent-1 {
+  padding-left: 2rem;
+}
+.article-body .ql-indent-2 {
+  padding-left: 4rem;
+}
+.article-body .ql-indent-3 {
+  padding-left: 6rem;
+}
+
+/* Admin: Quill editörü */
+.evos-quill .ql-toolbar.ql-snow {
+  border-color: #d4d4d4;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+  background: #fafafa;
+}
+.evos-quill .ql-container.ql-snow {
+  border-color: #d4d4d4;
+  border-bottom-left-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+}
+.evos-quill .ql-editor {
+  min-height: 380px;
+  line-height: 1.8;
+}
+.evos-quill .ql-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+}
+.evos-quill .ql-snow .ql-stroke {
+  stroke: #52525b;
+}
+.evos-quill .ql-snow .ql-fill {
+  fill: #52525b;
+}
+.evos-quill .ql-snow .ql-toolbar button:hover .ql-stroke,
+.evos-quill .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--color-evos);
+}
+.evos-quill .ql-snow .ql-toolbar button:hover .ql-fill,
+.evos-quill .ql-snow .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--color-evos);
+}
+
 .line-clamp-2-fallback {
   display: -webkit-box;
   -webkit-line-clamp: 2;

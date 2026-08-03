@@ -95,6 +95,28 @@ export function slugify(text: string) {
     .replace(/-+/g, "-");
 }
 
+/** Metin HTML mi, yoksa eski düz metin içerik mi? */
+export function isHtml(text: string) {
+  return /<(p|h[1-6]|ul|ol|li|br|img|blockquote|figure|div|iframe|strong|em|a)\b[^>]*>/i.test(
+    text
+  );
+}
+
+/**
+ * Editör ve yayın tarafı için içeriği HTML'e çevirir.
+ * Eski kayıtlar boş satırla ayrılmış düz metin olduğundan paragraflara bölünür.
+ */
+export function contentToHtml(text: string) {
+  if (!text) return "";
+  if (isHtml(text)) return text;
+  return text
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p>${p.replace(/\n/g, "<br />")}</p>`)
+    .join("");
+}
+
 /** Basit ÖTV + KDV hesaplayıcı (elektrikli araçlar, motor gücü bazlı) */
 export function calcOtv(basePrice: number, motorKw: number) {
   let rate = 10;

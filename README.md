@@ -74,12 +74,43 @@ middleware.ts              /admin koruması + layout ayrımı için x-pathname h
 | `/admin/aboneler` | Bülten aboneleri |
 | `/admin/talepler` | Form talepleri (lead) |
 
+### Görsel yükleme (Cloudinary)
+
+Görsel alanları (`kapak görseli`, `galeri`, `avatar`, `araç/ilan görselleri`) dosya yükler
+veya hazır URL kabul eder. **Mevcut kayıtlardaki picsum/unsplash URL'leri olduğu gibi korunur**;
+URL kutusu düzenlenebilir kalır, yükleme yapmak zorunlu değildir.
+
+`.env` içine Cloudinary anahtarlarını girin (console.cloudinary.com → Dashboard):
+
+```
+CLOUDINARY_CLOUD_NAME=""
+CLOUDINARY_API_KEY=""
+CLOUDINARY_API_SECRET=""
+CLOUDINARY_FOLDER="evos"
+```
+
+Yükleme `POST /api/upload` üzerinden sunucu tarafında imzalanır (admin cookie'si zorunlu,
+maks. 10 MB, jpeg/png/webp/avif/gif). Görseller 2000px'e sınırlanır, `quality:auto` +
+`fetch_format:auto` uygulanır. `next.config.ts` içinde `res.cloudinary.com` zaten tanımlı.
+
+### Zengin metin editörü (react-quill-new)
+
+Haber içeriği `react-quill-new` (Quill 2) ile düzenlenir: başlık, kalın/italik, renk,
+liste, hizalama, alıntı, kod bloğu, bağlantı, görsel ve video. Toolbar'daki görsel butonu
+base64 gömmek yerine dosyayı Cloudinary'ye yükleyip URL'i metne ekler.
+
+Eski kayıtlar boş satırla ayrılmış düz metindi; `contentToHtml()` (lib/utils.ts) bunları
+hem editörde hem yayın tarafında paragraflara çevirir, dolayısıyla **eski haberler
+dokunulmadan çalışmaya devam eder**. Yeni içerikler HTML olarak saklanır ve
+`/haber/[slug]` sayfasında `.article-body` stilleriyle render edilir.
+
 ## API uçları
 
 | Metot | Uç nokta | Açıklama |
 |---|---|---|
 | GET/POST | `/api/articles` | Liste (kategori, arama, sayfalama, sıralama) / oluşturma |
 | GET/PUT/DELETE | `/api/articles/[id]` | Tekil haber |
+| POST/DELETE | `/api/upload` | Cloudinary görsel yükleme / silme (admin) |
 | GET/POST/PUT/DELETE | `/api/categories`, `/api/categories/[id]` | Kategori |
 | GET/POST/DELETE | `/api/authors` | Yazar |
 | GET/POST/PUT/DELETE | `/api/comments`, `/api/comments/[id]`, `/api/comments/[id]/like` | Yorum |

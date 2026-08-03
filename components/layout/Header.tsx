@@ -106,11 +106,12 @@ export default function Header() {
                 12
               </span>
             </button>
-
+              <Link href="/giris">     
             <button className="flex h-9 shrink-0 items-center gap-1.5 rounded-md bg-black/25 px-2.5 text-sm font-bold text-white transition hover:bg-black/40 sm:h-10 sm:px-4">
               <IconUser className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>GİRİŞ</span>
             </button>
+            </Link>  
           </div>
         </div>
 
