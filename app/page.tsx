@@ -33,7 +33,11 @@ import {
   getActivePoll,
   getPriceIndex,
 } from "@/lib/queries";
+import ReelRail from "@/components/social/ReelRail";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
+import { getFeed, type FeedPost } from "@/lib/social";
+import type { SocialPost } from "@/components/social/types";
 import { formatTL, timeAgo } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +56,8 @@ const SERVICES = [
 ];
 
 export default async function HomePage() {
+  const viewer = await getCurrentUser();
+
   const [
     headlines,
     latest,
@@ -65,6 +71,7 @@ export default async function HomePage() {
     stations,
     market,
     tech,
+    reels,
   ] = await Promise.all([
     getHeadlines(6),
     getLatest(16),
@@ -78,8 +85,15 @@ export default async function HomePage() {
     prisma.chargeStation.findMany({ take: 5, orderBy: { maxPowerKw: "desc" } }),
     getByCategory("marketplace", 3),
     getByCategory("teknoloji", 4),
+    getFeed({
+      viewerId: viewer?.id ?? null,
+      scope: "explore",
+      kind: "reel",
+      limit: 10,
+    }),
   ]);
 
+  const reelCards = reels.map((r: FeedPost) => r as unknown as SocialPost);
   const last = priceIndex[priceIndex.length - 1];
   const heroIds = new Set(headlines.map((h) => h.id));
   const feed = latest.filter((a) => !heroIds.has(a.id));
@@ -140,6 +154,16 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* TOPLULUK REELS ŞERİDİ */}
+      {reelCards.length > 0 && (
+        <section className="px-3 sm:px-0">
+          <ReelRail
+            reels={reelCards}
+            title="TOPLULUKTAN REELS"
+          />
+        </section>
+      )}
 
       {/* ANA İÇERİK + SAĞ SÜTUN */}
       <div className="flex flex-col gap-6 lg:flex-row">

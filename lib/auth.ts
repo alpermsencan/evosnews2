@@ -95,6 +95,18 @@ export function isValidUsername(username: string) {
   return /^[a-z0-9_]{3,20}$/.test(username);
 }
 
+export type NotificationType =
+  | "reply"
+  | "comment_like"
+  | "follow"
+  | "friend_request"
+  | "friend_accept"
+  | "post_like"
+  | "post_comment";
+
+/** Her seferinde ayrı bildirim üretilen tipler (yazılı içerik) */
+const ALWAYS_NEW: NotificationType[] = ["reply", "post_comment"];
+
 /**
  * Bildirim oluşturur. Kendi eylemin için bildirim üretilmez ve aynı kişinin
  * aynı hedefteki okunmamış bildirimi tekrarlanmaz (beğen/geri al gürültüsü).
@@ -102,13 +114,13 @@ export function isValidUsername(username: string) {
 export async function notify(params: {
   userId: string;
   actorId?: string | null;
-  type: "reply" | "comment_like" | "follow";
+  type: NotificationType;
   message: string;
   href?: string;
 }) {
   if (params.actorId && params.actorId === params.userId) return;
 
-  if (params.actorId && params.type !== "reply") {
+  if (params.actorId && !ALWAYS_NEW.includes(params.type)) {
     const duplicate = await prisma.notification.findFirst({
       where: {
         userId: params.userId,

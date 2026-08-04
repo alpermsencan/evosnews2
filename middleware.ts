@@ -5,7 +5,13 @@ const ADMIN_COOKIE = "evos_admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
 
 /** Giriş yapmış üye gerektiren alanlar */
-const MEMBER_PATHS = ["/hesabim", "/bildirimler"];
+const MEMBER_PATHS = [
+  "/hesabim",
+  "/bildirimler",
+  "/akis",
+  "/arkadaslar",
+  "/reels/yeni",
+];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

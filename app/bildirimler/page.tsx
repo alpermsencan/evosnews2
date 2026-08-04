@@ -14,6 +14,10 @@ const TYPE_LABEL: Record<string, string> = {
   reply: "YANIT",
   comment_like: "BEĞENİ",
   follow: "TAKİP",
+  friend_request: "ARKADAŞLIK İSTEĞİ",
+  friend_accept: "ARKADAŞ OLDUNUZ",
+  post_like: "GÖNDERİ BEĞENİSİ",
+  post_comment: "GÖNDERİ YORUMU",
 };
 
 export default async function NotificationsPage() {
@@ -47,8 +51,9 @@ export default async function NotificationsPage() {
       {items.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-neutral-300 bg-white px-4 py-14">
           <p className="text-sm text-neutral-500">
-            Henüz bildirimin yok. Yorumların beğenildiğinde, yanıtlandığında ve
-            biri seni takip ettiğinde burada göreceksin.
+            Henüz bildirimin yok. Yorumların beğenildiğinde, gönderilerine yorum
+            geldiğinde, biri seni takip ettiğinde veya arkadaşlık isteği
+            gönderdiğinde burada göreceksin.
           </p>
         </div>
       ) : (

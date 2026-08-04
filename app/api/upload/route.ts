@@ -6,23 +6,43 @@ import {
   isCloudinaryReady,
   publicIdFromUrl,
   uploadImage,
+  uploadVideo,
 } from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+// Reel videoları büyük olabildiği için yükleme süresi uzatılır
+export const maxDuration = 60;
 
 const COOKIE = "evos_admin";
 const PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
-const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_BYTES = 10 * 1024 * 1024; // 10 MB (görsel)
+const MAX_VIDEO_BYTES = 80 * 1024 * 1024; // 80 MB (reel)
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
+const ALLOWED_VIDEO = [
+  "video/mp4",
+  "video/quicktime",
+  "video/webm",
+  "video/x-m4v",
+];
+
+/** Üyelerin yükleyebileceği klasörler: amaç -> klasör */
+const MEMBER_FOLDERS: Record<string, string> = {
+  avatar: "evos/avatarlar",
+  post: "evos/gonderiler",
+  reel: "evos/reels",
+};
 
 function isAdmin(req: NextRequest) {
   return req.cookies.get(COOKIE)?.value === PASSWORD;
 }
 
 /**
- * POST /api/upload — FormData("file" veya "files") ile Cloudinary'ye görsel yükler.
- * Yönetici her klasöre yükleyebilir; üyeler yalnızca kendi avatarlarını (tek dosya).
+ * POST /api/upload — FormData("file" veya "files") ile Cloudinary'ye yükler.
+ * Yönetici her klasöre görsel yükleyebilir; üyeler `purpose` alanına göre
+ * avatar / gönderi görseli / reel videosu yükler.
+ *
+ * Video yüklemek için: FormData'ya type="video" eklenir.
  */
 export async function POST(req: NextRequest) {
   const admin = isAdmin(req);
@@ -36,17 +56,35 @@ export async function POST(req: NextRequest) {
 
   try {
     const form = await req.formData();
-    // Üyeler klasör seçemez, hepsi avatar klasörüne düşer
+    const isVideo = String(form.get("type") || "") === "video";
+    const purpose = String(form.get("purpose") || "avatar");
+
+    // Üyeler serbest klasör seçemez, izinli amaçlardan birine düşerler
     const folder = admin
       ? String(form.get("folder") || "") || undefined
-      : "evos/avatarlar";
+      : MEMBER_FOLDERS[purpose] ?? MEMBER_FOLDERS.avatar;
 
     const raw = [...form.getAll("files"), ...form.getAll("file")];
     const files = raw.filter((f): f is File => f instanceof File && f.size > 0);
 
     if (files.length === 0) return fail("Dosya bulunamadı");
-    if (!admin && files.length > 1)
-      return fail("Aynı anda tek dosya yükleyebilirsiniz");
+
+    if (isVideo) {
+      const file = files[0];
+      if (files.length > 1) return fail("Aynı anda tek video yükleyebilirsiniz");
+      if (!ALLOWED_VIDEO.includes(file.type))
+        return fail(`Desteklenmeyen video tipi: ${file.type || "bilinmiyor"}`);
+      if (file.size > MAX_VIDEO_BYTES)
+        return fail(`"${file.name}" 80 MB sınırını aşıyor`);
+
+      const video = await uploadVideo(file, folder);
+      return ok({ video, url: video.url }, 201);
+    }
+
+    // Üyeler gönderi görsellerinde en fazla 4 dosya yükleyebilir
+    const maxFiles = admin ? 20 : purpose === "post" ? 4 : 1;
+    if (files.length > maxFiles)
+      return fail(`Aynı anda en fazla ${maxFiles} dosya yükleyebilirsiniz`);
 
     for (const file of files) {
       if (!ALLOWED.includes(file.type))
@@ -60,7 +98,7 @@ export async function POST(req: NextRequest) {
     // Tek dosya yüklendiğinde kolay kullanım için url'i de kökte döneriz
     return ok({ images, url: images[0].url }, 201);
   } catch (e) {
-    return fail(e instanceof Error ? e.message : "Görsel yüklenemedi", 500);
+    return fail(e instanceof Error ? e.message : "Dosya yüklenemedi", 500);
   }
 }
 

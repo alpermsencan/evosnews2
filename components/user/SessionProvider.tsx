@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -50,11 +49,15 @@ export default function SessionProvider({
   const [user, setUser] = useState<SessionUser | null>(initialUser);
   const [unread, setUnread] = useState(initialUnread);
 
-  // Sunucudan gelen oturum, gezinme sonrası tazelenir
-  useEffect(() => {
+  // Sunucudan gelen oturum, gezinme sonrası tazelenir.
+  // Prop değişimine göre render sırasında ayarlanır; effect kullanmak
+  // fazladan bir render turu doğururdu.
+  const [seen, setSeen] = useState({ initialUser, initialUnread });
+  if (seen.initialUser !== initialUser || seen.initialUnread !== initialUnread) {
+    setSeen({ initialUser, initialUnread });
     setUser(initialUser);
     setUnread(initialUnread);
-  }, [initialUser, initialUnread]);
+  }
 
   const refresh = useCallback(async () => {
     try {

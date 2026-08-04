@@ -10,7 +10,11 @@ import MostRead from "@/components/news/MostRead";
 import SectionTitle from "@/components/news/SectionTitle";
 import CommentSection from "@/components/news/CommentSection";
 import ArticleActions from "@/components/news/ArticleActions";
+import PostComposer from "@/components/social/PostComposer";
+import PostFeed from "@/components/social/PostFeed";
 import { getCurrentUser } from "@/lib/auth";
+import { getFeed, type FeedPost } from "@/lib/social";
+import type { SocialPost } from "@/components/social/types";
 import { IconClock, IconEye } from "@/components/ui/Icons";
 
 export const dynamic = "force-dynamic";
@@ -78,6 +82,21 @@ export default async function ArticlePage({ params }: Props) {
     ]);
 
   const likedCommentIds = new Set(myCommentLikes.map((l) => l.commentId));
+
+  // Bu habere iliştirilmiş kullanıcı gönderileri (sosyal katman)
+  const articlePostsRaw = await getFeed({
+    viewerId: viewer?.id ?? null,
+    scope: "article",
+    articleId: article.id,
+    limit: 5,
+  });
+  const articlePosts = articlePostsRaw.map(
+    (p: FeedPost) => p as unknown as SocialPost
+  );
+  const articlePostCursor =
+    articlePosts.length > 0
+      ? articlePosts[articlePosts.length - 1].createdAt
+      : null;
 
   // Editörden gelen HTML; eski düz metin kayıtlar paragraflara dönüştürülür
   const contentHtml = contentToHtml(article.content);
@@ -222,6 +241,28 @@ export default async function ArticlePage({ params }: Props) {
               ))}
             </div>
           )}
+
+          {/* Toplulukta bu haber: habere iliştirilmiş kullanıcı gönderileri */}
+          <section className="flex flex-col gap-3 border-t border-neutral-200 px-4 py-5">
+            <h2 className="text-sm font-black tracking-wide text-neutral-800">
+              TOPLULUKTA BU HABER
+            </h2>
+            <PostComposer
+              articleId={article.id}
+              articleTitle={article.title}
+              placeholder="Bu haber hakkında ne düşünüyorsun? Paylaşımın akışında da görünür."
+            />
+            <PostFeed
+              query={{ scope: "article", articleId: article.id }}
+              initialItems={articlePosts}
+              initialCursor={articlePostCursor}
+              emptyState={
+                <p className="rounded-lg border border-dashed border-neutral-300 bg-neutral-50 px-4 py-8 text-center text-[13px] text-neutral-500">
+                  Bu haberi henüz kimse akışında paylaşmadı. İlk paylaşan sen ol.
+                </p>
+              }
+            />
+          </section>
 
           <CommentSection
             articleId={article.id}

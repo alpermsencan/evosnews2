@@ -13,6 +13,8 @@ export type NavGroup = {
 /** Üst yatay menü (Hürriyet'teki ANASAYFA / GÜNDEM / DÜNYA şeridi gibi) */
 export const TOP_NAV: NavItem[] = [
   { label: "ANASAYFA", href: "/" },
+  { label: "AKIŞIM", href: "/akis" },
+  { label: "REELS", href: "/reels" },
   { label: "HABER MERKEZİ", href: "/kategori/haber-merkezi" },
   { label: "ARAÇ MERKEZİ", href: "/arac-merkezi" },
   { label: "ARAÇLARI KEŞFET", href: "/araclar" },
@@ -32,6 +34,33 @@ export const TOP_NAV: NavItem[] = [
 
 /** Hamburger menüden açılan sidebar içeriği */
 export const SIDEBAR_GROUPS: NavGroup[] = [
+  {
+    title: "SOSYAL",
+    items: [
+      {
+        label: "Akışım",
+        href: "/akis",
+        desc: "Takip ettiklerin ve arkadaşlarının paylaşımları",
+        badge: "YENİ",
+      },
+      {
+        label: "Reels",
+        href: "/reels",
+        desc: "Kullanıcılardan kısa dikey videolar",
+        badge: "YENİ",
+      },
+      {
+        label: "Arkadaşlarım",
+        href: "/arkadaslar",
+        desc: "Arkadaşlık istekleri ve kişi önerileri",
+      },
+      {
+        label: "Topluluk",
+        href: "/topluluk",
+        desc: "Forum başlıkları ve tartışmalar",
+      },
+    ],
+  },
   {
     title: "KEŞFET",
     items: [
@@ -86,6 +115,8 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
 
 /** Öne çıkan hızlı erişim kutuları (sidebar üstü) */
 export const QUICK_LINKS: NavItem[] = [
+  { label: "Akışım", href: "/akis" },
+  { label: "Reels", href: "/reels" },
   { label: "Araç Bul", href: "/araclar" },
   { label: "Şarj Bul", href: "/sarj-agi" },
   { label: "ÖTV Hesapla", href: "/otv-rehberi" },
@@ -120,8 +151,16 @@ export const FOOTER_GROUPS: NavGroup[] = [
       { label: "Araçları Keşfet", href: "/araclar" },
       { label: "Araç Merkezi", href: "/arac-merkezi" },
       { label: "ÖTV Hesaplama", href: "/otv-rehberi" },
-      { label: "Topluluk", href: "/topluluk" },
       { label: "Platform", href: "/platform" },
+    ],
+  },
+  {
+    title: "SOSYAL",
+    items: [
+      { label: "Akışım", href: "/akis" },
+      { label: "Reels", href: "/reels" },
+      { label: "Arkadaşlarım", href: "/arkadaslar" },
+      { label: "Topluluk", href: "/topluluk" },
     ],
   },
   {

@@ -12,3 +12,44 @@ export async function uploadToCloudinary(
   if (!res.ok) throw new Error(data.error || "Görsel yüklenemedi");
   return (data.images as { url: string }[]).map((i) => i.url);
 }
+
+/**
+ * Üye yüklemeleri. Klasör seçimi yerine "amaç" gönderilir; sunucu
+ * amaca göre izinli klasörü ve dosya sınırlarını uygular.
+ */
+export async function uploadMemberImages(
+  files: File[],
+  purpose: "avatar" | "post" = "post"
+): Promise<string[]> {
+  const fd = new FormData();
+  for (const f of files) fd.append("files", f);
+  fd.append("purpose", purpose);
+
+  const res = await fetch("/api/upload", { method: "POST", body: fd });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Görsel yüklenemedi");
+  return (data.images as { url: string }[]).map((i) => i.url);
+}
+
+export type UploadedVideoResult = {
+  url: string;
+  posterUrl: string;
+  durationSec: number;
+  width: number;
+  height: number;
+};
+
+/** Reel videosu yükler; kapak görseli ve süre sunucudan döner */
+export async function uploadMemberVideo(
+  file: File
+): Promise<UploadedVideoResult> {
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("type", "video");
+  fd.append("purpose", "reel");
+
+  const res = await fetch("/api/upload", { method: "POST", body: fd });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Video yüklenemedi");
+  return data.video as UploadedVideoResult;
+}

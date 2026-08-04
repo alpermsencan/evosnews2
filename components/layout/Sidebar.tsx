@@ -96,7 +96,7 @@ export default function Sidebar({
         </div>
 
         {/* Hızlı erişim */}
-        <div className="grid shrink-0 grid-cols-4 gap-px border-b border-neutral-200 bg-neutral-200">
+        <div className="grid shrink-0 grid-cols-3 gap-px border-b border-neutral-200 bg-neutral-200">
           {QUICK_LINKS.map((q) => (
             <Link
               key={q.href + q.label}

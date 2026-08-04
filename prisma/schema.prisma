@@ -64,6 +64,7 @@ model Article {
   comments    Comment[]
   likes       ArticleLike[]
   bookmarks   Bookmark[]
+  posts       Post[]
 
   @@index([categoryId, publishedAt])
   @@index([publishedAt])
@@ -122,6 +123,13 @@ model User {
   followers     Follow[]       @relation("Following")
   notifications Notification[] @relation("NotificationOwner")
   actorOf       Notification[] @relation("NotificationActor")
+
+  // Sosyal katman
+  posts            Post[]        @relation("PostAuthor")
+  postLikes        PostLike[]
+  postComments     PostComment[]
+  friendsRequested Friendship[]  @relation("FriendRequester")
+  friendsReceived  Friendship[]  @relation("FriendAddressee")
 
   @@index([createdAt])
 }
@@ -190,6 +198,104 @@ model Notification {
   @@index([userId, isRead, createdAt])
 }
 
+// ---------------------------------------------------------------------------
+// Sosyal katman: gönderi (metin/görsel) + reel (dikey video) + arkadaşlık
+// ---------------------------------------------------------------------------
+
+/**
+ * Tek gönderi modeli. `kind` alanı metin gönderisini reel'den ayırır;
+ * beğeni / yorum / görünürlük / akış mantığı ikisinde de aynı olduğu için
+ * ayrı model tutulmaz.
+ */
+model Post {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  kind     String @default("text") // text | reel
+  authorId String @db.ObjectId
+  author   User   @relation("PostAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  body   String   @default("")
+  images String[] @default([])
+  tags   String[] @default([])
+
+  // Reel alanları (kind = "reel")
+  videoUrl    String?
+  posterUrl   String?
+  durationSec Int     @default(0)
+
+  // public: herkes · friends: yalnızca arkadaşlar · private: yalnızca sahibi
+  visibility String @default("public")
+
+  // Gönderinin bağlandığı gazete içeriği (opsiyonel)
+  articleId String?  @db.ObjectId
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  vehicleId String?  @db.ObjectId
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  listingId String?  @db.ObjectId
+  listing   Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+
+  likeCount    Int     @default(0)
+  commentCount Int     @default(0)
+  views        Int     @default(0)
+  isHidden     Boolean @default(false) // moderasyon: yayından kaldırıldı
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  likes    PostLike[]
+  comments PostComment[]
+
+  @@index([authorId, createdAt])
+  @@index([kind, createdAt])
+  @@index([createdAt])
+  @@index([articleId])
+}
+
+model PostLike {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@index([userId, createdAt])
+}
+
+model PostComment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([postId, createdAt])
+  @@index([userId])
+}
+
+/**
+ * Arkadaşlık: takipten farklı olarak çift yönlü ve onaya tabidir.
+ * Takip = "içeriğini akışımda gör" (tek yönlü, herkese açık)
+ * Arkadaşlık = "arkadaşa özel paylaşımlarımı gör" (karşılıklı, onaylı)
+ */
+model Friendship {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  requesterId String @db.ObjectId
+  requester   User   @relation("FriendRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addresseeId String @db.ObjectId
+  addressee   User   @relation("FriendAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  status      String    @default("pending") // pending | accepted
+  createdAt   DateTime  @default(now())
+  respondedAt DateTime?
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId, status])
+  @@index([requesterId, status])
+}
+
 model Vehicle {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   brand        String
@@ -219,6 +325,7 @@ model Vehicle {
   cons         String[] @default([])
   description  String   @default("")
   createdAt    DateTime @default(now())
+  posts        Post[]
 
   @@index([brand])
   @@index([price])
@@ -269,6 +376,7 @@ model Listing {
   isSponsored   Boolean  @default(false)
   description   String   @default("")
   createdAt     DateTime @default(now())
+  posts         Post[]
 
   @@index([brand])
   @@index([price])

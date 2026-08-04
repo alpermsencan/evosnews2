@@ -36,6 +36,9 @@ export default function UserMenu() {
 
   const items = [
     { href: `/profil/${user.username}`, label: "Profilim" },
+    { href: "/akis", label: "Akışım" },
+    { href: "/arkadaslar", label: "Arkadaşlarım" },
+    { href: "/reels/yeni", label: "Reel Yükle" },
     { href: "/hesabim", label: "Hesap Ayarları" },
     { href: "/hesabim/kaydedilenler", label: "Kaydedilenler" },
     { href: "/bildirimler", label: "Bildirimler" },
