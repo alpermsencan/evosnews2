@@ -60,13 +60,40 @@ export const getCategories = () => prisma.category.findMany({ orderBy: { order: 
 
 export const getCategoryBySlug = (slug: string) => prisma.category.findUnique({ where: { slug } });
 
-export const getHeadlines = (limit: number = 6) =>
+/**
+ * Manşet carousel'i.
+ *
+ * Öncelik sırası: editörün MANŞET işaretlediği haberler → öne çıkarılanlar →
+ * en yeni yayındaki haberler. Panelden hiç manşet seçilmemişse (ilk kurulum ya
+ * da ingest'ten gelen içerikte bayrak set edilmediğinde) carousel boş kalıp
+ * sayfadan tamamen kaybolmasın diye bu geri düşüş var. Görselsiz haber
+ * carousel'de kırık kutu gibi durduğu için elenir.
+ */
+export const getHeadlines = async (limit: number = 6) => {
+  const where = { ...PUBLISHED, NOT: { image: "" } } as const;
+  const query = (extra: object, take: number) =>
     prisma.article.findMany({
-      where: { ...PUBLISHED, isHeadline: true },
+      where: { ...where, ...extra },
       orderBy: { publishedAt: "desc" },
-      take: limit,
+      take,
       select: ARTICLE_CARD_SELECT,
     });
+
+  const slides = await query({ isHeadline: true }, limit);
+  if (slides.length >= limit) return slides;
+
+  const seen = new Set(slides.map((a) => a.id));
+  for (const extra of [{ isFeatured: true }, {}]) {
+    const fill = await query(extra, limit * 2);
+    for (const a of fill) {
+      if (seen.has(a.id)) continue;
+      seen.add(a.id);
+      slides.push(a);
+      if (slides.length === limit) return slides;
+    }
+  }
+  return slides;
+};
 
 export const getLatest = (limit: number = 12, skip: number = 0) =>
     prisma.article.findMany({
