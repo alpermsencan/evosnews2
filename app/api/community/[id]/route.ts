@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok } from "@/lib/api";
+import { touchCommunity } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export async function POST(_req: NextRequest, { params }: Ctx) {
       data: { likes: { increment: 1 } },
       select: { id: true, likes: true },
     });
+    touchCommunity();
     return ok({ post });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Beğenilemedi", 500);
@@ -34,6 +36,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
         ...(b.isPinned !== undefined && { isPinned: !!b.isPinned }),
       },
     });
+    touchCommunity();
     return ok({ post });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Güncellenemedi", 500);
@@ -44,6 +47,7 @@ export async function DELETE(_req: NextRequest, { params }: Ctx) {
   try {
     const { id } = await params;
     await prisma.communityPost.delete({ where: { id } });
+    touchCommunity();
     return ok({ success: true });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Silinemedi", 500);

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, num, ok, slugify } from "@/lib/api";
 import type { Prisma } from "@prisma/client";
+import { touchArticles } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
         slug: exists ? `${slug}-${Date.now().toString().slice(-5)}` : slug,
         spot,
         content,
-        image: image || `https://picsum.photos/seed/${slug}/1200/675`,
+        image: image || "/haber-placeholder.svg",
         imageCredit: body.imageCredit || "Evos Görsel Arşivi",
         gallery: body.gallery ?? [],
         tags: body.tags ?? [],
@@ -75,11 +76,15 @@ export async function POST(req: NextRequest) {
         isBreaking: !!body.isBreaking,
         isVideo: !!body.isVideo,
         readTime: Number(body.readTime) || 3,
+        status: ["DRAFT", "PUBLISHED", "REJECTED"].includes(body.status)
+          ? body.status
+          : "PUBLISHED",
         publishedAt: body.publishedAt ? new Date(body.publishedAt) : new Date(),
       },
       include: { category: true },
     });
 
+    touchArticles();
     return ok({ article }, 201);
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Haber oluşturulamadı", 500);

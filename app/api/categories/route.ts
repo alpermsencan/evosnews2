@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok, slugify } from "@/lib/api";
+import { touchCategories } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export async function POST(req: NextRequest) {
         href: body.href || null,
       },
     });
+    touchCategories();
     return ok({ category }, 201);
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Kategori oluşturulamadı", 500);

@@ -248,31 +248,6 @@ export default function PostCard({
         </Link>
       )}
 
-      {post.listing && (
-        <Link
-          href={`/marketplace/${post.listing.slug}`}
-          className="group flex items-center gap-3 overflow-hidden rounded-lg border border-neutral-200 transition hover:border-evos"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={post.listing.image}
-            alt={post.listing.title}
-            className="h-20 w-28 shrink-0 bg-neutral-100 object-cover"
-          />
-          <span className="flex min-w-0 flex-col gap-1 py-2 pr-3">
-            <span className="text-[10px] font-black text-neutral-400">
-              İLAN · {post.listing.city}
-            </span>
-            <span className="line-clamp-2 text-[13px] font-black leading-snug text-neutral-800 group-hover:text-evos">
-              {post.listing.title}
-            </span>
-            <span className="text-[11px] font-bold text-evos">
-              {formatTL(post.listing.price, { compact: true })}
-            </span>
-          </span>
-        </Link>
-      )}
-
       {/* Aksiyonlar */}
       <footer className="flex items-center gap-1 border-t border-neutral-100 pt-2">
         <button

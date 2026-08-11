@@ -255,3 +255,69 @@ body {
 .animate-slide-in {
   animation: evos-slide-in 0.25s ease-out;
 }
+
+/* EVOS SERVİSLERİ — simge şeridi */
+@keyframes evos-service-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes evos-service-wiggle {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  35% {
+    transform: rotate(-9deg) scale(1.12);
+  }
+  70% {
+    transform: rotate(7deg) scale(1.08);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.evos-service {
+  animation: evos-service-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.evos-service-icon {
+  box-shadow: 0 4px 12px -5px rgb(0 0 0 / 0.35);
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.35s ease;
+}
+
+.evos-service:hover .evos-service-icon,
+.evos-service:focus-visible .evos-service-icon {
+  transform: translateY(-5px) scale(1.09);
+  box-shadow: 0 14px 24px -10px rgb(0 0 0 / 0.5);
+}
+
+.evos-service:active .evos-service-icon {
+  transform: translateY(-1px) scale(0.96);
+}
+
+.evos-service:hover .evos-service-icon > svg,
+.evos-service:focus-visible .evos-service-icon > svg {
+  animation: evos-service-wiggle 0.55s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evos-service,
+  .evos-service-icon,
+  .evos-service-icon > svg {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .evos-service:hover .evos-service-icon {
+    transform: none;
+  }
+}

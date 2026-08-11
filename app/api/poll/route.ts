@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok } from "@/lib/api";
+import { touchPoll } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,7 @@ export async function POST(req: NextRequest) {
       select: { votes: true, options: true },
     });
 
+    touchPoll();
     return ok({ votes: updated.votes, options: updated.options });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Oy kaydedilemedi", 500);

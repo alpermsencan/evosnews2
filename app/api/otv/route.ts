@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok } from "@/lib/api";
 import { calcOtv } from "@/lib/utils";
+import { touchOtv } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
       where: { rate: result.rate },
     });
 
+    touchOtv();
     return ok({ ...result, bracket });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Hesaplanamadı", 500);

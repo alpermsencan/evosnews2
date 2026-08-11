@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE, verifySession } from "@/lib/session";
-
-const ADMIN_COOKIE = "evos_admin";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
+import { ADMIN_COOKIE, isAdminCookie } from "@/lib/admin-auth";
 
 /** Giriş yapmış üye gerektiren alanlar */
 const MEMBER_PATHS = [
@@ -13,13 +11,51 @@ const MEMBER_PATHS = [
   "/reels/yeni",
 ];
 
+/**
+ * Yalnızca yöneticinin yazabileceği API yolları.
+ * Sayfa korumasının yanı sıra API'nin de korunması şart: aksi halde panel
+ * arkasındaki içerik uçları doğrudan istekle dışarıdan değiştirilebilir.
+ */
+const ADMIN_API = [
+  /^\/api\/articles(\/|$)/,
+  /^\/api\/categories(\/|$)/,
+  /^\/api\/authors(\/|$)/,
+  /^\/api\/vehicles(\/|$)/,
+  /^\/api\/stations(\/|$)/,
+  /^\/api\/listings(\/|$)/,
+  /^\/api\/community(\/|$)/,
+  /^\/api\/ticker(\/|$)/,
+  /^\/api\/prices(\/|$)/,
+  /^\/api\/otv(\/|$)/,
+  /^\/api\/admin(\/|$)/,
+  /^\/api\/moderation(\/|$)/,
+  /^\/api\/sources(\/|$)/,
+];
+
+/** Üyelere/ziyaretçilere açık kalması gereken yazma uçları (istisnalar). */
+const PUBLIC_WRITES = [
+  /^\/api\/articles\/[^/]+\/(like|bookmark)$/, // üye beğeni/kaydetme
+  /^\/api\/community\/[^/]+$/, // topluluk gönderisi beğenisi (POST)
+];
+
+function needsAdmin(pathname: string, method: string) {
+  if (method === "GET" || method === "HEAD" || method === "OPTIONS") return false;
+  if (PUBLIC_WRITES.some((re) => re.test(pathname)) && method === "POST") return false;
+  return ADMIN_API.some((re) => re.test(pathname));
+}
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const adminCookie = req.cookies.get(ADMIN_COOKIE)?.value;
 
-  // Admin koruması
+  // Admin API koruması
+  if (needsAdmin(pathname, req.method) && !(await isAdminCookie(adminCookie))) {
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  }
+
+  // Admin sayfa koruması
   if (pathname.startsWith("/admin") && pathname !== "/admin/giris") {
-    const token = req.cookies.get(ADMIN_COOKIE)?.value;
-    if (token !== ADMIN_PASSWORD) {
+    if (!(await isAdminCookie(adminCookie))) {
       const url = req.nextUrl.clone();
       url.pathname = "/admin/giris";
       url.searchParams.set("devam", pathname);

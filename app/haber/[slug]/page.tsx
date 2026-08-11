@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { getArticleBySlug, getRelated, getMostRead } from "@/lib/queries";
-import { contentToHtml, formatDate, timeAgo } from "@/lib/utils";
+import { getArticleBySlug, getArticleComments, getRelated, getMostRead } from "@/lib/queries";
+import { contentToHtml, formatDate, timeAgo, toDate } from "@/lib/utils";
 import NewsCard from "@/components/news/NewsCard";
 import MostRead from "@/components/news/MostRead";
 import SectionTitle from "@/components/news/SectionTitle";
@@ -51,6 +51,9 @@ export default async function ArticlePage({ params }: Props) {
 
   const viewer = await getCurrentUser();
 
+  // Yorumlar önbelleklenmez; her istekte tazedir (bkz. lib/queries.ts).
+  const comments = await getArticleComments(article.id);
+
   const [related, mostRead, likeCount, myLike, myBookmark, myCommentLikes] =
     await Promise.all([
       getRelated(article.categoryId, article.id, 4),
@@ -74,7 +77,7 @@ export default async function ArticlePage({ params }: Props) {
         ? prisma.commentLike.findMany({
             where: {
               userId: viewer.id,
-              commentId: { in: article.comments.map((c) => c.id) },
+              commentId: { in: comments.map((c) => c.id) },
             },
             select: { commentId: true },
           })
@@ -194,7 +197,7 @@ export default async function ArticlePage({ params }: Props) {
             initialLikes={likeCount}
             initialLiked={Boolean(myLike)}
             initialBookmarked={Boolean(myBookmark)}
-            commentCount={article.comments.length}
+            commentCount={comments.length}
           />
 
           <div
@@ -267,12 +270,13 @@ export default async function ArticlePage({ params }: Props) {
           <CommentSection
             articleId={article.id}
             articleSlug={article.slug}
-            initialComments={article.comments.map((c) => ({
+            initialComments={comments.map((c) => ({
               id: c.id,
               name: c.name,
               body: c.body,
               likes: c.likes,
-              createdAt: c.createdAt.toISOString(),
+              // Yorumlar önbellekli sorgudan geliyor; createdAt string olabilir.
+              createdAt: toDate(c.createdAt).toISOString(),
               parentId: c.parentId,
               user: c.user,
               likedByMe: likedCommentIds.has(c.id),

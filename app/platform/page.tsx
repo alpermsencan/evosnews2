@@ -6,49 +6,61 @@ import LeadForm from "@/components/ui/LeadForm";
 import { getByCategory } from "@/lib/queries";
 import { IconLayers, IconCheck } from "@/components/ui/Icons";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 export const metadata = {
   title: "Platformu İncele",
   description:
     "Evos platform mimarisi, API'ler, iş ortaklıkları ve kurumsal filo çözümleri.",
 };
 
+/**
+ * Modül listesi. Yayında OLAN ve OLMAYAN modüller ayrı ayrı işaretlenir;
+ * geliştirme aşamasındaki bir modülü yayındaymış gibi göstermek okuyucuyu
+ * yanıltır.
+ */
 const MODULES = [
-  { t: "Haber Merkezi", d: "Editoryal yayın motoru, kategori yönetimi ve gerçek zamanlı okunma analitiği.", href: "/kategori/haber-merkezi" },
-  { t: "Araç Veri Tabanı", d: "Model varyantları, teknik veriler, ÖTV oranları ve fiyat geçmişi.", href: "/araclar" },
-  { t: "Evos Charge Network", d: "İstasyon envanteri, doluluk verisi, tarife yönetimi ve rezervasyon.", href: "/sarj-agi" },
-  { t: "Evos Market", d: "İlan yönetimi, batarya sağlık raporu doğrulama ve değerleme motoru.", href: "/marketplace" },
-  { t: "Dijital Garaj", d: "Servis geçmişi entegrasyonu, poliçe takibi ve bakım hatırlatmaları.", href: "/dijital-garaj" },
-  { t: "AI Danışman", d: "Kullanım profiline göre araç önerisi ve toplam maliyet simülasyonu.", href: "/ai-danisman" },
-  { t: "Voice Intelligence", d: "Doğal dil komut işleme, araç içi asistan ve çağrı merkezi otomasyonu.", href: "/voice-intelligence" },
-  { t: "Evos Protect", d: "Batarya garantisi, poliçe üretimi ve hasar süreç yönetimi.", href: "/evos-protect" },
+  { t: "Haber Merkezi", d: "Kaynak beslemelerinden günlük derlenen, yeniden yazılan ve moderasyondan geçen yayın akışı.", href: "/kategori/haber-merkezi", live: true },
+  { t: "Araç Veri Tabanı", d: "Türkiye'de satıştaki elektrikli model varyantları; liste fiyatı, teknik veri ve ÖTV oranı.", href: "/araclar", live: true },
+  { t: "Şarj Ağı", d: "Open Charge Map açık verisinden tazelenen istasyon envanteri, soket tipleri ve güç kapasiteleri.", href: "/sarj-agi", live: true },
+  { t: "AI Danışman", d: "Kullanım profiline göre katalogdan araç önerisi ve beş yıllık maliyet karşılaştırması.", href: "/ai-danisman", live: true },
+  { t: "Dijital Garaj", d: "Servis geçmişi, poliçe takibi ve bakım hatırlatmaları. Geliştirme aşamasında.", href: "/dijital-garaj", live: false },
+  { t: "Evos Protect", d: "Batarya güvencesi ve genişletilmiş garanti danışmanlığı. Talep toplama aşamasında.", href: "/evos-protect", live: false },
 ];
 
+/** Gerçekten yayında olan, herkese açık okuma uçları. */
 const ENDPOINTS = [
   { m: "GET", p: "/api/articles", d: "Haber listesi (kategori, arama, sayfalama)" },
   { m: "GET", p: "/api/vehicles", d: "Araç kataloğu ve teknik filtreler" },
   { m: "GET", p: "/api/stations", d: "Şarj istasyonları, il/operatör/güç filtreleri" },
-  { m: "GET", p: "/api/listings", d: "İkinci el ilan listesi ve filtreler" },
-  { m: "POST", p: "/api/advisor", d: "Kullanım profiline göre araç önerisi üretir" },
+  { m: "GET", p: "/api/prices", d: "Aylık fiyat endeksi ve katalogdan türetilen pazar sayaçları" },
+  { m: "GET", p: "/api/search", d: "Haber, araç ve istasyonda birleşik arama" },
+  { m: "GET", p: "/api/ticker", d: "Üst veri şeridi: TCMB kurları ve katalog sayaçları" },
+  { m: "GET", p: "/api/otv", d: "Güncel ÖTV dilimleri" },
   { m: "POST", p: "/api/otv", d: "Matrah ve motor gücünden ÖTV/KDV hesaplar" },
-  { m: "GET", p: "/api/prices", d: "Fiyat endeksi ve pazar istatistikleri" },
-  { m: "POST", p: "/api/comments", d: "Haber yorumu oluşturur" },
+  { m: "POST", p: "/api/advisor", d: "Kullanım profiline göre araç önerisi üretir" },
+  { m: "GET", p: "/api/route-to", d: "Bir istasyona gerçek sürüş rotası ve mesafe" },
   { m: "POST", p: "/api/leads", d: "İletişim / teklif talebi kaydeder" },
-  { m: "GET", p: "/api/search", d: "Haber, araç, ilan ve istasyonda birleşik arama" },
+  { m: "GET", p: "/feed.xml", d: "Yayındaki haberlerin RSS beslemesi" },
 ];
 
 export default async function PlatformPage() {
   const [news, counts] = await Promise.all([
     getByCategory("platform", 4),
     Promise.all([
-      prisma.article.count(),
+      // Yalnızca yayındaki haberler sayılır; moderasyon kuyruğundaki
+      // taslakları saymak sayacı şişirir.
+      prisma.article.count({ where: { status: "PUBLISHED" } }),
       prisma.vehicle.count(),
       prisma.chargeStation.count(),
-      prisma.listing.count(),
+      prisma.chargeStation.aggregate({ _sum: { socketCount: true } }),
     ]),
   ]);
 
-  const [articleCount, vehicleCount, stationCount, listingCount] = counts;
+  const [articleCount, vehicleCount, stationCount, socketAgg] = counts;
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
@@ -58,15 +70,16 @@ export default async function PlatformPage() {
           <h1 className="text-2xl font-black sm:text-4xl">PLATFORMU İNCELE</h1>
         </div>
         <p className="max-w-3xl text-sm text-white/85 sm:text-base">
-          Evos; haber yayıncılığı, araç verisi, şarj altyapısı, ikinci el pazarı
-          ve yapay zekâ servislerini tek veri modelinde birleştiren bütünleşik
-          bir mobilite platformudur.
+          Evos; haber yayıncılığı, araç verisi, şarj altyapısı ve yapay zekâ
+          servislerini tek veri modelinde birleştiren bütünleşik bir mobilite
+          platformudur. Aşağıdaki sayaçlar veri tabanındaki güncel kayıt
+          sayılarıdır.
         </p>
         <div className="mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat label="Haber" value={`${articleCount}`} />
+          <Stat label="Yayındaki haber" value={`${articleCount}`} />
           <Stat label="Araç varyantı" value={`${vehicleCount}`} />
           <Stat label="Şarj istasyonu" value={`${stationCount}`} />
-          <Stat label="Aktif ilan" value={`${listingCount}`} />
+          <Stat label="Toplam soket" value={`${socketAgg._sum.socketCount ?? 0}`} />
         </div>
       </header>
 
@@ -79,7 +92,16 @@ export default async function PlatformPage() {
               href={m.href}
               className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5 transition hover:border-evos hover:shadow-md"
             >
-              <h3 className="text-[15px] font-black text-neutral-900">{m.t}</h3>
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-[15px] font-black text-neutral-900">{m.t}</h3>
+                <span
+                  className={`shrink-0 rounded px-2 py-0.5 text-[9px] font-black text-white ${
+                    m.live ? "bg-volt" : "bg-neutral-400"
+                  }`}
+                >
+                  {m.live ? "YAYINDA" : "GELİŞTİRİLİYOR"}
+                </span>
+              </div>
               <p className="text-[13px] leading-relaxed text-neutral-600">{m.d}</p>
             </Link>
           ))}
@@ -150,7 +172,6 @@ export default async function PlatformPage() {
           <ul className="mt-2 flex flex-col gap-1 text-sm text-neutral-600">
             <li>• Kurumsal filo çözümleri</li>
             <li>• Şarj operatörü entegrasyonu</li>
-            <li>• Galeri ve bayi ilan paketleri</li>
             <li>• Veri lisanslama</li>
           </ul>
         </div>

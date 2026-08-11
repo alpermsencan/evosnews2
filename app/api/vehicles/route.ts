@@ -2,8 +2,24 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, num, ok, slugify } from "@/lib/api";
 import type { Prisma } from "@prisma/client";
+import { touchVehicles } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Boş bırakılabilen sayısal alanlar.
+ * Formdan boş gelen değeri 0 yazmak "DC şarj gücü 0 kW" gibi yanlış bir veri
+ * üretir; onun yerine alan tamamen boş bırakılır ve arayüzde "—" görünür.
+ */
+const optionalInt = (v: unknown) => {
+  const n = Number(v);
+  return v === "" || v == null || !Number.isFinite(n) || n <= 0 ? null : Math.round(n);
+};
+
+const optionalFloat = (v: unknown) => {
+  const n = Number(v);
+  return v === "" || v == null || !Number.isFinite(n) || n <= 0 ? null : n;
+};
 
 /** GET /api/vehicles?marka=&segment=&minFiyat=&maxFiyat=&minMenzil=&sirala= */
 export async function GET(req: NextRequest) {
@@ -35,7 +51,9 @@ export async function GET(req: NextRequest) {
       : sort === "hizlanma"
       ? { acceleration: "asc" }
       : sort === "puan"
-      ? { rating: "desc" }
+      ? // MongoDB'de null, azalan sıralamada sayıların ardına düşer:
+        // puanı olmayan (henüz incelenmemiş) araçlar listenin sonunda kalır.
+        { rating: "desc" }
       : { price: "asc" };
 
   return handle(async () => {
@@ -61,7 +79,7 @@ export async function POST(req: NextRequest) {
         year: Number(b.year) || new Date().getFullYear(),
         segment: b.segment || "C-SUV",
         bodyType: b.bodyType || "SUV",
-        image: b.image || `https://picsum.photos/seed/car-${slug}/1000/640`,
+        image: b.image || "/arac-placeholder.svg",
         price: Number(b.price) || 0,
         otvRate: Number(b.otvRate) || 10,
         rangeKm: Number(b.rangeKm) || 0,
@@ -70,18 +88,22 @@ export async function POST(req: NextRequest) {
         motorPowerHp: Number(b.motorPowerHp) || 0,
         acceleration: Number(b.acceleration) || 0,
         topSpeed: Number(b.topSpeed) || 0,
-        dcChargeKw: Number(b.dcChargeKw) || 0,
-        chargeMin: Number(b.chargeMin) || 0,
         consumption: Number(b.consumption) || 0,
-        trunkLiter: Number(b.trunkLiter) || 0,
         driveType: b.driveType || "RWD",
         isFeatured: !!b.isFeatured,
-        rating: Number(b.rating) || 4.5,
+        // Doğrulanabilir kaynağı olmayan alanlar: girilmediyse boş kalır.
+        // Sıfır/varsayılan yazmak uydurma veri üretmek olur.
+        dcChargeKw: optionalInt(b.dcChargeKw),
+        chargeMin: optionalInt(b.chargeMin),
+        trunkLiter: optionalInt(b.trunkLiter),
+        warranty: b.warranty?.trim() || null,
+        rating: optionalFloat(b.rating),
         pros: b.pros ?? [],
         cons: b.cons ?? [],
         description: b.description || "",
       },
     });
+    touchVehicles();
     return ok({ vehicle }, 201);
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Araç eklenemedi", 500);

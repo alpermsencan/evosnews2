@@ -9,7 +9,11 @@ import { getByCategory, getMostRead } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 import { IconCar } from "@/components/ui/Icons";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 export const metadata = {
   title: "Araç Merkezi",
   description:
@@ -21,7 +25,12 @@ export default async function VehicleHubPage() {
     await Promise.all([
       getByCategory("arac-merkezi", 10),
       getByCategory("test-surusu", 4),
-      prisma.vehicle.findMany({ orderBy: { rating: "desc" }, take: 8 }),
+      // Editör puanı yalnızca gerçekten incelenen araçlarda dolu; puanı
+      // olmayanlar menzile göre sıralanıp listeye sonradan katılır.
+      prisma.vehicle.findMany({
+        orderBy: [{ rating: "desc" }, { rangeKm: "desc" }],
+        take: 8,
+      }),
       getMostRead(8),
       prisma.vehicle.findFirst({ orderBy: { price: "asc" } }),
       prisma.vehicle.findFirst({ orderBy: { rangeKm: "desc" } }),
@@ -42,8 +51,9 @@ export default async function VehicleHubPage() {
           <h1 className="text-2xl font-black sm:text-4xl">ARAÇ MERKEZİ</h1>
         </div>
         <p className="max-w-3xl text-sm text-white/85 sm:text-base">
-          Evos test ekibinin incelemeleri, uzun dönem raporları, karşılaştırmalar
-          ve satın alma rehberleri.
+          Türkiye pazarındaki elektrikli modeller: segment şampiyonları,
+          karşılaştırmalar ve araç haberleri. Teknik veriler katalogdaki
+          doğrulanmış kayıtlardan gelir.
         </p>
       </header>
 
@@ -67,7 +77,7 @@ export default async function VehicleHubPage() {
                   </span>
                   <span className="text-2xl font-black text-evos">{c.metric}</span>
                   <span className="text-xs text-neutral-500">
-                    {c.v.segment} · {c.v.batteryKwh} kWh · {c.v.dcChargeKw} kW DC
+                    {c.v.segment} · {c.v.batteryKwh} kWh · {c.v.motorPowerHp} HP
                   </span>
                 </Link>
               )

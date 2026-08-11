@@ -6,16 +6,13 @@ import MostRead from "@/components/news/MostRead";
 import SectionTitle from "@/components/news/SectionTitle";
 import CardRail from "@/components/ui/CardRail";
 import VehicleCard from "@/components/vehicles/VehicleCard";
-import ListingCard from "@/components/market/ListingCard";
 import PollWidget from "@/components/ui/PollWidget";
 import NewsletterForm from "@/components/ui/NewsletterForm";
 import {
   IconBolt,
   IconChevronRight,
-  IconMic,
   IconShield,
   IconSparkles,
-  IconStore,
   IconChart,
   IconCar,
   IconUsers,
@@ -28,7 +25,6 @@ import {
   getMostRead,
   getByCategory,
   getFeaturedVehicles,
-  getListings,
   getCommunityPosts,
   getActivePoll,
   getPriceIndex,
@@ -45,9 +41,8 @@ export const dynamic = "force-dynamic";
 const SERVICES = [
   { label: "Araçları Keşfet", href: "/araclar", Icon: IconCar, color: "bg-evos" },
   { label: "Şarj Ağı", href: "/sarj-agi", Icon: IconBolt, color: "bg-volt" },
+  // AI Danışman + Voice Intelligence tek hizmette birleşti (sesli asistan bölümü).
   { label: "AI Danışman", href: "/ai-danisman", Icon: IconSparkles, color: "bg-indigo-600" },
-  { label: "Voice Intelligence", href: "/voice-intelligence", Icon: IconMic, color: "bg-cyan-600" },
-  { label: "Evos Market", href: "/marketplace", Icon: IconStore, color: "bg-rose-600" },
   { label: "Evos Protect", href: "/evos-protect", Icon: IconShield, color: "bg-blue-700" },
   { label: "ÖTV Rehberi", href: "/otv-rehberi", Icon: IconTag, color: "bg-violet-600" },
   { label: "Fiyat Analizi", href: "/fiyat-analizi", Icon: IconChart, color: "bg-amber-600" },
@@ -64,12 +59,10 @@ export default async function HomePage() {
     mostRead,
     charge,
     vehicles,
-    listings,
     community,
     poll,
     priceIndex,
     stations,
-    market,
     tech,
     reels,
   ] = await Promise.all([
@@ -78,12 +71,10 @@ export default async function HomePage() {
     getMostRead(8),
     getByCategory("sarj-agi", 4),
     getFeaturedVehicles(8),
-    getListings(8),
     getCommunityPosts(5),
     getActivePoll(),
     getPriceIndex(),
     prisma.chargeStation.findMany({ take: 5, orderBy: { maxPowerKw: "desc" } }),
-    getByCategory("marketplace", 3),
     getByCategory("teknoloji", 4),
     getFeed({
       viewerId: viewer?.id ?? null,
@@ -134,19 +125,20 @@ export default async function HomePage() {
               PLATFORM <IconChevronRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="no-scrollbar flex gap-3 overflow-x-auto p-3 sm:grid sm:grid-cols-5 sm:overflow-visible lg:grid-cols-10">
-            {SERVICES.map(({ label, href, Icon, color }) => (
+          <div className="no-scrollbar flex gap-3 overflow-x-auto p-3 sm:grid sm:grid-cols-5 sm:gap-4 sm:overflow-visible lg:grid-cols-10">
+            {SERVICES.map(({ label, href, Icon, color }, i) => (
               <Link
                 key={href + label}
                 href={href}
-                className="flex w-[76px] shrink-0 flex-col items-center gap-2 rounded-lg p-1.5 text-center transition hover:bg-neutral-50 sm:w-auto"
+                style={{ animationDelay: `${i * 45}ms` }}
+                className="evos-service flex w-[88px] shrink-0 flex-col items-center gap-2 rounded-lg p-1.5 text-center transition hover:bg-neutral-50 sm:w-auto"
               >
                 <span
-                  className={`flex h-12 w-12 items-center justify-center rounded-xl text-white ${color}`}
+                  className={`evos-service-icon flex h-16 w-16 items-center justify-center rounded-2xl text-white ${color}`}
                 >
-                  <Icon className="h-6 w-6" />
+                  <Icon className="h-8 w-8" />
                 </span>
-                <span className="text-[10px] font-bold leading-tight text-neutral-600">
+                <span className="text-[11px] font-bold leading-tight text-neutral-600">
                   {label}
                 </span>
               </Link>
@@ -250,26 +242,6 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* EVOS MARKET */}
-          <section className="px-3 sm:px-0">
-            <SectionTitle
-              title="EVOS MARKET"
-              href="/marketplace"
-              color="#be123c"
-              subtitle="İkinci el elektrikli araç ilanları ve batarya raporlu fırsatlar"
-            />
-            <CardRail itemClass="w-[62%] sm:w-[38%] lg:w-[24%]">
-              {listings.map((l) => (
-                <ListingCard key={l.id} listing={l} />
-              ))}
-            </CardRail>
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-              {market.map((a) => (
-                <NewsCard key={a.id} article={a} />
-              ))}
-            </div>
-          </section>
-
           {/* TEKNOLOJİ */}
           <section className="px-3 sm:px-0">
             <SectionTitle
@@ -285,7 +257,8 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* TOPLULUK */}
+          {/* TOPLULUK — üye içeriği yoksa bölüm hiç gösterilmez */}
+          {community.length > 0 && (
           <section className="px-3 sm:px-0">
             <SectionTitle
               title="TOPLULUK"
@@ -333,6 +306,7 @@ export default async function HomePage() {
               ))}
             </div>
           </section>
+          )}
         </div>
 
         {/* SAĞ SÜTUN */}
@@ -347,13 +321,22 @@ export default async function HomePage() {
                   EVOS FİYAT ENDEKSİ
                 </h3>
               </div>
+              {/* Yalnızca doğrulanmış kaynağı olan satırlar gösterilir;
+                  operatör tarife girmediyse o satır hiç çıkmaz. */}
               <div className="flex flex-col divide-y divide-neutral-100">
                 <Row label="Ortalama EV fiyatı" value={formatTL(last.avgEvPrice)} />
-                <Row label="DC şarj" value={`${last.dcChargeCost.toFixed(2)} ₺/kWh`} />
-                <Row label="AC şarj" value={`${last.acChargeCost.toFixed(2)} ₺/kWh`} />
-                <Row label="Benzin (100 km)" value={`${last.fuelCost.toFixed(0)} ₺`} />
-                <Row label="Batarya maliyeti" value={`${last.batteryUsd} $/kWh`} />
-                <Row label="EV pazar payı" value={`%${last.evShare}`} />
+                <Row label="Ortalama menzil" value={`${last.avgRangeKm} km`} />
+                <Row label="Katalogdaki model" value={`${last.modelCount}`} />
+                {last.dcChargeCost != null && (
+                  <Row label="DC şarj" value={`${last.dcChargeCost.toFixed(2)} ₺/kWh`} />
+                )}
+                {last.acChargeCost != null && (
+                  <Row label="AC şarj" value={`${last.acChargeCost.toFixed(2)} ₺/kWh`} />
+                )}
+                {last.batteryUsd != null && (
+                  <Row label="Batarya maliyeti" value={`${last.batteryUsd} $/kWh`} />
+                )}
+                {last.evShare != null && <Row label="EV pazar payı" value={`%${last.evShare}`} />}
               </div>
               <Link
                 href="/fiyat-analizi"

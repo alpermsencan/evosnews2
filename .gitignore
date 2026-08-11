@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# .env.example depoya girsin — gerçek sırlar .env dosyasında kalır
+!.env.example

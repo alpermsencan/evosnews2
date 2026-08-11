@@ -68,11 +68,16 @@ export async function POST(req: NextRequest) {
         const yearlySaving = iceYearlyFuel - yearlyEnergyCost;
 
         // Skorlama (0-100)
+        // DC şarj gücü ve editör puanı her araçta dolu olmayabilir (operatör
+        // panelden girer). Eksik ölçüt için varsayılan bir değer uydurmak
+        // sıralamayı bozar; onun yerine ölçüt devre dışı bırakılır ve ağırlığı
+        // aşağıda kalan ölçütlere orantılı olarak dağıtılır.
         const rangeScore = (v.rangeKm / maxRange) * 100;
         const priceScore = (minPrice / v.price) * 100;
         const perfScore = Math.max(0, 100 - (v.acceleration - 3.5) * 12);
-        const chargeScore = Math.min(100, (v.dcChargeKw / 250) * 100);
-        const ratingScore = (v.rating / 5) * 100;
+        const chargeScore =
+          v.dcChargeKw != null ? Math.min(100, (v.dcChargeKw / 250) * 100) : null;
+        const ratingScore = v.rating != null ? (v.rating / 5) * 100 : null;
         const budgetFit = v.price <= budget ? 100 : 70;
 
         // Günlük kullanım menzil yeterliliği
@@ -88,18 +93,27 @@ export async function POST(req: NextRequest) {
             ? { rangeScore: 0.16, priceScore: 0.1, perfScore: 0.34, chargeScore: 0.18, ratingScore: 0.14, dailyFit: 0.08 }
             : { rangeScore: 0.22, priceScore: 0.22, perfScore: 0.14, chargeScore: 0.16, ratingScore: 0.14, dailyFit: 0.12 };
 
+        const parts: [number | null, number][] = [
+          [rangeScore, weights.rangeScore],
+          [priceScore, weights.priceScore],
+          [perfScore, weights.perfScore],
+          [chargeScore, weights.chargeScore],
+          [ratingScore, weights.ratingScore],
+          [dailyFit, weights.dailyFit],
+        ];
+
+        const usable = parts.filter((p): p is [number, number] => p[0] != null);
+        // Kullanılan ağırlıkların toplamı 1 olacak şekilde normalize edilir;
+        // böylece verisi eksik araçlar haksız yere düşük puan almaz.
+        const weightSum = usable.reduce((sum, [, w]) => sum + w, 0) || 1;
         const score =
-          (rangeScore * weights.rangeScore +
-            priceScore * weights.priceScore +
-            perfScore * weights.perfScore +
-            chargeScore * weights.chargeScore +
-            ratingScore * weights.ratingScore +
-            dailyFit * weights.dailyFit) *
+          (usable.reduce((sum, [value, w]) => sum + value * w, 0) / weightSum) *
           (budgetFit / 100);
 
         const reasons: string[] = [];
         if (v.rangeKm >= 500) reasons.push(`${v.rangeKm} km menzil ile uzun yolda mola ihtiyacını azaltır`);
-        if (v.dcChargeKw >= 150) reasons.push(`${v.dcChargeKw} kW DC şarj gücü ile molalar kısalır`);
+        if (v.dcChargeKw != null && v.dcChargeKw >= 150)
+          reasons.push(`${v.dcChargeKw} kW DC şarj gücü ile molalar kısalır`);
         if (v.price <= budget * 0.9) reasons.push("Bütçenizin altında kalarak ek donanım payı bırakır");
         if (v.acceleration <= 5) reasons.push(`0-100 km/s ${v.acceleration} sn ile segmentinde hızlı`);
         if (v.consumption <= 15.5) reasons.push(`${v.consumption} kWh/100 km tüketimle işletme maliyeti düşük`);

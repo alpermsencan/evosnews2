@@ -6,7 +6,11 @@ import PollWidget from "@/components/ui/PollWidget";
 import { getActivePoll, getByCategory } from "@/lib/queries";
 import { IconUsers } from "@/components/ui/Icons";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 export const metadata = {
   title: "Topluluk",
   description:
@@ -76,7 +80,7 @@ export default async function CommunityPage() {
             <ul className="flex flex-col gap-2 text-[13px] text-neutral-600">
               <li>• Deneyiminizi mümkün olduğunca veriyle paylaşın.</li>
               <li>• Marka tartışmalarında saygılı bir dil kullanın.</li>
-              <li>• Reklam ve ilan paylaşımları Evos Market&apos;e aittir.</li>
+              <li>• Reklam ve satış ilanı paylaşmayın.</li>
               <li>• Kişisel verilerinizi (plaka, şase) paylaşmayın.</li>
             </ul>
           </div>
@@ -86,6 +90,11 @@ export default async function CommunityPage() {
               EN ÇOK KONUŞULAN KONULAR
             </div>
             <ul className="flex flex-col">
+              {topics.length === 0 && (
+                <li className="px-4 py-4 text-center text-xs text-neutral-400">
+                  Henüz konu açılmadı.
+                </li>
+              )}
               {topics.map((t) => {
                 const count = posts.filter((p) => p.topic === t.topic).length;
                 return (

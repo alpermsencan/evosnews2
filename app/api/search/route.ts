@@ -9,9 +9,9 @@ export async function GET(req: NextRequest) {
   const q = (req.nextUrl.searchParams.get("q") ?? "").trim();
 
   return handle(async () => {
-    if (!q) return { q, articles: [], vehicles: [], listings: [], stations: [], total: 0 };
+    if (!q) return { q, articles: [], vehicles: [], stations: [], total: 0 };
 
-    const [articles, vehicles, listings, stations] = await Promise.all([
+    const [articles, vehicles, stations] = await Promise.all([
       prisma.article.findMany({
         where: {
           OR: [
@@ -34,11 +34,6 @@ export async function GET(req: NextRequest) {
         take: 10,
         select: { id: true, brand: true, model: true, slug: true, price: true, rangeKm: true },
       }),
-      prisma.listing.findMany({
-        where: { title: { contains: q, mode: "insensitive" } },
-        take: 10,
-        select: { id: true, title: true, slug: true, price: true, city: true },
-      }),
       prisma.chargeStation.findMany({
         where: {
           OR: [
@@ -55,9 +50,8 @@ export async function GET(req: NextRequest) {
       q,
       articles,
       vehicles,
-      listings,
       stations,
-      total: articles.length + vehicles.length + listings.length + stations.length,
+      total: articles.length + vehicles.length + stations.length,
     };
   });
 }

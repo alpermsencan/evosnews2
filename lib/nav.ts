@@ -21,12 +21,10 @@ export const TOP_NAV: NavItem[] = [
   { label: "ŞARJ AĞI", href: "/sarj-agi" },
   { label: "FİYAT ANALİZİ", href: "/fiyat-analizi" },
   { label: "ÖTV REHBERİ", href: "/otv-rehberi" },
-  { label: "MARKETPLACE", href: "/marketplace" },
   { label: "DİJİTAL GARAJ", href: "/dijital-garaj" },
   { label: "TOPLULUK", href: "/topluluk" },
   { label: "EVOS PROTECT", href: "/evos-protect" },
   { label: "AI DANIŞMAN", href: "/ai-danisman" },
-  { label: "VOICE INTELLIGENCE", href: "/voice-intelligence" },
   { label: "PLATFORM", href: "/platform" },
   { label: "TEKNOLOJİ", href: "/kategori/teknoloji" },
   { label: "DÜNYA", href: "/kategori/dunya" },
@@ -82,7 +80,7 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
       {
         label: "AI Danışmanı Anlat",
         href: "/ai-danisman",
-        desc: "Yapay zekâ destekli araç ve maliyet danışmanı",
+        desc: "Yapay zekâ destekli araç danışmanı ve sesli asistan",
         badge: "YENİ",
       },
     ],
@@ -91,8 +89,6 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
     title: "İÇERİK",
     items: [
       { label: "Haber Merkezi", href: "/kategori/haber-merkezi" },
-      { label: "Voice Intelligence", href: "/voice-intelligence", badge: "BETA" },
-      { label: "Marketplace", href: "/marketplace" },
       { label: "Araç Merkezi", href: "/arac-merkezi" },
       { label: "Teknoloji", href: "/kategori/teknoloji" },
       { label: "Dünya", href: "/kategori/dunya" },
@@ -106,7 +102,6 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
       { label: "Fiyat Analizi", href: "/fiyat-analizi" },
       { label: "Evos Protect", href: "/evos-protect" },
       { label: "Evos Charge Network", href: "/sarj-agi" },
-      { label: "Evos Market", href: "/marketplace" },
       { label: "Dijital Garaj", href: "/dijital-garaj" },
       { label: "Topluluk", href: "/topluluk" },
     ],
@@ -120,7 +115,6 @@ export const QUICK_LINKS: NavItem[] = [
   { label: "Araç Bul", href: "/araclar" },
   { label: "Şarj Bul", href: "/sarj-agi" },
   { label: "ÖTV Hesapla", href: "/otv-rehberi" },
-  { label: "İlanlar", href: "/marketplace" },
 ];
 
 export const FOOTER_GROUPS: NavGroup[] = [
@@ -138,11 +132,9 @@ export const FOOTER_GROUPS: NavGroup[] = [
     title: "ÜRÜNLER",
     items: [
       { label: "Evos Charge Network", href: "/sarj-agi" },
-      { label: "Evos Market", href: "/marketplace" },
       { label: "Evos Protect", href: "/evos-protect" },
       { label: "Dijital Garaj", href: "/dijital-garaj" },
       { label: "AI Danışman", href: "/ai-danisman" },
-      { label: "Voice Intelligence", href: "/voice-intelligence" },
     ],
   },
   {

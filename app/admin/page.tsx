@@ -7,11 +7,11 @@ export const dynamic = "force-dynamic";
 export default async function AdminDashboard() {
   const [
     articles,
+    drafts,
     categories,
     comments,
     vehicles,
     stations,
-    listings,
     community,
     subscribers,
     leads,
@@ -22,12 +22,14 @@ export default async function AdminDashboard() {
     perCategory,
     latest,
   ] = await Promise.all([
-    prisma.article.count(),
+    // Yayındaki ve kuyruktaki haberler ayrı sayılır: tek bir "haber" sayacı,
+    // moderasyondan geçmemiş taslakları da yayındaymış gibi gösterirdi.
+    prisma.article.count({ where: { status: "PUBLISHED" } }),
+    prisma.article.count({ where: { status: "DRAFT" } }),
     prisma.category.count(),
     prisma.comment.count(),
     prisma.vehicle.count(),
     prisma.chargeStation.count(),
-    prisma.listing.count(),
     prisma.communityPost.count(),
     prisma.subscriber.count(),
     prisma.lead.count(),
@@ -57,13 +59,13 @@ export default async function AdminDashboard() {
   const maxCat = Math.max(...perCategory.map((c) => c._count.articles), 1);
 
   const CARDS = [
-    { label: "Haber", value: articles, href: "/admin/haberler", color: "bg-evos" },
+    { label: "Yayındaki haber", value: articles, href: "/admin/haberler", color: "bg-evos" },
+    { label: "Moderasyon kuyruğu", value: drafts, href: "/admin/kuyruk", color: "bg-amber-700" },
     { label: "Toplam okunma", value: views._sum.views ?? 0, href: "/admin/haberler", color: "bg-neutral-800" },
     { label: "Yorum", value: comments, href: "/admin/yorumlar", color: "bg-amber-600" },
     { label: "Kategori", value: categories, href: "/admin/kategoriler", color: "bg-violet-600" },
     { label: "Araç", value: vehicles, href: "/admin/araclar", color: "bg-teal-700" },
     { label: "Şarj istasyonu", value: stations, href: "/admin/istasyonlar", color: "bg-volt" },
-    { label: "Market ilanı", value: listings, href: "/admin/ilanlar", color: "bg-rose-600" },
     { label: "Topluluk gönderisi", value: community, href: "/admin/topluluk", color: "bg-orange-600" },
     { label: "Bülten abonesi", value: subscribers, href: "/admin/aboneler", color: "bg-sky-700" },
     { label: "Talep", value: leads, href: "/admin/talepler", color: "bg-indigo-600" },
@@ -235,12 +237,6 @@ export default async function AdminDashboard() {
           className="rounded-md bg-volt px-5 py-3 text-sm font-black text-white transition hover:bg-volt-dark"
         >
           + YENİ İSTASYON
-        </Link>
-        <Link
-          href="/admin/ilanlar/yeni"
-          className="rounded-md bg-rose-600 px-5 py-3 text-sm font-black text-white transition hover:bg-rose-700"
-        >
-          + YENİ İLAN
         </Link>
       </div>
     </div>

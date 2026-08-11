@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
       return fail("Boş gönderi paylaşılamaz");
 
     // Bağlanan içerikler gerçekten var mı?
-    const [article, vehicle, listing] = await Promise.all([
+    const [article, vehicle] = await Promise.all([
       body.articleId
         ? prisma.article.findUnique({
             where: { id: String(body.articleId) },
@@ -96,12 +96,6 @@ export async function POST(req: NextRequest) {
       body.vehicleId
         ? prisma.vehicle.findUnique({
             where: { id: String(body.vehicleId) },
-            select: { id: true },
-          })
-        : null,
-      body.listingId
-        ? prisma.listing.findUnique({
-            where: { id: String(body.listingId) },
             select: { id: true },
           })
         : null,
@@ -132,7 +126,6 @@ export async function POST(req: NextRequest) {
         visibility: normalizeVisibility(body.visibility),
         articleId: article?.id ?? null,
         vehicleId: vehicle?.id ?? null,
-        listingId: listing?.id ?? null,
       },
       select: POST_SELECT,
     });

@@ -6,7 +6,11 @@ import NewsCard from "@/components/news/NewsCard";
 import MostRead from "@/components/news/MostRead";
 import NewsletterForm from "@/components/ui/NewsletterForm";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 
 const PAGE_SIZE = 12;
 

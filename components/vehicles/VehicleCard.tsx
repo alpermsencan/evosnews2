@@ -12,10 +12,13 @@ export type VehicleLite = {
   price: number;
   rangeKm: number;
   batteryKwh: number;
-  dcChargeKw: number;
   acceleration: number;
   segment: string;
-  rating: number;
+  motorPowerHp: number;
+  /** Operatör girmediyse boştur — kartta uydurma değer gösterilmez. */
+  dcChargeKw: number | null;
+  /** Editör puanı; gerçek bir inceleme yoksa boştur. */
+  rating: number | null;
 };
 
 export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
@@ -35,9 +38,11 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
         <span className="absolute left-2 top-2 rounded bg-evos-ink/85 px-2 py-0.5 text-[10px] font-black text-white backdrop-blur">
           {vehicle.segment}
         </span>
-        <span className="absolute right-2 top-2 flex items-center gap-1 rounded bg-volt px-2 py-0.5 text-[10px] font-black text-white">
-          ★ {vehicle.rating.toFixed(1)}
-        </span>
+        {vehicle.rating != null && (
+          <span className="absolute right-2 top-2 flex items-center gap-1 rounded bg-volt px-2 py-0.5 text-[10px] font-black text-white">
+            ★ {vehicle.rating.toFixed(1)}
+          </span>
+        )}
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-3">
@@ -63,12 +68,15 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
             </span>
             <span className="text-[9px] font-semibold text-neutral-400">kWh</span>
           </div>
+          {/* DC şarj gücü bilinmiyorsa yerine motor gücü gösterilir. */}
           <div className="flex flex-col items-center gap-0.5">
             <IconBolt className="h-4 w-4 text-volt" />
             <span className="text-[13px] font-black text-neutral-800">
-              {vehicle.dcChargeKw}
+              {vehicle.dcChargeKw ?? vehicle.motorPowerHp}
             </span>
-            <span className="text-[9px] font-semibold text-neutral-400">kW DC</span>
+            <span className="text-[9px] font-semibold text-neutral-400">
+              {vehicle.dcChargeKw != null ? "kW DC" : "HP"}
+            </span>
           </div>
         </div>
 

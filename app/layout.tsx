@@ -9,8 +9,16 @@ import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import SessionProvider from "@/components/user/SessionProvider";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getBreakingBar, getTickers } from "@/lib/queries";
+import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
+  // Göreli OG/twitter görsellerinin mutlak URL'e çevrilmesi için gerekli.
+  metadataBase: new URL(siteUrl()),
+  alternates: {
+    canonical: "/",
+    types: { "application/rss+xml": `${siteUrl()}/feed.xml` },
+  },
   title: {
     default: "Evos Gazete · Elektrikli Araç Haber Merkezi",
     template: "%s · Evos Gazete",
@@ -44,14 +52,11 @@ export default async function RootLayout({
     );
   }
 
+  // Şerit verileri her istekte okunduğu için önbellekli sorgulardan gelir;
+  // içerik değişince revalidateTag anında tazeler (bkz. lib/revalidate.ts).
   const [tickers, breaking, currentUser] = await Promise.all([
-    prisma.ticker.findMany({ orderBy: { order: "asc" } }),
-    prisma.article.findMany({
-      where: { OR: [{ isBreaking: true }, { isFeatured: true }] },
-      orderBy: { publishedAt: "desc" },
-      take: 8,
-      select: { id: true, title: true, slug: true },
-    }),
+    getTickers(),
+    getBreakingBar(8),
     getCurrentUser(),
   ]);
 

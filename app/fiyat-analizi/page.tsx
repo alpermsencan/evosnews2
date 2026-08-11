@@ -6,30 +6,69 @@ import { getByCategory } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 import { IconChart } from "@/components/ui/Icons";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 export const metadata = {
   title: "Fiyat Analizi",
   description:
-    "Evos Fiyat Endeksi: elektrikli araç fiyatları, şarj maliyetleri, batarya fiyatları ve pazar payı.",
+    "Türkiye'de satıştaki elektrikli araçların fiyat, menzil ve segment analizi; kilometre başına enerji maliyeti.",
 };
 
+/**
+ * FİYAT ANALİZİ
+ *
+ * Sayfadaki her rakam sitedeki gerçek kayıtlardan hesaplanır:
+ *  - Fiyat/menzil/segment analizi → araç kataloğu (üretici liste fiyatları)
+ *  - Şarj maliyeti → operatörün doğrulayıp girdiği istasyon tarifeleri
+ *  - Aylık seri → her ay kaydedilen katalog anlık görüntüleri
+ *
+ * Batarya hücre maliyeti ve EV pazar payı gibi göstergeler için ücretsiz ve
+ * güvenilir bir veri kaynağı bulunmadığından bu sayfada YER ALMAZ; ilgili
+ * bölümler ancak operatör doğrulanmış veri girerse görünür.
+ */
 export default async function PriceAnalysisPage() {
-  const [index, vehicles, listings, news] = await Promise.all([
-    prisma.priceIndex.findMany({ orderBy: { order: "asc" } }),
+  const [index, vehicles, pricedStations, news] = await Promise.all([
+    prisma.priceIndex.findMany({ orderBy: { order: "asc" }, take: 24 }),
     prisma.vehicle.findMany({ orderBy: { price: "asc" } }),
-    prisma.listing.findMany(),
+    prisma.chargeStation.findMany({
+      where: { pricePerKwh: { not: null } },
+      select: { pricePerKwh: true, isFast: true },
+    }),
     getByCategory("fiyat-analizi", 4),
   ]);
 
-  const labels = index.map((i) => i.month);
-  const first = index[0];
-  const last = index[index.length - 1];
+  if (vehicles.length === 0) {
+    return (
+      <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
+        <Header />
+        <p className="rounded-lg border border-neutral-200 bg-white p-8 text-center text-sm text-neutral-500">
+          Araç kataloğu henüz doldurulmadı. Analizler katalog verisinden
+          hesaplandığı için burada gösterilecek bir şey yok.
+        </p>
+      </div>
+    );
+  }
 
-  const evChange = (((last.avgEvPrice - first.avgEvPrice) / first.avgEvPrice) * 100).toFixed(1);
-  const iceChange = (((last.avgIcePrice - first.avgIcePrice) / first.avgIcePrice) * 100).toFixed(1);
-  const batteryChange = (((last.batteryUsd - first.batteryUsd) / first.batteryUsd) * 100).toFixed(1);
+  const avgPrice = Math.round(vehicles.reduce((a, v) => a + v.price, 0) / vehicles.length);
+  const avgRange = Math.round(vehicles.reduce((a, v) => a + v.rangeKm, 0) / vehicles.length);
+  const avgConsumption = vehicles.reduce((a, v) => a + v.consumption, 0) / vehicles.length;
+  const cheapest = vehicles[0];
+  const longest = [...vehicles].sort((a, b) => b.rangeKm - a.rangeKm)[0];
 
-  // Segment bazlı ortalama fiyat
+  // Aylık seri en az iki nokta olunca anlam kazanır; tek anlık görüntüyle
+  // "trend" çizmek yanıltıcı olur.
+  const hasTrend = index.length >= 2;
+  const trendChange = hasTrend
+    ? (
+        ((index[index.length - 1].avgEvPrice - index[0].avgEvPrice) / index[0].avgEvPrice) *
+        100
+      ).toFixed(1)
+    : null;
+
+  // Segment bazlı ortalama fiyat ve menzil
   const bySegment = new Map<string, { total: number; count: number; range: number }>();
   for (const v of vehicles) {
     const cur = bySegment.get(v.segment) ?? { total: 0, count: 0, range: 0 };
@@ -39,211 +78,207 @@ export default async function PriceAnalysisPage() {
     bySegment.set(v.segment, cur);
   }
 
-  // İkinci el değer kaybı (aynı marka sıfır fiyatına göre)
-  const depreciation = listings
-    .map((l) => {
-      const zero = vehicles.find((v) => v.brand === l.brand);
-      if (!zero) return null;
-      const loss = ((zero.price - l.price) / zero.price) * 100;
-      return {
-        title: l.title,
-        brand: l.brand,
-        year: l.year,
-        km: l.km,
-        price: l.price,
-        zeroPrice: zero.price,
-        loss: Number(loss.toFixed(1)),
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => a!.loss - b!.loss)
-    .slice(0, 10) as {
-    title: string;
-    brand: string;
-    year: number;
-    km: number;
-    price: number;
-    zeroPrice: number;
-    loss: number;
-  }[];
+  // Menzil başına maliyet: bütçeye göre en verimli modeli gösteren gerçek ölçüt.
+  const perKm = [...vehicles]
+    .map((v) => ({ ...v, costPerKm: Math.round(v.price / v.rangeKm) }))
+    .sort((a, b) => a.costPerKm - b.costPerKm)
+    .slice(0, 10);
 
-  // 100 km maliyet karşılaştırması
-  const avgConsumption =
-    vehicles.reduce((a, v) => a + v.consumption, 0) / vehicles.length;
-  const homeCost = (avgConsumption * 2.8).toFixed(0);
-  const acCost = (avgConsumption * last.acChargeCost).toFixed(0);
-  const dcCost = (avgConsumption * last.dcChargeCost).toFixed(0);
-  const fuel = last.fuelCost.toFixed(0);
+  // Şarj maliyeti yalnızca operatörün doğruladığı tarifelerden hesaplanır.
+  const avgOf = (rows: { pricePerKwh: number | null }[]) =>
+    rows.length
+      ? rows.reduce((a, s) => a + (s.pricePerKwh ?? 0), 0) / rows.length
+      : null;
+
+  const dcTariff = avgOf(pricedStations.filter((s) => s.isFast));
+  const acTariff = avgOf(pricedStations.filter((s) => !s.isFast));
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-amber-600 to-orange-800 p-6 text-white">
-        <div className="flex items-center gap-2">
-          <IconChart className="h-7 w-7" />
-          <h1 className="text-2xl font-black sm:text-4xl">FİYAT ANALİZİ</h1>
-        </div>
-        <p className="max-w-3xl text-sm text-white/85 sm:text-base">
-          Evos Fiyat Endeksi; 38 marka ve 214 varyantın liste fiyatları, şarj
-          tarifeleri ve batarya maliyetleri üzerinden aylık olarak hesaplanır.
-        </p>
-        <div className="mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat label="Ortalama EV fiyatı" value={formatTL(last.avgEvPrice, { compact: true })} sub={`%${evChange} (12 ay)`} />
-          <Stat label="Benzinli ortalama" value={formatTL(last.avgIcePrice, { compact: true })} sub={`%${iceChange} (12 ay)`} />
-          <Stat label="Batarya maliyeti" value={`${last.batteryUsd} $/kWh`} sub={`%${batteryChange} (12 ay)`} />
-          <Stat label="EV pazar payı" value={`%${last.evShare}`} sub={`${first.evShare} → ${last.evShare}`} />
-        </div>
-      </header>
+      <Header modelCount={vehicles.length} />
 
-      <section>
-        <SectionTitle title="ORTALAMA ARAÇ FİYATI (12 AY)" color="#b45309" />
-        <div className="rounded-lg border border-neutral-200 bg-white p-4">
-          <LineChart
-            labels={labels}
-            series={[
-              {
-                label: "Elektrikli ortalama",
-                color: "#e30613",
-                values: index.map((i) => i.avgEvPrice),
-              },
-              {
-                label: "Benzinli ortalama",
-                color: "#334155",
-                values: index.map((i) => i.avgIcePrice),
-              },
-            ]}
-          />
-        </div>
-      </section>
-
-      <div className="flex flex-col gap-5 lg:flex-row">
-        <section className="min-w-0 flex-1">
-          <SectionTitle title="ŞARJ MALİYETİ (₺/kWh)" color="#15803d" />
-          <div className="rounded-lg border border-neutral-200 bg-white p-4">
-            <LineChart
-              height={190}
-              labels={labels}
-              series={[
-                { label: "DC hızlı şarj", color: "#15803d", values: index.map((i) => i.dcChargeCost) },
-                { label: "AC şarj", color: "#0891b2", values: index.map((i) => i.acChargeCost) },
-              ]}
-            />
-          </div>
-        </section>
-
-        <section className="min-w-0 flex-1">
-          <SectionTitle title="BATARYA MALİYETİ ($/kWh)" color="#9333ea" />
-          <div className="rounded-lg border border-neutral-200 bg-white p-4">
-            <LineChart
-              height={190}
-              labels={labels}
-              series={[
-                { label: "Hücre maliyeti", color: "#9333ea", values: index.map((i) => i.batteryUsd) },
-              ]}
-            />
-          </div>
-        </section>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Stat label="Ortalama liste fiyatı" value={formatTL(avgPrice, { compact: true })} sub={trendChange ? `%${trendChange} (kayıt başlangıcından beri)` : undefined} />
+        <Stat label="Ortalama menzil" value={`${avgRange} km`} />
+        <Stat
+          label="En uygun fiyatlı"
+          value={formatTL(cheapest.price, { compact: true })}
+          sub={`${cheapest.brand} ${cheapest.model}`}
+        />
+        <Stat
+          label="En uzun menzil"
+          value={`${longest.rangeKm} km`}
+          sub={`${longest.brand} ${longest.model}`}
+        />
       </div>
 
+      {hasTrend ? (
+        <section>
+          <SectionTitle title="ORTALAMA LİSTE FİYATI (AYLIK)" color="#b45309" />
+          <div className="rounded-lg border border-neutral-200 bg-white p-4">
+            <LineChart
+              labels={index.map((i) => i.month)}
+              series={[
+                {
+                  label: "Katalog ortalaması",
+                  color: "#e30613",
+                  values: index.map((i) => i.avgEvPrice),
+                },
+              ]}
+            />
+            <p className="mt-2 text-[11px] text-neutral-500">
+              Seri, katalogdaki modellerin liste fiyatlarından her ay
+              hesaplanan anlık görüntülerden oluşur.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <p className="rounded-lg border border-dashed border-neutral-300 bg-white p-5 text-center text-xs text-neutral-500">
+          Aylık fiyat serisi bu ay kaydedilmeye başlandı. Grafik ikinci aydan
+          itibaren görünecek — geçmişe dönük veri uydurulmuyor.
+        </p>
+      )}
+
       <section>
-        <SectionTitle title="100 KİLOMETRE MALİYET KARŞILAŞTIRMASI" color="#b45309" />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <CostCard label="Ev şarjı (gece)" value={`${homeCost} ₺`} color="bg-volt" pct={100} />
-          <CostCard label="Halka açık AC" value={`${acCost} ₺`} color="bg-cyan-600" pct={(Number(acCost) / Number(fuel)) * 100} />
-          <CostCard label="DC hızlı şarj" value={`${dcCost} ₺`} color="bg-amber-600" pct={(Number(dcCost) / Number(fuel)) * 100} />
-          <CostCard label="Benzinli araç" value={`${fuel} ₺`} color="bg-evos" pct={100} />
+        <SectionTitle title="MENZİL BAŞINA MALİYET (₺ / km)" color="#b45309" />
+        <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
+          <table className="w-full min-w-[520px] text-left text-sm">
+            <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
+              <tr>
+                <th className="px-4 py-3">MODEL</th>
+                <th className="px-4 py-3">MENZİL</th>
+                <th className="px-4 py-3">FİYAT</th>
+                <th className="px-4 py-3 text-right">KM BAŞINA</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-100">
+              {perKm.map((v) => (
+                <tr key={v.id} className="hover:bg-neutral-50">
+                  <td className="px-4 py-3 font-bold text-neutral-900">
+                    {v.brand} {v.model}
+                  </td>
+                  <td className="px-4 py-3 text-neutral-600">{v.rangeKm} km</td>
+                  <td className="px-4 py-3 text-neutral-600">{formatTL(v.price)}</td>
+                  <td className="px-4 py-3 text-right font-black text-evos">
+                    {formatTL(v.costPerKm)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <p className="mt-2 text-xs text-neutral-500">
-          Hesaplama, filodaki araçların ortalama {avgConsumption.toFixed(1)}{" "}
-          kWh/100 km tüketimi baz alınarak yapılmıştır.
+        <p className="mt-2 text-[11px] text-neutral-500">
+          Etiket fiyatının gerçek menzile bölümü. Düşük değer, satın alınan her
+          kilometrelik menzilin daha ucuza geldiği anlamına gelir.
         </p>
       </section>
 
-      <div className="flex flex-col gap-5 lg:flex-row">
-        <section className="min-w-0 flex-1">
-          <SectionTitle title="SEGMENT BAZLI ORTALAMA FİYAT" color="#b45309" />
-          <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
-                <tr>
-                  <th className="px-4 py-3">SEGMENT</th>
-                  <th className="px-4 py-3">MODEL</th>
-                  <th className="px-4 py-3">ORT. MENZİL</th>
-                  <th className="px-4 py-3 text-right">ORT. FİYAT</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-100">
-                {[...bySegment.entries()]
-                  .sort((a, b) => a[1].total / a[1].count - b[1].total / b[1].count)
-                  .map(([seg, d]) => (
-                    <tr key={seg} className="hover:bg-neutral-50">
-                      <td className="px-4 py-3 font-bold text-neutral-900">{seg}</td>
-                      <td className="px-4 py-3 text-neutral-600">{d.count}</td>
-                      <td className="px-4 py-3 text-neutral-600">
-                        {Math.round(d.range / d.count)} km
-                      </td>
-                      <td className="px-4 py-3 text-right font-black text-evos">
-                        {formatTL(Math.round(d.total / d.count))}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+      <section>
+        <SectionTitle title="100 KİLOMETRE ENERJİ MALİYETİ" color="#15803d" />
+        {dcTariff == null && acTariff == null ? (
+          <p className="rounded-lg border border-dashed border-neutral-300 bg-white p-5 text-center text-xs text-neutral-500">
+            Şarj tarifesi karşılaştırması için doğrulanmış operatör fiyatı
+            gerekiyor. Tarifeler yönetim panelinden girildiğinde bu bölüm
+            otomatik olarak dolar — tahmini fiyat gösterilmiyor.
+          </p>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {dcTariff != null && (
+                <CostCard
+                  label="DC hızlı şarj"
+                  value={`${(avgConsumption * dcTariff).toFixed(0)} ₺`}
+                  sub={`${dcTariff.toFixed(2)} ₺/kWh ortalama`}
+                  color="bg-amber-600"
+                />
+              )}
+              {acTariff != null && (
+                <CostCard
+                  label="Halka açık AC"
+                  value={`${(avgConsumption * acTariff).toFixed(0)} ₺`}
+                  sub={`${acTariff.toFixed(2)} ₺/kWh ortalama`}
+                  color="bg-cyan-600"
+                />
+              )}
+            </div>
+            <p className="mt-2 text-xs text-neutral-500">
+              Hesaplama, katalogdaki araçların ortalama{" "}
+              {avgConsumption.toFixed(1)} kWh/100 km tüketimi ve{" "}
+              {pricedStations.length} istasyonun doğrulanmış tarifesi baz alınarak
+              yapılmıştır.
+            </p>
+          </>
+        )}
+      </section>
 
-        <section className="min-w-0 flex-1">
-          <SectionTitle title="İKİNCİ EL DEĞER KAYBI" color="#be123c" />
-          <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
-                <tr>
-                  <th className="px-4 py-3">İLAN</th>
-                  <th className="px-4 py-3">YIL</th>
-                  <th className="px-4 py-3 text-right">DEĞER KAYBI</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-100">
-                {depreciation.map((d) => (
-                  <tr key={d.title} className="hover:bg-neutral-50">
-                    <td className="max-w-[220px] truncate px-4 py-3 font-bold text-neutral-900">
-                      {d.title}
+      <section>
+        <SectionTitle title="SEGMENT BAZLI ORTALAMA FİYAT" color="#b45309" />
+        <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
+              <tr>
+                <th className="px-4 py-3">SEGMENT</th>
+                <th className="px-4 py-3">MODEL</th>
+                <th className="px-4 py-3">ORT. MENZİL</th>
+                <th className="px-4 py-3 text-right">ORT. FİYAT</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-100">
+              {[...bySegment.entries()]
+                .sort((a, b) => a[1].total / a[1].count - b[1].total / b[1].count)
+                .map(([seg, d]) => (
+                  <tr key={seg} className="hover:bg-neutral-50">
+                    <td className="px-4 py-3 font-bold text-neutral-900">{seg}</td>
+                    <td className="px-4 py-3 text-neutral-600">{d.count}</td>
+                    <td className="px-4 py-3 text-neutral-600">
+                      {Math.round(d.range / d.count)} km
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">{d.year}</td>
-                    <td className="px-4 py-3 text-right">
-                      <span
-                        className={`rounded px-2 py-1 text-xs font-black text-white ${
-                          d.loss < 25 ? "bg-volt" : d.loss < 40 ? "bg-amber-600" : "bg-evos"
-                        }`}
-                      >
-                        %{d.loss}
-                      </span>
+                    <td className="px-4 py-3 text-right font-black text-evos">
+                      {formatTL(Math.round(d.total / d.count))}
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-
-      <section>
-        <SectionTitle title="FİYAT ANALİZİ HABERLERİ" href="/kategori/fiyat-analizi" color="#b45309" />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {news.map((a) => (
-            <NewsCard key={a.id} article={a} />
-          ))}
+            </tbody>
+          </table>
         </div>
       </section>
+
+      {news.length > 0 && (
+        <section>
+          <SectionTitle title="FİYAT ANALİZİ HABERLERİ" href="/kategori/fiyat-analizi" color="#b45309" />
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {news.map((a) => (
+              <NewsCard key={a.id} article={a} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
+  );
+}
+
+function Header({ modelCount }: { modelCount?: number }) {
+  return (
+    <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-amber-600 to-orange-800 p-6 text-white">
+      <div className="flex items-center gap-2">
+        <IconChart className="h-7 w-7" />
+        <h1 className="text-2xl font-black sm:text-4xl">FİYAT ANALİZİ</h1>
+      </div>
+      <p className="max-w-3xl text-sm text-white/85 sm:text-base">
+        {modelCount
+          ? `Türkiye'de satıştaki ${modelCount} elektrikli model varyantının liste fiyatı, menzili ve segment dağılımı. Tüm rakamlar katalogdaki gerçek kayıtlardan hesaplanır.`
+          : "Türkiye'de satıştaki elektrikli modellerin liste fiyatı, menzili ve segment dağılımı."}
+      </p>
+    </header>
   );
 }
 
 function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="flex flex-col rounded-lg bg-white/10 px-3 py-2 backdrop-blur">
-      <span className="text-[11px] font-semibold text-white/70">{label}</span>
-      <span className="text-lg font-black">{value}</span>
-      {sub && <span className="text-[10px] text-white/60">{sub}</span>}
+    <div className="flex flex-col rounded-lg border border-neutral-200 bg-white px-4 py-3">
+      <span className="text-[11px] font-semibold text-neutral-500">{label}</span>
+      <span className="text-lg font-black text-neutral-900">{value}</span>
+      {sub && <span className="text-[10px] text-neutral-400">{sub}</span>}
     </div>
   );
 }
@@ -251,24 +286,20 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
 function CostCard({
   label,
   value,
+  sub,
   color,
-  pct,
 }: {
   label: string;
   value: string;
+  sub: string;
   color: string;
-  pct: number;
 }) {
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-4">
       <span className="text-[11px] font-bold text-neutral-500">{label}</span>
       <span className="text-2xl font-black text-neutral-900">{value}</span>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-100">
-        <div
-          className={`h-full rounded-full ${color}`}
-          style={{ width: `${Math.min(100, pct)}%` }}
-        />
-      </div>
+      <span className="text-[10px] text-neutral-400">{sub}</span>
+      <div className={`h-1 w-10 rounded-full ${color}`} />
     </div>
   );
 }

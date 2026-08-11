@@ -2,8 +2,19 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, num, ok, slugify } from "@/lib/api";
 import type { Prisma } from "@prisma/client";
+import { touchStations } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * Boş bırakılabilen sayısal alan. Formdan boş gelen değeri 0 veya varsayılan
+ * bir sayı olarak yazmak uydurma veri üretir; onun yerine boş bırakılır ve
+ * arayüzde "—" görünür.
+ */
+const optionalNum = (v: unknown) => {
+  const n = Number(v);
+  return v === "" || v == null || !Number.isFinite(n) || n <= 0 ? null : n;
+};
 
 /** GET /api/stations?il=&operator=&hizli=1&minGuc= */
 export async function GET(req: NextRequest) {
@@ -71,15 +82,18 @@ export async function POST(req: NextRequest) {
         lat: Number(b.lat) || 0,
         lng: Number(b.lng) || 0,
         socketCount: Number(b.socketCount) || 2,
-        maxPowerKw: Number(b.maxPowerKw) || 60,
+        maxPowerKw: optionalNum(b.maxPowerKw),
         socketTypes: b.socketTypes ?? ["Type 2"],
-        pricePerKwh: Number(b.pricePerKwh) || 0,
+        pricePerKwh: optionalNum(b.pricePerKwh),
         isFast: !!b.isFast,
-        is24h: b.is24h !== false,
+        // Üçlü durum: işaretli / işaretsiz / bilgi yok. Kaynakta bu bilgi
+        // olmadığı için varsayılan "bilinmiyor"dur.
+        is24h: b.is24h === undefined ? null : !!b.is24h,
         amenities: b.amenities ?? [],
         status: b.status || "aktif",
       },
     });
+    touchStations();
     return ok({ station }, 201);
   } catch (e) {
     return fail(e instanceof Error ? e.message : "İstasyon eklenemedi", 500);

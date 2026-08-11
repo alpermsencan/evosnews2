@@ -6,7 +6,11 @@ import { getByCategory } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 import { IconTag } from "@/components/ui/Icons";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 export const metadata = {
   title: "ÖTV Rehberi",
   description:

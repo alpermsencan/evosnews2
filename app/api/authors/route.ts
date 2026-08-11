@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok, slugify } from "@/lib/api";
+import { touchArticles } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +26,13 @@ export async function POST(req: NextRequest) {
         slug,
         title: b.title || null,
         bio: b.bio || null,
-        avatar: b.avatar || `https://picsum.photos/seed/author-${slug}/200/200`,
+        avatar: b.avatar || null,
         twitter: b.twitter || null,
       },
     });
+    // Yazar adı ve avatarı haber kartlarında görünür; önbellekli haber
+    // sorguları tazelenmezse eski isimle kalırlar.
+    touchArticles();
     return ok({ author }, 201);
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Yazar eklenemedi", 500);
@@ -44,6 +48,7 @@ export async function DELETE(req: NextRequest) {
       data: { authorId: null },
     });
     await prisma.author.delete({ where: { id } });
+    touchArticles();
     return ok({ success: true });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Silinemedi", 500);

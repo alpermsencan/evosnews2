@@ -34,15 +34,6 @@ export type PostVehicle = {
   price: number;
 };
 
-export type PostListing = {
-  id: string;
-  title: string;
-  slug: string;
-  image: string;
-  price: number;
-  city: string;
-};
-
 export type SocialPost = {
   id: string;
   kind: string;
@@ -60,7 +51,6 @@ export type SocialPost = {
   author: SocialUser;
   article: PostArticle | null;
   vehicle: PostVehicle | null;
-  listing: PostListing | null;
   likedByMe: boolean;
   isMine: boolean;
 };

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok } from "@/lib/api";
+import { touchTickers } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export async function POST(req: NextRequest) {
         order: Number(b.order) || 99,
       },
     });
+    touchTickers();
     return ok({ ticker }, 201);
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Eklenemedi", 500);
@@ -44,6 +46,7 @@ export async function PUT(req: NextRequest) {
         ...(b.order !== undefined && { order: Number(b.order) }),
       },
     });
+    touchTickers();
     return ok({ ticker });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Güncellenemedi", 500);
@@ -55,6 +58,7 @@ export async function DELETE(req: NextRequest) {
     const id = req.nextUrl.searchParams.get("id");
     if (!id) return fail("id zorunludur");
     await prisma.ticker.delete({ where: { id } });
+    touchTickers();
     return ok({ success: true });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Silinemedi", 500);

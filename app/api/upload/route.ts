@@ -111,7 +111,7 @@ export async function DELETE(req: NextRequest) {
   if (!url) return fail("url parametresi gerekli");
 
   const publicId = publicIdFromUrl(url);
-  // Cloudinary dışı (mevcut picsum/unsplash) görsellerde silinecek bir şey yok
+  // Cloudinary dışı (kaynak sitesinden gelen) görsellerde silinecek bir şey yok
   if (!publicId) return ok({ success: true, skipped: true });
 
   try {

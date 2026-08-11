@@ -10,7 +10,8 @@
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
-    "seed": "node --env-file=.env prisma/seed.mjs"
+    "db:purge-seed": "node --env-file=.env prisma/purge-seed.mjs",
+    "db:vehicles": "node --env-file=.env prisma/import-vehicles.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

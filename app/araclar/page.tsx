@@ -8,7 +8,11 @@ import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 export const metadata = {
   title: "Araçları Keşfet",
   description:
@@ -43,7 +47,9 @@ export default async function VehiclesPage({
       : sp.sirala === "hizlanma"
       ? { acceleration: "asc" }
       : sp.sirala === "puan"
-      ? { rating: "desc" }
+      ? // MongoDB'de null, azalan sıralamada sayıların ardına düşer:
+        // puanı olmayan (henüz incelenmemiş) araçlar listenin sonunda kalır.
+        { rating: "desc" }
       : { price: "asc" };
 
   const [vehicles, brands, segments, bodyTypes, stats, news] = await Promise.all([
@@ -117,13 +123,14 @@ export default async function VehiclesPage({
       <section>
         <SectionTitle title="TEKNİK KARŞILAŞTIRMA TABLOSU" color="#0f766e" />
         <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-          <table className="w-full min-w-[860px] text-left text-sm">
+          <table className="w-full min-w-[960px] text-left text-sm">
             <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
               <tr>
                 <th className="px-4 py-3">MODEL</th>
                 <th className="px-4 py-3">SEGMENT</th>
                 <th className="px-4 py-3">MENZİL</th>
                 <th className="px-4 py-3">BATARYA</th>
+                <th className="px-4 py-3">MOTOR</th>
                 <th className="px-4 py-3">DC ŞARJ</th>
                 <th className="px-4 py-3">0-100</th>
                 <th className="px-4 py-3">TÜKETİM</th>
@@ -140,7 +147,10 @@ export default async function VehiclesPage({
                   <td className="px-4 py-3 text-neutral-600">{v.segment}</td>
                   <td className="px-4 py-3 font-semibold text-volt-dark">{v.rangeKm} km</td>
                   <td className="px-4 py-3 text-neutral-600">{v.batteryKwh} kWh</td>
-                  <td className="px-4 py-3 text-neutral-600">{v.dcChargeKw} kW</td>
+                  <td className="px-4 py-3 text-neutral-600">{v.motorPowerHp} HP</td>
+                  <td className="px-4 py-3 text-neutral-600">
+                    {v.dcChargeKw != null ? `${v.dcChargeKw} kW` : "—"}
+                  </td>
                   <td className="px-4 py-3 text-neutral-600">{v.acceleration} sn</td>
                   <td className="px-4 py-3 text-neutral-600">{v.consumption} kWh</td>
                   <td className="px-4 py-3 text-neutral-600">%{v.otvRate}</td>
@@ -153,6 +163,12 @@ export default async function VehiclesPage({
           </table>
         </div>
       </section>
+
+      <p className="px-1 text-[11px] leading-relaxed text-neutral-500">
+        Fiyatlar Türkiye anahtar teslim liste fiyatlarıdır ve sık değişir. Menzil
+        ile tüketim değerleri üretici beyanı değil, gerçek kullanım ortalamalarıdır
+        (kaynak: EV Database). Boş bırakılan alanlar için doğrulanmış veri yoktur.
+      </p>
 
       <section>
         <SectionTitle title="ARAÇ HABERLERİ" href="/arac-merkezi" color="#0f766e" />

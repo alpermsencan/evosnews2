@@ -1,5 +1,7 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { prisma } from "./prisma";
+import { TAGS, TTL } from "./cache";
 
 export const ARTICLE_CARD_SELECT = {
   id: true,
@@ -14,147 +16,208 @@ export const ARTICLE_CARD_SELECT = {
   views: true,
   readTime: true,
   publishedAt: true,
+  sourceName: true,
+  sourceUrl: true,
   category: { select: { name: true, slug: true, color: true } },
   author: { select: { name: true, slug: true, avatar: true } },
 } as const;
 
-export async function getCategories() {
-  return prisma.category.findMany({ orderBy: { order: "asc" } });
+/**
+ * Yayın filtresi.
+ * Ingest edilen içerik DRAFT olarak gelir ve editör onaylayana kadar sitenin
+ * hiçbir yerinde görünmemelidir. Her genel okuma bu koşulu içerir.
+ */
+const PUBLISHED = { status: "PUBLISHED" } as const;
+
+/**
+ * ÖNBELLEKLEME NEDEN YOK
+ *
+ * Bu sorgular daha önce `unstable_cache` ile etiketli olarak önbellekleniyordu.
+ * Sorun şu: `revalidateTag` girdiyi silmez, BAYAT işaretler — bayat girdi bir
+ * sonraki isteğe olduğu gibi servis edilir, tazeleme arka planda yapılır.
+ * Sonuç: panelden bir haber düzenlendiğinde sayfayı ilk açan ziyaretçi hâlâ
+ * eski içeriği görüyordu. Anında geçersiz kılan `updateTag` ise yalnızca
+ * Server Action içinden çağrılabiliyor, route handler'lardan çağrılamıyor.
+ *
+ * Sitenin tüm sayfaları zaten istek başına render ediliyor (kök layout oturumu
+ * sunucuda okuyor), yani önbellek yalnızca birkaç indeksli Mongo sorgusunu
+ * tasarruf ediyordu. Doğruluk bu tasarruftan değerli olduğu için okumalar
+ * doğrudan yapılıyor.
+ *
+ * Tek istisna: getPublishedIndex (sitemap/RSS için binlerce kayıt). Orada
+ * saniyelik tazelik gereksiz, maliyet ise yüksek olduğu için önbellek kalıyor.
+ */
+function cached<A extends unknown[], R>(
+  fn: (...args: A) => Promise<R>,
+  keyParts: string[],
+  tags: string[],
+  revalidate: number,
+) {
+  return unstable_cache(fn, keyParts, { tags, revalidate });
 }
 
-export async function getCategoryBySlug(slug: string) {
-  return prisma.category.findUnique({ where: { slug } });
-}
+export const getCategories = () => prisma.category.findMany({ orderBy: { order: "asc" } });
 
-export async function getHeadlines(limit = 6) {
-  return prisma.article.findMany({
-    where: { isHeadline: true },
-    orderBy: { publishedAt: "desc" },
-    take: limit,
-    select: ARTICLE_CARD_SELECT,
-  });
-}
+export const getCategoryBySlug = (slug: string) => prisma.category.findUnique({ where: { slug } });
 
-export async function getLatest(limit = 12, skip = 0) {
-  return prisma.article.findMany({
-    orderBy: { publishedAt: "desc" },
-    take: limit,
-    skip,
-    select: ARTICLE_CARD_SELECT,
-  });
-}
+export const getHeadlines = (limit: number = 6) =>
+    prisma.article.findMany({
+      where: { ...PUBLISHED, isHeadline: true },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      select: ARTICLE_CARD_SELECT,
+    });
 
-export async function getMostRead(limit = 8) {
-  return prisma.article.findMany({
-    orderBy: { views: "desc" },
-    take: limit,
-    select: ARTICLE_CARD_SELECT,
-  });
-}
+export const getLatest = (limit: number = 12, skip: number = 0) =>
+    prisma.article.findMany({
+      where: PUBLISHED,
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      skip,
+      select: ARTICLE_CARD_SELECT,
+    });
 
-export async function getByCategory(slug: string, limit = 8, skip = 0) {
-  return prisma.article.findMany({
-    where: { category: { slug } },
-    orderBy: { publishedAt: "desc" },
-    take: limit,
-    skip,
-    select: ARTICLE_CARD_SELECT,
-  });
-}
+export const getMostRead = (limit: number = 8) =>
+    prisma.article.findMany({
+      where: PUBLISHED,
+      orderBy: { views: "desc" },
+      take: limit,
+      select: ARTICLE_CARD_SELECT,
+    });
 
-export async function countByCategory(slug: string) {
-  return prisma.article.count({ where: { category: { slug } } });
-}
+export const getByCategory = (slug: string, limit: number = 8, skip: number = 0) =>
+    prisma.article.findMany({
+      where: { ...PUBLISHED, category: { slug } },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      skip,
+      select: ARTICLE_CARD_SELECT,
+    });
 
-export async function getArticleBySlug(slug: string) {
-  return prisma.article.findUnique({
-    where: { slug },
+export const countByCategory = (slug: string) => prisma.article.count({ where: { ...PUBLISHED, category: { slug } } });
+
+/**
+ * Haber detayı. Taslak/reddedilmiş içerik genel tarafta 404 döner.
+ *
+ * Yorumlar bilerek DIŞARIDA bırakıldı: haber gövdesi nadiren, yorumlar sürekli
+ * değişir. İkisi aynı önbellek girdisinde olsaydı yeni bir yorum, TTL dolana
+ * kadar diğer ziyaretçilere görünmezdi. Yorumlar getArticleComments ile
+ * önbelleksiz okunur.
+ */
+export const getArticleBySlug = async (slug: string) => {
+    const article = await prisma.article.findUnique({
+      where: { slug },
+      include: { category: true, author: true },
+    });
+    return article && article.status === "PUBLISHED" ? article : null;
+  };
+
+/**
+ * Haber yorumları — ÖNBELLEKLENMEZ.
+ * Yorum yazan kişi kendi yorumunu istemci tarafında anında görür; bu sorgu
+ * diğer ziyaretçilerin de gecikmesiz görmesini sağlar.
+ */
+export function getArticleComments(articleId: string) {
+  return prisma.comment.findMany({
+    where: { articleId, approved: true },
+    orderBy: { createdAt: "desc" },
     include: {
-      category: true,
-      author: true,
-      comments: {
-        where: { approved: true },
-        orderBy: { createdAt: "desc" },
-        include: {
-          user: {
-            select: { id: true, name: true, username: true, avatar: true },
-          },
-        },
-      },
+      user: { select: { id: true, name: true, username: true, avatar: true } },
     },
   });
 }
 
-export async function getRelated(categoryId: string, excludeId: string, limit = 4) {
-  return prisma.article.findMany({
-    where: { categoryId, NOT: { id: excludeId } },
-    orderBy: { publishedAt: "desc" },
-    take: limit,
-    select: ARTICLE_CARD_SELECT,
-  });
-}
+export const getRelated = (categoryId: string, excludeId: string, limit: number = 4) =>
+    prisma.article.findMany({
+      where: { ...PUBLISHED, categoryId, NOT: { id: excludeId } },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      select: ARTICLE_CARD_SELECT,
+    });
 
-export async function getTickers() {
-  return prisma.ticker.findMany({ orderBy: { order: "asc" } });
-}
+/**
+ * Sitemap ve RSS için: yayındaki tüm haberlerin hafif listesi.
+ *
+ * Tek önbelleklenen sorgu. Binlerce kayıt döndürdüğü için maliyetlidir, buna
+ * karşılık okuyucusu arama motoru tarayıcısıdır; birkaç dakikalık gecikme
+ * önemsizdir. Yeni içerik geldiğinde `touchArticles()` etiketi tazeler.
+ */
+export const getPublishedIndex = cached(
+  (limit: number = 5000) =>
+    prisma.article.findMany({
+      where: PUBLISHED,
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      select: {
+        slug: true,
+        title: true,
+        spot: true,
+        publishedAt: true,
+        updatedAt: true,
+        category: { select: { slug: true } },
+      },
+    }),
+  ["published-index"],
+  [TAGS.articles],
+  TTL.articles,
+);
 
-export async function getActivePoll() {
-  return prisma.poll.findFirst({
-    where: { isActive: true },
-    orderBy: { createdAt: "desc" },
-  });
-}
+/** Kök layout'taki son dakika şeridi. */
+export const getBreakingBar = (limit: number = 8) =>
+    prisma.article.findMany({
+      where: { ...PUBLISHED, OR: [{ isBreaking: true }, { isFeatured: true }] },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      select: { id: true, title: true, slug: true },
+    });
 
-export async function getVehicles(where: Record<string, unknown> = {}, orderBy: Record<string, unknown> = { price: "asc" }) {
+export const getTickers = () => prisma.ticker.findMany({ orderBy: { order: "asc" } });
+
+export const getActivePoll = () =>
+    prisma.poll.findFirst({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+/**
+ * Serbest filtreli araç sorgusu (arama/filtre ekranları).
+ * Filtre kombinasyonu sınırsız olduğundan önbelleklenmez.
+ *
+ * NOT: Araç detayı, şarj istasyonu listesi ve ÖTV dilimleri için burada
+ * önbellekli yardımcı YOKTUR. İlgili sayfalar prisma'ya doğrudan gider;
+ * böylece panelden yapılan bir düzenleme anında yansır.
+ */
+export async function getVehicles(
+  where: Record<string, unknown> = {},
+  orderBy: Record<string, unknown> = { price: "asc" },
+) {
   return prisma.vehicle.findMany({ where, orderBy });
 }
 
-export async function getFeaturedVehicles(limit = 6) {
-  return prisma.vehicle.findMany({
-    where: { isFeatured: true },
-    orderBy: { rangeKm: "desc" },
-    take: limit,
-  });
-}
+export const getFeaturedVehicles = (limit: number = 6) =>
+    prisma.vehicle.findMany({
+      where: { isFeatured: true },
+      orderBy: { rangeKm: "desc" },
+      take: limit,
+    });
 
-export async function getVehicleBySlug(slug: string) {
-  return prisma.vehicle.findUnique({ where: { slug } });
-}
 
-export async function getStations() {
-  return prisma.chargeStation.findMany({ orderBy: [{ city: "asc" }, { name: "asc" }] });
-}
 
-export async function getListings(limit?: number) {
-  return prisma.listing.findMany({
-    orderBy: [{ isSponsored: "desc" }, { createdAt: "desc" }],
-    take: limit,
-  });
-}
+export const getCommunityPosts = (limit: number | undefined) =>
+    prisma.communityPost.findMany({
+      orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
+      take: limit,
+    });
 
-export async function getListingBySlug(slug: string) {
-  return prisma.listing.findUnique({ where: { slug } });
-}
+export const getPriceIndex = () => prisma.priceIndex.findMany({ orderBy: { order: "asc" } });
 
-export async function getCommunityPosts(limit?: number) {
-  return prisma.communityPost.findMany({
-    orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
-    take: limit,
-  });
-}
 
-export async function getPriceIndex() {
-  return prisma.priceIndex.findMany({ orderBy: { order: "asc" } });
-}
-
-export async function getOtvBrackets() {
-  return prisma.otvBracket.findMany({ orderBy: { order: "asc" } });
-}
-
+/** Arama sorgusu kullanıcıya özgüdür; önbelleklenmez. */
 export async function searchArticles(q: string, limit = 30) {
   if (!q?.trim()) return [];
   return prisma.article.findMany({
     where: {
+      ...PUBLISHED,
       OR: [
         { title: { contains: q, mode: "insensitive" } },
         { spot: { contains: q, mode: "insensitive" } },

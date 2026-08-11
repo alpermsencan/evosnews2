@@ -23,10 +23,10 @@ export default async function AdminStations() {
         key="p"
         className="rounded bg-volt/10 px-2 py-1 text-[11px] font-black text-volt-dark"
       >
-        {s.maxPowerKw} kW
+        {s.maxPowerKw != null ? `${s.maxPowerKw} kW` : "—"}
       </span>,
       s.socketCount,
-      `${s.pricePerKwh.toFixed(2)} ₺/kWh`,
+      s.pricePerKwh != null ? `${s.pricePerKwh.toFixed(2)} ₺/kWh` : "—",
       s.status,
     ],
   }));

@@ -55,7 +55,7 @@ export default function ImageUpload({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex gap-3">
-        {/* Mevcut görsel önizlemesi (picsum/unsplash dahil korunur) */}
+        {/* Mevcut görsel önizlemesi (dış URL girilmişse o da korunur) */}
         <div className="relative h-24 w-32 shrink-0 overflow-hidden rounded-md border border-neutral-300 bg-neutral-50">
           {value ? (
             <Preview src={value} alt="Görsel önizleme" />

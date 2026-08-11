@@ -6,9 +6,14 @@ import FilterBar from "@/components/ui/FilterBar";
 import SectionTitle from "@/components/news/SectionTitle";
 import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
+import RouteButton from "@/components/stations/RouteButton";
 import { IconBolt, IconClock, IconMap } from "@/components/ui/Icons";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 export const metadata = {
   title: "Şarj Ağı · Evos Charge Network",
   description:
@@ -40,28 +45,38 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
     getByCategory("sarj-agi", 4),
   ]);
 
-  // Operatör tarife özeti
+  // Operatör özeti. Tarife OCM verisinde yer almaz; yalnızca operatörün
+  // panelden girdiği doğrulanmış fiyatlar ortalamaya katılır, girilmemişse
+  // sütun "—" gösterir.
   const byOperator = new Map<
     string,
-    { count: number; sockets: number; totalPrice: number; maxKw: number }
+    { count: number; sockets: number; priceSum: number; priced: number; maxKw: number | null }
   >();
   const all = await prisma.chargeStation.findMany();
   for (const s of all) {
     const cur = byOperator.get(s.operator) ?? {
       count: 0,
       sockets: 0,
-      totalPrice: 0,
-      maxKw: 0,
+      priceSum: 0,
+      priced: 0,
+      maxKw: null as number | null,
     };
     cur.count += 1;
     cur.sockets += s.socketCount;
-    cur.totalPrice += s.pricePerKwh;
-    cur.maxKw = Math.max(cur.maxKw, s.maxPowerKw);
+    if (s.pricePerKwh != null) {
+      cur.priceSum += s.pricePerKwh;
+      cur.priced += 1;
+    }
+    if (s.maxPowerKw != null) cur.maxKw = Math.max(cur.maxKw ?? 0, s.maxPowerKw);
     byOperator.set(s.operator, cur);
   }
 
   const cityCounts = new Map<string, number>();
-  for (const s of all) cityCounts.set(s.city, (cityCounts.get(s.city) ?? 0) + s.socketCount);
+  for (const s of all) {
+    // İli çözülemeyen kayıtlar il dağılımı grafiğini yanıltmasın.
+    if (s.city === "Belirtilmemiş") continue;
+    cityCounts.set(s.city, (cityCounts.get(s.city) ?? 0) + s.socketCount);
+  }
   const topCities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
   const maxCity = topCities[0]?.[1] ?? 1;
 
@@ -73,16 +88,17 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
           <h1 className="text-2xl font-black sm:text-4xl">ŞARJ AĞINI GÖSTER</h1>
         </div>
         <p className="max-w-2xl text-sm text-white/85 sm:text-base">
-          Evos Charge Network ve anlaşmalı operatörlerin Türkiye genelindeki
-          istasyonları, güç kapasiteleri ve güncel kWh tarifeleri.
+          Türkiye genelindeki halka açık şarj istasyonları, operatörleri, soket
+          tipleri ve güç kapasiteleri. Envanter Open Charge Map katkıcılarının
+          açık verisinden günlük olarak tazelenir.
         </p>
         <div className="mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="İstasyon" value={`${agg._count}`} />
           <Stat label="Toplam soket" value={`${agg._sum.socketCount ?? 0}`} />
           <Stat label="Hızlı şarj noktası" value={`${fastCount}`} />
           <Stat
-            label="Ortalama tarife"
-            value={`${(agg._avg.pricePerKwh ?? 0).toFixed(2)} ₺`}
+            label="Ortalama güç"
+            value={agg._avg.maxPowerKw ? `${Math.round(agg._avg.maxPowerKw)} kW` : "—"}
           />
         </div>
       </header>
@@ -123,7 +139,7 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
                     s.isFast ? "bg-volt" : "bg-neutral-400"
                   }`}
                 >
-                  {s.maxPowerKw} kW
+                  {s.maxPowerKw != null ? `${s.maxPowerKw} kW` : "Güç bilinmiyor"}
                 </span>
               </div>
 
@@ -139,7 +155,7 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
                 {s.socketTypes.map((t) => (
                   <Chip key={t}>{t}</Chip>
                 ))}
-                {s.is24h && (
+                {s.is24h === true && (
                   <Chip>
                     <IconClock className="mr-1 inline h-3 w-3" />
                     7/24
@@ -147,14 +163,24 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
                 )}
               </div>
 
-              <div className="mt-auto flex items-center justify-between border-t border-neutral-100 pt-2">
+              <div className="mt-auto flex items-center justify-between gap-2 border-t border-neutral-100 pt-2">
                 <span className="text-[11px] font-semibold text-neutral-400">
-                  {s.amenities.join(" · ") || "Ek hizmet yok"}
+                  {s.amenities.join(" · ")}
                 </span>
-                <span className="text-sm font-black text-volt-dark">
-                  {s.pricePerKwh.toFixed(2)} ₺/kWh
-                </span>
+                {/* Tarife yalnızca operatör doğrulanmış fiyat girdiyse gösterilir. */}
+                {s.pricePerKwh != null && (
+                  <span className="shrink-0 text-sm font-black text-volt-dark">
+                    {s.pricePerKwh.toFixed(2)} ₺/kWh
+                  </span>
+                )}
               </div>
+              <RouteButton
+                name={s.name}
+                lat={s.lat}
+                lng={s.lng}
+                city={s.city}
+                district={s.district}
+              />
             </article>
           ))}
         </div>
@@ -189,10 +215,10 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
                       <td className="px-4 py-3 text-neutral-600">{d.count}</td>
                       <td className="px-4 py-3 text-neutral-600">{d.sockets}</td>
                       <td className="px-4 py-3 font-semibold text-volt-dark">
-                        {d.maxKw} kW
+                        {d.maxKw != null ? `${d.maxKw} kW` : "—"}
                       </td>
                       <td className="px-4 py-3 text-right font-black text-neutral-900">
-                        {(d.totalPrice / d.count).toFixed(2)} ₺
+                        {d.priced > 0 ? `${(d.priceSum / d.priced).toFixed(2)} ₺` : "—"}
                       </td>
                     </tr>
                   ))}

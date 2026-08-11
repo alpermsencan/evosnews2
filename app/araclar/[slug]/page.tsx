@@ -5,10 +5,14 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import VehicleCard from "@/components/vehicles/VehicleCard";
 import SectionTitle from "@/components/news/SectionTitle";
-import { calcOtv, formatTL } from "@/lib/utils";
+import { calcOtv, formatDate, formatTL } from "@/lib/utils";
 import { IconCheck, IconClose } from "@/components/ui/Icons";
 
-export const dynamic = "force-dynamic";
+// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
+// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
+// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
+// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
+export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -33,8 +37,10 @@ export default async function VehicleDetail({ params }: Props) {
       take: 4,
       orderBy: { price: "asc" },
     }),
+    // Aracın DC şarj gücü bilinmiyorsa "uyumlu istasyon" eşiği kurulamaz;
+    // bu durumda en güçlü istasyonlar gösterilir.
     prisma.chargeStation.findMany({
-      where: { maxPowerKw: { gte: vehicle.dcChargeKw } },
+      where: vehicle.dcChargeKw != null ? { maxPowerKw: { gte: vehicle.dcChargeKw } } : {},
       take: 4,
       orderBy: { maxPowerKw: "desc" },
     }),
@@ -50,21 +56,25 @@ export default async function VehicleDetail({ params }: Props) {
   const energyCost = Math.round((yearlyKm / 100) * vehicle.consumption * 4.9);
   const iceCost = Math.round((yearlyKm / 100) * 400);
 
+  // Kaynağı olmayan teknik alanlar boş kalabilir; uydurma değer yerine "—".
+  const spec = (value: string | number | null | undefined, unit = "") =>
+    value == null || value === "" ? "—" : `${value}${unit}`;
+
   const SPECS: [string, string][] = [
     ["Segment", vehicle.segment],
     ["Kasa tipi", vehicle.bodyType],
     ["Model yılı", String(vehicle.year)],
-    ["Menzil (WLTP)", `${vehicle.rangeKm} km`],
+    ["Menzil", `${vehicle.rangeKm} km`],
     ["Batarya kapasitesi", `${vehicle.batteryKwh} kWh`],
     ["Motor gücü", `${vehicle.motorPowerKw} kW / ${vehicle.motorPowerHp} HP`],
     ["0-100 km/s", `${vehicle.acceleration} sn`],
     ["Azami hız", `${vehicle.topSpeed} km/s`],
-    ["DC şarj gücü", `${vehicle.dcChargeKw} kW`],
-    ["%10-80 şarj", `${vehicle.chargeMin} dakika`],
+    ["DC şarj gücü", spec(vehicle.dcChargeKw, " kW")],
+    ["%10-80 şarj", spec(vehicle.chargeMin, " dakika")],
     ["Tüketim", `${vehicle.consumption} kWh/100 km`],
-    ["Bagaj hacmi", `${vehicle.trunkLiter} litre`],
+    ["Bagaj hacmi", spec(vehicle.trunkLiter, " litre")],
     ["Çekiş", vehicle.driveType],
-    ["Batarya garantisi", vehicle.warranty],
+    ["Batarya garantisi", spec(vehicle.warranty)],
     ["ÖTV oranı", `%${vehicle.otvRate}`],
   ];
 
@@ -95,9 +105,12 @@ export default async function VehicleDetail({ params }: Props) {
 
         <div className="flex min-w-0 flex-1 flex-col gap-3 p-5">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded bg-volt px-2 py-1 text-[11px] font-black text-white">
-              ★ {vehicle.rating.toFixed(1)} / 5
-            </span>
+            {/* Editör puanı yalnızca gerçek bir inceleme yapıldıysa vardır. */}
+            {vehicle.rating != null && (
+              <span className="rounded bg-volt px-2 py-1 text-[11px] font-black text-white">
+                ★ {vehicle.rating.toFixed(1)} / 5
+              </span>
+            )}
             <span className="rounded bg-neutral-100 px-2 py-1 text-[11px] font-bold text-neutral-600">
               {vehicle.driveType}
             </span>
@@ -108,14 +121,20 @@ export default async function VehicleDetail({ params }: Props) {
             <span className="font-bold text-neutral-600">{vehicle.model}</span>
           </h1>
 
-          <p className="text-sm leading-relaxed text-neutral-600">
-            {vehicle.description}
-          </p>
+          {vehicle.description && (
+            <p className="text-sm leading-relaxed text-neutral-600">
+              {vehicle.description}
+            </p>
+          )}
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <KeySpec label="MENZİL" value={`${vehicle.rangeKm}`} unit="km" />
             <KeySpec label="BATARYA" value={`${vehicle.batteryKwh}`} unit="kWh" />
-            <KeySpec label="DC ŞARJ" value={`${vehicle.dcChargeKw}`} unit="kW" />
+            {vehicle.dcChargeKw != null ? (
+              <KeySpec label="DC ŞARJ" value={`${vehicle.dcChargeKw}`} unit="kW" />
+            ) : (
+              <KeySpec label="MOTOR" value={`${vehicle.motorPowerHp}`} unit="HP" />
+            )}
             <KeySpec label="0-100" value={`${vehicle.acceleration}`} unit="sn" />
           </div>
 
@@ -169,33 +188,54 @@ export default async function VehicleDetail({ params }: Props) {
               </tbody>
             </table>
           </div>
+
+          {/* Veri izlenebilirliği: okuyucu rakamın nereden geldiğini görsün. */}
+          {vehicle.priceSource && (
+            <p className="mt-2 text-[11px] leading-relaxed text-neutral-500">
+              Fiyat kaynağı: {vehicle.priceSource}
+              {vehicle.priceUpdatedAt && ` · ${formatDate(vehicle.priceUpdatedAt)} tarihinde doğrulandı`}
+              . Menzil ve tüketim değerleri gerçek kullanım ortalamalarıdır (EV Database).
+              Fiyatlar sık değişir; kesin bilgi için yetkili satıcıya danışın.
+            </p>
+          )}
         </section>
 
         <aside className="flex w-full shrink-0 flex-col gap-5 lg:w-[380px]">
-          <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-            <div className="bg-volt px-4 py-3 text-sm font-black text-white">
-              ARTILARI
+          {/* Artı/eksi listesi editör değerlendirmesidir; girilmediyse gösterilmez. */}
+          {(vehicle.pros.length > 0 || vehicle.cons.length > 0) && (
+            <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
+              {vehicle.pros.length > 0 && (
+                <>
+                  <div className="bg-volt px-4 py-3 text-sm font-black text-white">
+                    ARTILARI
+                  </div>
+                  <ul className="flex flex-col gap-2 p-4">
+                    {vehicle.pros.map((p) => (
+                      <li key={p} className="flex items-start gap-2 text-sm text-neutral-700">
+                        <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-volt" />
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+              {vehicle.cons.length > 0 && (
+                <>
+                  <div className="bg-evos px-4 py-3 text-sm font-black text-white">
+                    EKSİLERİ
+                  </div>
+                  <ul className="flex flex-col gap-2 p-4">
+                    {vehicle.cons.map((c) => (
+                      <li key={c} className="flex items-start gap-2 text-sm text-neutral-700">
+                        <IconClose className="mt-0.5 h-4 w-4 shrink-0 text-evos" />
+                        {c}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
-            <ul className="flex flex-col gap-2 p-4">
-              {vehicle.pros.map((p) => (
-                <li key={p} className="flex items-start gap-2 text-sm text-neutral-700">
-                  <IconCheck className="mt-0.5 h-4 w-4 shrink-0 text-volt" />
-                  {p}
-                </li>
-              ))}
-            </ul>
-            <div className="bg-evos px-4 py-3 text-sm font-black text-white">
-              EKSİLERİ
-            </div>
-            <ul className="flex flex-col gap-2 p-4">
-              {vehicle.cons.map((c) => (
-                <li key={c} className="flex items-start gap-2 text-sm text-neutral-700">
-                  <IconClose className="mt-0.5 h-4 w-4 shrink-0 text-evos" />
-                  {c}
-                </li>
-              ))}
-            </ul>
-          </div>
+          )}
 
           <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
             <div className="bg-amber-600 px-4 py-3 text-sm font-black text-white">
@@ -236,7 +276,8 @@ export default async function VehicleDetail({ params }: Props) {
                   {s.city} · {s.operator}
                 </span>
                 <span className="mt-1 w-fit rounded bg-volt/10 px-2 py-1 text-[11px] font-black text-volt-dark">
-                  {s.maxPowerKw} kW · {s.pricePerKwh.toFixed(2)} ₺/kWh
+                  {s.maxPowerKw != null ? `${s.maxPowerKw} kW` : "Güç bilinmiyor"}
+                  {s.pricePerKwh != null && ` · ${s.pricePerKwh.toFixed(2)} ₺/kWh`}
                 </span>
               </div>
             ))}

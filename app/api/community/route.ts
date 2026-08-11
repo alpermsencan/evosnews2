@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, num, ok, slugify } from "@/lib/api";
+import { touchCommunity } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -31,11 +32,12 @@ export async function POST(req: NextRequest) {
         slug,
         body: b.body.trim().slice(0, 2000),
         author: b.author.trim().slice(0, 40),
-        avatar: b.avatar || `https://picsum.photos/seed/${slug}/120/120`,
+        avatar: b.avatar || null,
         topic: b.topic || "Genel",
         isPinned: !!b.isPinned,
       },
     });
+    touchCommunity();
     return ok({ post }, 201);
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Gönderi eklenemedi", 500);

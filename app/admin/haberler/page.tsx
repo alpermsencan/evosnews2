@@ -41,6 +41,18 @@ export default async function AdminArticles() {
         >
           {a.category.name.toUpperCase()}
         </span>,
+        <span
+          key="s"
+          className={`rounded px-2 py-1 text-[10px] font-black text-white ${
+            a.status === "PUBLISHED"
+              ? "bg-volt"
+              : a.status === "DRAFT"
+                ? "bg-amber-500"
+                : "bg-neutral-400"
+          }`}
+        >
+          {a.status === "PUBLISHED" ? "YAYINDA" : a.status === "DRAFT" ? "TASLAK" : "REDDEDİLDİ"}
+        </span>,
         <span key="f" className="text-[11px] font-bold text-neutral-500">
           {flags || "—"}
         </span>,
@@ -69,7 +81,7 @@ export default async function AdminArticles() {
       <AdminTable
         endpoint="/api/articles"
         editBase="/admin/haberler"
-        columns={["BAŞLIK", "KATEGORİ", "ETİKET", "OKUNMA", "TARİH"]}
+        columns={["BAŞLIK", "KATEGORİ", "DURUM", "ETİKET", "OKUNMA", "TARİH"]}
         rows={rows}
       />
     </div>

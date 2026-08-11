@@ -61,9 +61,6 @@ export const POST_SELECT = {
   vehicle: {
     select: { id: true, brand: true, model: true, slug: true, image: true, price: true },
   },
-  listing: {
-    select: { id: true, title: true, slug: true, image: true, price: true, city: true },
-  },
 } as const;
 
 type RawPost = Awaited<

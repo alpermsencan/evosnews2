@@ -10,7 +10,6 @@ import {
   IconClose,
   IconLayers,
   IconMenu,
-  IconStore,
   IconUsers,
   IconTag,
 } from "@/components/ui/Icons";
@@ -18,6 +17,8 @@ import {
 const NAV = [
   { href: "/admin", label: "Gösterge Paneli", Icon: IconChart },
   { href: "/admin/haberler", label: "Haberler", Icon: IconLayers },
+  { href: "/admin/kuyruk", label: "Moderasyon Kuyruğu", Icon: IconLayers },
+  { href: "/admin/kaynaklar", label: "Veri Kaynakları", Icon: IconBolt },
   { href: "/admin/kategoriler", label: "Kategoriler", Icon: IconTag },
   { href: "/admin/yazarlar", label: "Yazarlar", Icon: IconUsers },
   { href: "/admin/uyeler", label: "Üyeler", Icon: IconUsers },
@@ -25,7 +26,6 @@ const NAV = [
   { href: "/admin/gonderiler", label: "Gönderiler & Reels", Icon: IconLayers },
   { href: "/admin/araclar", label: "Araçlar", Icon: IconCar },
   { href: "/admin/istasyonlar", label: "Şarj İstasyonları", Icon: IconBolt },
-  { href: "/admin/ilanlar", label: "Market İlanları", Icon: IconStore },
   { href: "/admin/topluluk", label: "Topluluk", Icon: IconUsers },
   { href: "/admin/gosterge", label: "Veri Şeridi", Icon: IconChart },
   { href: "/admin/aboneler", label: "Bülten Aboneleri", Icon: IconUsers },

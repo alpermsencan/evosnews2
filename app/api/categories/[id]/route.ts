@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok, slugify } from "@/lib/api";
+import { touchCategories } from "@/lib/revalidate";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
         ...(body.href !== undefined && { href: body.href }),
       },
     });
+    touchCategories();
     return ok({ category });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Güncellenemedi", 500);
@@ -38,6 +40,7 @@ export async function DELETE(_req: NextRequest, { params }: Ctx) {
         409
       );
     await prisma.category.delete({ where: { id } });
+    touchCategories();
     return ok({ success: true });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Silinemedi", 500);

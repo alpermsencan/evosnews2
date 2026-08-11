@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { searchArticles } from "@/lib/queries";
 import NewsCard from "@/components/news/NewsCard";
 import VehicleCard from "@/components/vehicles/VehicleCard";
-import ListingCard from "@/components/market/ListingCard";
 import SectionTitle from "@/components/news/SectionTitle";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +16,7 @@ export default async function SearchPage({
   const { q = "" } = await searchParams;
   const query = q.trim();
 
-  const [articles, vehicles, listings, stations] = query
+  const [articles, vehicles, stations] = query
     ? await Promise.all([
         searchArticles(query),
         prisma.vehicle.findMany({
@@ -25,16 +24,6 @@ export default async function SearchPage({
             OR: [
               { brand: { contains: query, mode: "insensitive" } },
               { model: { contains: query, mode: "insensitive" } },
-            ],
-          },
-          take: 8,
-        }),
-        prisma.listing.findMany({
-          where: {
-            OR: [
-              { title: { contains: query, mode: "insensitive" } },
-              { brand: { contains: query, mode: "insensitive" } },
-              { city: { contains: query, mode: "insensitive" } },
             ],
           },
           take: 8,
@@ -50,10 +39,10 @@ export default async function SearchPage({
           take: 6,
         }),
       ])
-    : [[], [], [], []];
+    : [[], [], []];
 
   const totalCount =
-    articles.length + vehicles.length + listings.length + stations.length;
+    articles.length + vehicles.length + stations.length;
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
@@ -104,17 +93,6 @@ export default async function SearchPage({
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {vehicles.map((v) => (
               <VehicleCard key={v.id} vehicle={v} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {listings.length > 0 && (
-        <section>
-          <SectionTitle title={`İLANLAR (${listings.length})`} color="#be123c" href="/marketplace" />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {listings.map((l) => (
-              <ListingCard key={l.id} listing={l} />
             ))}
           </div>
         </section>

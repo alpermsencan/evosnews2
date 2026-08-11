@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400" role="img" aria-label="Araç görseli henüz yüklenmedi">
+  <rect width="640" height="400" fill="#f1f5f9"/>
+  <g fill="none" stroke="#94a3b8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M148 236h344M170 236l26-64a26 26 0 0 1 24-16h200a26 26 0 0 1 24 16l26 64"/>
+    <path d="M148 236v40a12 12 0 0 0 12 12h20a12 12 0 0 0 12-12v-12M492 264v12a12 12 0 0 0 12 12h20a12 12 0 0 0 12-12v-40"/>
+  </g>
+  <circle cx="212" cy="264" r="24" fill="none" stroke="#94a3b8" stroke-width="10"/>
+  <circle cx="428" cy="264" r="24" fill="none" stroke="#94a3b8" stroke-width="10"/>
+  <text x="320" y="342" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="20" font-weight="600" fill="#94a3b8" text-anchor="middle">Görsel yüklenmedi</text>
+</svg>

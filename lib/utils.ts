@@ -43,6 +43,19 @@ const DAYS = [
   "Cumartesi",
 ];
 
+/**
+ * Tarihe normalize eder.
+ *
+ * DİKKAT: `lib/queries.ts` sorguları `unstable_cache` ile önbelleklenir ve
+ * önbellekten dönen değerler JSON'a serileştirilmiştir — yani `Date` alanları
+ * ilk çağrıda Date, sonraki çağrılarda string olarak gelir. Önbellekli veri
+ * üzerinde doğrudan `.getTime()` / `.toISOString()` çağırmayın; önce bundan
+ * geçirin.
+ */
+export function toDate(value: Date | string): Date {
+  return value instanceof Date ? value : new Date(value);
+}
+
 export function formatDate(date: Date | string, withTime = true) {
   const d = typeof date === "string" ? new Date(date) : date;
   const base = `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;

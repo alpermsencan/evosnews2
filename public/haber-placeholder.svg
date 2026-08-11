@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Görsel bekleniyor">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f5f5f5"/>
+      <stop offset="1" stop-color="#e5e5e5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <g transform="translate(600 310)" fill="none" stroke="#d4d4d4" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-46-62 6-62 -14-8 46-8 -20 70 -2 8 -46 8Z" fill="#d4d4d4" stroke="none"/>
+  </g>
+  <text x="600" y="452" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="30" font-weight="700" fill="#a3a3a3">
+    Görsel bekleniyor
+  </text>
+  <text x="600" y="494" text-anchor="middle" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="21" fill="#bdbdbd">
+    Taslak yayına alınmadan önce görsel eklenecek
+  </text>
+</svg>

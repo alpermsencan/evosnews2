@@ -41,6 +41,7 @@ export default async function EditVehiclePage({
           consumption: v.consumption,
           trunkLiter: v.trunkLiter,
           driveType: v.driveType,
+          warranty: v.warranty,
           rating: v.rating,
           image: v.image,
           isFeatured: v.isFeatured,

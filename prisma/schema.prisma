@@ -40,55 +40,80 @@ model Author {
 }
 
 model Article {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
-  slug        String    @unique
+  slug        String   @unique
   spot        String
   content     String
   image       String
   imageCredit String?
-  gallery     String[]  @default([])
-  tags        String[]  @default([])
-  categoryId  String    @db.ObjectId
-  category    Category  @relation(fields: [categoryId], references: [id])
-  authorId    String?   @db.ObjectId
-  author      Author?   @relation(fields: [authorId], references: [id])
-  isFeatured  Boolean   @default(false)
-  isBreaking  Boolean   @default(false)
-  isHeadline  Boolean   @default(false)
-  isVideo     Boolean   @default(false)
-  views       Int       @default(0)
-  readTime    Int       @default(3)
-  publishedAt DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  comments    Comment[]
-  likes       ArticleLike[]
-  bookmarks   Bookmark[]
-  posts       Post[]
+  gallery     String[] @default([])
+  tags        String[] @default([])
+  categoryId  String   @db.ObjectId
+  category    Category @relation(fields: [categoryId], references: [id])
+  authorId    String?  @db.ObjectId
+  author      Author?  @relation(fields: [authorId], references: [id])
+  isFeatured  Boolean  @default(false)
+  isBreaking  Boolean  @default(false)
+  isHeadline  Boolean  @default(false)
+  isVideo     Boolean  @default(false)
+  views       Int      @default(0)
+  readTime    Int      @default(3)
+  publishedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // --- Yayın durumu ve kaynak izlenebilirliği (ingest) ---
+  // status: DRAFT (moderasyon kuyruğunda) | PUBLISHED (yayında) | REJECTED (reddedildi)
+  status      String    @default("PUBLISHED")
+  sourceName  String? // "Kaynak Adı" — agregatörde zorunlu atıf
+  sourceUrl   String? // orijinal habere kanonik link
+  externalId  String? // kaynaktaki benzersiz kimlik (RSS guid)
+  contentHash String? // içerik değişti mi tespiti için
+  ingestedAt  DateTime? // otomatik çekildiği an (elle girilenlerde null)
+
+  // --- Yeniden yazım (telif güvenliği) ---
+  // Metin kaynaktan kopyalanmaz; LLM ile sıfırdan yeniden yazılır. Yalnızca
+  // rewrittenAt dolu olan otomatik haberler yayına çıkabilir.
+  rewrittenAt     DateTime?
+  rewriteModel    String?
+  rewriteAttempts Int       @default(0)
+  rewriteError    String?
+
+  comments  Comment[]
+  likes     ArticleLike[]
+  bookmarks Bookmark[]
+  posts     Post[]
 
   @@index([categoryId, publishedAt])
   @@index([publishedAt])
   @@index([views])
+  @@index([status, publishedAt])
+  @@index([externalId])
+  @@index([contentHash])
+  // Yeniden yazım kuyruğu: henüz yazılmamış taslakları sıraya almak için.
+  @@index([sourceName, rewrittenAt, rewriteAttempts])
+  // Arşiv temizliği: 30 günden eski otomatik haberleri bulmak için.
+  @@index([ingestedAt])
 }
 
 model Comment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  articleId String   @db.ObjectId
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  articleId String    @db.ObjectId
+  article   Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
   // Üyelik öncesi yorumlarda userId boştur, name alanı kullanılır
-  userId    String?  @db.ObjectId
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?   @db.ObjectId
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   body      String
-  likes     Int      @default(0)
-  approved  Boolean  @default(true)
+  likes     Int       @default(0)
+  approved  Boolean   @default(true)
   // Yanıt zinciri: üst yorumun id'si
-  parentId  String?  @db.ObjectId
-  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId  String?   @db.ObjectId
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   replies   Comment[] @relation("CommentReplies")
 
   commentLikes CommentLike[]
-  createdAt DateTime @default(now())
+  createdAt    DateTime      @default(now())
 
   @@index([articleId, createdAt])
   @@index([userId, createdAt])
@@ -313,22 +338,34 @@ model Vehicle {
   motorPowerHp Int
   acceleration Float
   topSpeed     Int
-  dcChargeKw   Int
-  chargeMin    Int
   consumption  Float
-  trunkLiter   Int
   driveType    String   @default("RWD")
-  warranty     String   @default("8 yıl / 160.000 km")
   isFeatured   Boolean  @default(false)
-  rating       Float    @default(4.5)
   pros         String[] @default([])
   cons         String[] @default([])
   description  String   @default("")
+
+  // --- Doğrulanabilir bir kaynağı olmayan alanlar ---
+  // Bu değerler için ücretsiz ve güvenilir bir toplu veri kaynağı yok; uydurmak
+  // yerine boş bırakılır ve /admin/araclar üzerinden operatör doldurur.
+  // Arayüz boş değerleri "—" olarak gösterir, hesaplamalarda atlar.
+  dcChargeKw Int?
+  chargeMin  Int?
+  trunkLiter Int?
+  warranty   String?
+  /// Editör puanı. Otomatik atanmaz; yalnızca gerçek bir inceleme yapıldıysa dolar.
+  rating     Float?
   createdAt    DateTime @default(now())
   posts        Post[]
 
+  // --- Kaynak izlenebilirliği ---
+  externalId     String?
+  priceSource    String? // fiyatın alındığı kaynak (marka listesi / elle)
+  priceUpdatedAt DateTime? // fiyat ne zaman doğrulandı
+
   @@index([brand])
   @@index([price])
+  @@index([externalId])
 }
 
 model ChargeStation {
@@ -342,17 +379,29 @@ model ChargeStation {
   lat         Float
   lng         Float
   socketCount Int
-  maxPowerKw  Int
   socketTypes String[] @default([])
-  pricePerKwh Float
   isFast      Boolean  @default(false)
-  is24h       Boolean  @default(true)
   amenities   String[] @default([])
   status      String   @default("aktif")
   createdAt   DateTime @default(now())
 
+  // --- Kaynakta her zaman bulunmayan alanlar ---
+  // Open Charge Map kayıtlarının bir kısmında güç bilgisi yok; tarife ve
+  // 7/24 bilgisi ise OCM'de hiç tutulmaz. Uydurmak yerine boş bırakılır,
+  // arayüz "—" gösterir ve ortalamalara dâhil etmez. Operatör /admin/istasyonlar
+  // üzerinden doldurabilir.
+  maxPowerKw  Int?
+  pricePerKwh Float?
+  is24h       Boolean?
+
+  // --- Kaynak izlenebilirliği ---
+  source     String? // "openchargemap" | "manuel"
+  externalId String? // OCM POI ID
+  fetchedAt  DateTime?
+
   @@index([city])
   @@index([operator])
+  @@index([externalId])
 }
 
 model Listing {
@@ -407,33 +456,59 @@ model Ticker {
   changePct Float    @default(0)
   order     Int      @default(0)
   updatedAt DateTime @updatedAt
+
+  // --- Kaynak izlenebilirliği ---
+  key       String? // "usd" | "eur" | "brent" — otomatik güncellenenler için sabit anahtar
+  source    String? // "tcmb" | "manuel"
+  fetchedAt DateTime?
+
+  @@index([key])
 }
 
+/**
+ * Aylık pazar anlık görüntüsü.
+ *
+ * `avgEvPrice`, `avgRangeKm` ve `modelCount` her ay kataloğun gerçek
+ * içeriğinden hesaplanır (bkz. lib/ingest/sources/price-index.ts).
+ * Kalan alanlar için ücretsiz ve güvenilir bir veri kaynağı bulunmadığından
+ * boş bırakılır; operatör doğrulanmış değer girerse dolar, girmezse arayüz
+ * ilgili grafiği hiç göstermez.
+ */
 model PriceIndex {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  month        String
-  order        Int
-  avgEvPrice   Int
-  avgIcePrice  Int
-  acChargeCost Float
-  dcChargeCost Float
-  fuelCost     Float
-  batteryUsd   Int
-  evShare      Float
-  createdAt    DateTime @default(now())
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  /// "2026-08" — ay başına tek kayıt.
+  period     String   @unique
+  month      String
+  order      Int
+  avgEvPrice Int
+  avgRangeKm Int      @default(0)
+  modelCount Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  // --- Doğrulanmış kaynağı olmayan, operatörün girebileceği alanlar ---
+  avgIcePrice  Int?
+  acChargeCost Float?
+  dcChargeCost Float?
+  fuelCost     Float?
+  batteryUsd   Int?
+  evShare      Float?
+
+  // --- Kaynak izlenebilirliği ---
+  source    String? // "katalog" (türetilmiş) | "manuel"
+  fetchedAt DateTime?
 
   @@index([order])
 }
 
 model OtvBracket {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  label       String
-  motorMaxKw  Int
-  priceMin    Int
-  priceMax    Int
-  rate        Int
-  order       Int      @default(0)
-  note        String?
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  label      String
+  motorMaxKw Int
+  priceMin   Int
+  priceMax   Int
+  rate       Int
+  order      Int     @default(0)
+  note       String?
 }
 
 model Poll {
@@ -462,4 +537,55 @@ model Lead {
   message   String
   status    String   @default("yeni")
   createdAt DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// VERİ KAYNAKLARI — otomatik içerik/veri akışının kaydı ve izlenebilirliği
+// ---------------------------------------------------------------------------
+
+model DataSource {
+  /// Dış kaynak tanımı. Cron bu tabloyu okuyup hangi kaynağın çalışacağına karar verir.
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  key         String      @unique // "tcmb" | "openchargemap" | "news:otomobil"
+  name        String
+  kind        String // news | stations | fx | prices
+  endpoint    String?
+  /// Haber kaynakları için: çekilen içeriğin düşeceği kategori slug'ı.
+  categorySlug String?
+  /// Konu filtresi: doluysa yalnızca bu kelimeleri içeren başlıklar kuyruğa girer.
+  /// Genel teknoloji beslemelerinden yalnızca elektrikli araç haberlerini ayıklar.
+  keywords     String[] @default([])
+  attribution String? // yayında gösterilecek atıf metni
+  schedule    String      @default("") // bilgi amaçlı cron ifadesi
+  isActive    Boolean     @default(true)
+  autoPublish Boolean     @default(false) // false ise kayıtlar DRAFT olarak düşer
+  lastRunAt   DateTime?
+  lastOkAt    DateTime?
+  lastError   String?
+  runs        IngestRun[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([kind, isActive])
+}
+
+model IngestRun {
+  /// Her cron çalışmasının sonucu. Panelde "veri ne kadar taze" göstergesini besler.
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  sourceKey  String
+  sourceId   String?     @db.ObjectId
+  source     DataSource? @relation(fields: [sourceId], references: [id])
+  status     String // ok | partial | error
+  fetched    Int         @default(0)
+  created    Int         @default(0)
+  updated    Int         @default(0)
+  skipped    Int         @default(0)
+  failed     Int         @default(0)
+  durationMs Int         @default(0)
+  error      String?
+  startedAt  DateTime    @default(now())
+  finishedAt DateTime?
+
+  @@index([sourceKey, startedAt])
+  @@index([startedAt])
 }

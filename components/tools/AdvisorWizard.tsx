@@ -15,11 +15,12 @@ type Result = {
   price: number;
   rangeKm: number;
   batteryKwh: number;
-  dcChargeKw: number;
   acceleration: number;
   consumption: number;
   segment: string;
-  rating: number;
+  /** Veri girilmediyse boş gelir; arayüzde ilgili rozet gösterilmez. */
+  dcChargeKw: number | null;
+  rating: number | null;
   score: number;
   costs: {
     yearlyEnergyCost: number;
@@ -234,7 +235,7 @@ export default function AdvisorWizard({ bodyTypes }: { bodyTypes: string[] }) {
                 <div className="flex flex-wrap gap-2">
                   <Chip>{r.segment}</Chip>
                   <Chip>{r.rangeKm} km menzil</Chip>
-                  <Chip>{r.dcChargeKw} kW DC</Chip>
+                  {r.dcChargeKw != null && <Chip>{r.dcChargeKw} kW DC</Chip>}
                   <Chip>{r.consumption} kWh/100km</Chip>
                   <Chip>0-100: {r.acceleration}s</Chip>
                 </div>
