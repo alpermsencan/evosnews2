@@ -31,6 +31,8 @@ const MEMBER_FOLDERS: Record<string, string> = {
   avatar: "evos/avatarlar",
   post: "evos/gonderiler",
   reel: "evos/reels",
+  // Üye kendi ilanının görselini yükler; ilan zaten moderasyondan geçiyor.
+  listing: "evos/ilanlar",
 };
 
 function isAdmin(req: NextRequest) {
@@ -82,7 +84,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Üyeler gönderi görsellerinde en fazla 4 dosya yükleyebilir
-    const maxFiles = admin ? 20 : purpose === "post" ? 4 : 1;
+    const maxFiles = admin ? 20 : purpose === "post" ? 4 : purpose === "listing" ? 6 : 1;
     if (files.length > maxFiles)
       return fail(`Aynı anda en fazla ${maxFiles} dosya yükleyebilirsiniz`);
 

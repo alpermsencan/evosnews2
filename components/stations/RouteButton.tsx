@@ -100,9 +100,12 @@ export default function RouteButton({
 
       const res = await fetch(`/api/route-to?${params}`);
       const json = await res.json();
-      if (!res.ok || !json?.data) throw new Error(json?.error ?? "Rota alınamadı");
+      // Uç nokta rotayı ÜST SEVİYEDE döndürür ({mode, distanceKm, ...}),
+      // `data` sarmalayıcısı içinde değil. Hata durumunda gövde {error} olur.
+      if (!res.ok) throw new Error(json?.error ?? "Rota alınamadı");
+      if (!json?.geometry?.length) throw new Error("Rota verisi eksik döndü");
 
-      setState({ status: "done", data: json.data as RouteData });
+      setState({ status: "done", data: json as RouteData });
     } catch (e) {
       const message =
         e instanceof GeolocationPositionError || (e as { code?: number })?.code === 1

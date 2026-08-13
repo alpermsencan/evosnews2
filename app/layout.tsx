@@ -7,6 +7,8 @@ import TickerBar from "@/components/layout/TickerBar";
 import BreakingBar from "@/components/layout/BreakingBar";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import SessionProvider from "@/components/user/SessionProvider";
+import CompareProvider from "@/components/compare/CompareProvider";
+import CompareBar from "@/components/compare/CompareBar";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getBreakingBar, getTickers } from "@/lib/queries";
@@ -84,9 +86,14 @@ export default async function RootLayout({
           <Header />
           <BreakingBar items={breaking} />
           <TickerBar items={tickers} />
-          <main className="mx-auto w-full max-w-[1280px] flex-1 px-0 pb-16 sm:px-4 lg:pb-8">
-            {children}
-          </main>
+          {/* Karşılaştırma sepeti sayfalar arasında yaşar, bu yüzden sağlayıcı
+              kökte durur; çubuk yalnızca sepette öğe varken render edilir. */}
+          <CompareProvider>
+            <main className="mx-auto w-full max-w-[1280px] flex-1 px-0 pb-16 sm:px-4 lg:pb-8">
+              {children}
+            </main>
+            <CompareBar />
+          </CompareProvider>
           <Footer />
           <MobileBottomNav />
         </SessionProvider>

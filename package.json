@@ -11,7 +11,8 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:purge-seed": "node --env-file=.env prisma/purge-seed.mjs",
-    "db:vehicles": "node --env-file=.env prisma/import-vehicles.mjs"
+    "db:vehicles": "node --env-file=.env prisma/import-vehicles.mjs",
+    "db:tariffs": "node --env-file=.env prisma/import-tariffs.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

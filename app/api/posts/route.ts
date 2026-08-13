@@ -17,11 +17,12 @@ export const runtime = "nodejs";
 
 const MAX_BODY = 2000;
 const MAX_IMAGES = 4;
-const SCOPES: FeedScope[] = ["feed", "explore", "user", "article"];
+const SCOPES: FeedScope[] = ["feed", "explore", "user", "article", "vehicle"];
 
 /**
  * GET /api/posts
- * ?scope=feed|explore|user|article &kind=text|reel &username= &articleId=
+ * ?scope=feed|explore|user|article|vehicle &kind=text|reel &username=
+ * &articleId= &vehicleId=
  * &before=<ISO tarih> &limit=
  */
 export async function GET(req: NextRequest) {
@@ -53,6 +54,7 @@ export async function GET(req: NextRequest) {
     kind,
     authorId,
     articleId: sp.get("articleId") ?? undefined,
+    vehicleId: sp.get("vehicleId") ?? undefined,
     before: sp.get("before"),
     limit: num(sp.get("limit"), 12),
   });

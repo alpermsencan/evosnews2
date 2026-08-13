@@ -7,7 +7,10 @@ import SectionTitle from "@/components/news/SectionTitle";
 import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
 import RouteButton from "@/components/stations/RouteButton";
-import { IconBolt, IconClock, IconMap } from "@/components/ui/Icons";
+import NearbyStations from "@/components/stations/NearbyStations";
+import StationMap from "@/components/stations/StationMap";
+import { IconBolt, IconChevronRight, IconClock, IconMap } from "@/components/ui/Icons";
+import { buildTariffIndex, formatTariff, matchTariff } from "@/lib/tariffs";
 
 // Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
 // render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
@@ -32,7 +35,7 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
   const minGuc = Number(sp.minGuc);
   if (minGuc > 0) where.maxPowerKw = { gte: minGuc };
 
-  const [stations, cities, operators, agg, fastCount, news] = await Promise.all([
+  const [stations, cities, operators, agg, fastCount, news, tariffs] = await Promise.all([
     prisma.chargeStation.findMany({ where, orderBy: [{ maxPowerKw: "desc" }, { city: "asc" }] }),
     prisma.chargeStation.findMany({ select: { city: true }, distinct: ["city"], orderBy: { city: "asc" } }),
     prisma.chargeStation.findMany({ select: { operator: true }, distinct: ["operator"], orderBy: { operator: "asc" } }),
@@ -43,14 +46,27 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
     }),
     prisma.chargeStation.count({ where: { isFast: true } }),
     getByCategory("sarj-agi", 4),
+    prisma.operatorTariff.findMany({ where: { isActive: true } }),
   ]);
 
-  // Operatör özeti. Tarife OCM verisinde yer almaz; yalnızca operatörün
-  // panelden girdiği doğrulanmış fiyatlar ortalamaya katılır, girilmemişse
-  // sütun "—" gösterir.
+  // Operatör özeti.
+  //
+  // Tarife OCM verisinde YER ALMAZ; fiyat iki yerden gelebilir: istasyona özel
+  // olarak panelden girilen `pricePerKwh` ya da operatörün ilan ettiği tarife
+  // (`OperatorTariff`, bkz. /sarj-fiyatlari). İstasyona özel fiyat önceliklidir;
+  // ikisi de yoksa sütun "—" gösterir — tahmini bir sayı yazılmaz.
+  const tariffIndex = buildTariffIndex(tariffs);
+
   const byOperator = new Map<
     string,
-    { count: number; sockets: number; priceSum: number; priced: number; maxKw: number | null }
+    {
+      count: number;
+      sockets: number;
+      priceSum: number;
+      priced: number;
+      maxKw: number | null;
+      tariff: (typeof tariffs)[number] | null;
+    }
   >();
   const all = await prisma.chargeStation.findMany();
   for (const s of all) {
@@ -60,6 +76,7 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
       priceSum: 0,
       priced: 0,
       maxKw: null as number | null,
+      tariff: matchTariff(tariffIndex, s.operator),
     };
     cur.count += 1;
     cur.sockets += s.socketCount;
@@ -79,6 +96,27 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
   }
   const topCities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
   const maxCity = topCities[0]?.[1] ?? 1;
+
+  // "Yakınımdaki istasyonlar" sıralaması tarayıcıda yapılır (konum sunucuya
+  // gitmez), bu yüzden liste istemciye taşınır. Yalnızca sıralama ve kartta
+  // görünen alanlar gönderilir — tüm kaydı serileştirmek gereksiz yük olurdu.
+  const nearbyStations = all.map((s) => {
+    const tariff = matchTariff(tariffIndex, s.operator);
+    return {
+      id: s.id,
+      name: s.name,
+      operator: s.operator,
+      city: s.city,
+      district: s.district,
+      lat: s.lat,
+      lng: s.lng,
+      socketCount: s.socketCount,
+      maxPowerKw: s.maxPowerKw,
+      isFast: s.isFast,
+      // İstasyona özel doğrulanmış fiyat yoksa operatörün ilan ettiği DC tarifesi.
+      price: s.pricePerKwh ?? tariff?.dcPrice ?? null,
+    };
+  });
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
@@ -102,6 +140,10 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
           />
         </div>
       </header>
+
+      <StationMap stations={nearbyStations} />
+
+      <NearbyStations stations={nearbyStations} />
 
       <Suspense fallback={<div className="h-16 rounded-lg bg-white" />}>
         <FilterBar
@@ -194,16 +236,22 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
       {/* OPERATÖR TARİFE TABLOSU + İL DAĞILIMI */}
       <div className="flex flex-col gap-5 lg:flex-row">
         <section className="min-w-0 flex-1">
-          <SectionTitle title="OPERATÖR TARİFE KARŞILAŞTIRMASI" color="#15803d" />
+          <SectionTitle
+            title="OPERATÖR TARİFE KARŞILAŞTIRMASI"
+            href="/sarj-fiyatlari"
+            color="#15803d"
+            subtitle="Tarifeler operatörlerin ilan ettiği KDV dâhil ₺/kWh fiyatlarıdır"
+          />
           <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-            <table className="w-full min-w-[520px] text-left text-sm">
+            <table className="w-full min-w-[600px] text-left text-sm">
               <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
                 <tr>
                   <th className="px-4 py-3">OPERATÖR</th>
                   <th className="px-4 py-3">İSTASYON</th>
                   <th className="px-4 py-3">SOKET</th>
                   <th className="px-4 py-3">MAKS. GÜÇ</th>
-                  <th className="px-4 py-3 text-right">ORT. TARİFE</th>
+                  <th className="px-4 py-3 text-right">AC</th>
+                  <th className="px-4 py-3 text-right">DC</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-100">
@@ -217,14 +265,32 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
                       <td className="px-4 py-3 font-semibold text-volt-dark">
                         {d.maxKw != null ? `${d.maxKw} kW` : "—"}
                       </td>
-                      <td className="px-4 py-3 text-right font-black text-neutral-900">
-                        {d.priced > 0 ? `${(d.priceSum / d.priced).toFixed(2)} ₺` : "—"}
+                      <td className="whitespace-nowrap px-4 py-3 text-right font-black text-neutral-900">
+                        {d.tariff
+                          ? formatTariff(d.tariff.acPrice, d.tariff.acPriceMax)
+                          : "—"}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-right font-black text-neutral-900">
+                        {/* İstasyona özel doğrulanmış fiyat, operatör liste
+                            tarifesini yener. */}
+                        {d.priced > 0
+                          ? `${(d.priceSum / d.priced).toFixed(2)} ₺`
+                          : d.tariff
+                            ? formatTariff(d.tariff.dcPrice, d.tariff.dcPriceMax)
+                            : "—"}
                       </td>
                     </tr>
                   ))}
               </tbody>
             </table>
           </div>
+          <Link
+            href="/sarj-fiyatlari"
+            className="mt-3 flex items-center justify-center gap-1 rounded-lg border border-neutral-200 bg-white py-3 text-xs font-bold text-neutral-600 hover:text-volt-dark"
+          >
+            TÜM OPERATÖR TARİFELERİNİ KARŞILAŞTIR{" "}
+            <IconChevronRight className="h-3 w-3" />
+          </Link>
         </section>
 
         <aside className="w-full shrink-0 lg:w-[380px]">

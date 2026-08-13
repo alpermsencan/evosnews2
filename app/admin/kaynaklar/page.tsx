@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import SourcePanel, { type SourceRow } from "@/components/admin/SourcePanel";
+import FreshnessBoard from "@/components/admin/FreshnessBoard";
+import { checkFreshness } from "@/lib/freshness";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminSources() {
-  const [sources, runs] = await Promise.all([
+  const [sources, runs, health] = await Promise.all([
     prisma.dataSource.findMany({ orderBy: [{ kind: "asc" }, { key: "asc" }] }),
     prisma.ingestRun.findMany({ orderBy: { startedAt: "desc" }, take: 200 }),
+    // Beslemesi olmayan veri kümeleri (araç kataloğu, tarifeler) buradaki
+    // kaynak listesinde görünmez; tazelikleri ayrıca denetlenir.
+    checkFreshness(),
   ]);
 
   const recentRuns = runs.slice(0, 20);
@@ -58,6 +63,8 @@ export default async function AdminSources() {
           elle de çalıştırabilirsiniz.
         </p>
       </div>
+
+      <FreshnessBoard report={health} />
 
       <SourcePanel sources={rows} />
 

@@ -19,7 +19,7 @@ export async function uploadToCloudinary(
  */
 export async function uploadMemberImages(
   files: File[],
-  purpose: "avatar" | "post" = "post"
+  purpose: "avatar" | "post" | "listing" = "post"
 ): Promise<string[]> {
   const fd = new FormData();
   for (const f of files) fd.append("files", f);

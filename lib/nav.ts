@@ -18,8 +18,12 @@ export const TOP_NAV: NavItem[] = [
   { label: "HABER MERKEZİ", href: "/kategori/haber-merkezi" },
   { label: "ARAÇ MERKEZİ", href: "/arac-merkezi" },
   { label: "ARAÇLARI KEŞFET", href: "/araclar" },
+  { label: "İLANLAR", href: "/ilanlar" },
+  { label: "KARŞILAŞTIR", href: "/karsilastir" },
   { label: "ŞARJ AĞI", href: "/sarj-agi" },
+  { label: "ŞARJ FİYATLARI", href: "/sarj-fiyatlari" },
   { label: "FİYAT ANALİZİ", href: "/fiyat-analizi" },
+  { label: "FİNANSMAN", href: "/finansman" },
   { label: "ÖTV REHBERİ", href: "/otv-rehberi" },
   { label: "DİJİTAL GARAJ", href: "/dijital-garaj" },
   { label: "TOPLULUK", href: "/topluluk" },
@@ -68,9 +72,26 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
         desc: "20+ elektrikli model, teknik veri ve karşılaştırma",
       },
       {
+        label: "İlanlar",
+        href: "/ilanlar",
+        desc: "Sıfır ve ikinci el ilanlar, batarya raporu ve VoltScore ile",
+        badge: "YENİ",
+      },
+      {
+        label: "Karşılaştır",
+        href: "/karsilastir",
+        desc: "Sıfır modelleri ve ikinci el ilanları yan yana inceleyin",
+      },
+      {
         label: "Şarj Ağını Göster",
         href: "/sarj-agi",
-        desc: "Türkiye genelinde istasyon haritası ve tarifeler",
+        desc: "Türkiye genelinde istasyon envanteri ve rota",
+      },
+      {
+        label: "Şarj Fiyatları",
+        href: "/sarj-fiyatlari",
+        desc: "Operatör tarifeleri: AC, DC ve ultra hızlı ₺/kWh karşılaştırması",
+        badge: "YENİ",
       },
       {
         label: "Platformu İncele",
@@ -99,6 +120,9 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
     title: "HİZMETLER",
     items: [
       { label: "ÖTV Rehberi", href: "/otv-rehberi" },
+      { label: "Şarj Fiyatları", href: "/sarj-fiyatlari" },
+      { label: "Batarya Raporu", href: "/batarya-raporu" },
+      { label: "Finansman", href: "/finansman" },
       { label: "Fiyat Analizi", href: "/fiyat-analizi" },
       { label: "Evos Protect", href: "/evos-protect" },
       { label: "Evos Charge Network", href: "/sarj-agi" },
@@ -113,7 +137,9 @@ export const QUICK_LINKS: NavItem[] = [
   { label: "Akışım", href: "/akis" },
   { label: "Reels", href: "/reels" },
   { label: "Araç Bul", href: "/araclar" },
+  { label: "İlanlar", href: "/ilanlar" },
   { label: "Şarj Bul", href: "/sarj-agi" },
+  { label: "Şarj Fiyatı", href: "/sarj-fiyatlari" },
   { label: "ÖTV Hesapla", href: "/otv-rehberi" },
 ];
 
@@ -132,6 +158,7 @@ export const FOOTER_GROUPS: NavGroup[] = [
     title: "ÜRÜNLER",
     items: [
       { label: "Evos Charge Network", href: "/sarj-agi" },
+      { label: "Şarj Fiyatları", href: "/sarj-fiyatlari" },
       { label: "Evos Protect", href: "/evos-protect" },
       { label: "Dijital Garaj", href: "/dijital-garaj" },
       { label: "AI Danışman", href: "/ai-danisman" },
@@ -141,6 +168,8 @@ export const FOOTER_GROUPS: NavGroup[] = [
     title: "ARAÇLAR",
     items: [
       { label: "Araçları Keşfet", href: "/araclar" },
+      { label: "İlanlar", href: "/ilanlar" },
+      { label: "Karşılaştır", href: "/karsilastir" },
       { label: "Araç Merkezi", href: "/arac-merkezi" },
       { label: "ÖTV Hesaplama", href: "/otv-rehberi" },
       { label: "Platform", href: "/platform" },
@@ -158,11 +187,11 @@ export const FOOTER_GROUPS: NavGroup[] = [
   {
     title: "KURUMSAL",
     items: [
-      { label: "Hakkımızda", href: "/platform" },
-      { label: "İletişim", href: "/platform#iletisim" },
+      { label: "Hakkımızda", href: "/hakkinda" },
+      { label: "İletişim", href: "/iletisim" },
+      { label: "Evos Pro", href: "/pro" },
+      { label: "Platform", href: "/platform" },
       { label: "Yönetim Paneli", href: "/admin" },
-      { label: "Gizlilik", href: "/platform" },
-      { label: "Künye", href: "/platform" },
     ],
   },
 ];

@@ -5,6 +5,7 @@ import { fetchText } from "../http";
 import { dateOf, extractBlocks, linkOf, stripHtml, tagAttr, tagText } from "../xml";
 import { fetchSourcePage, rewriteArticle, rewriteEnabled } from "../rewrite";
 import { matchesTopic } from "../topic";
+import { routeCategory } from "../route-category";
 import { emptyStats, type IngestContext, type IngestResult, type SourceJob } from "../types";
 
 /**
@@ -77,6 +78,12 @@ function feedImage(item: string): string | null {
   return null;
 }
 
+/** Kategori slug'ı → id. Yönlendirme her iki aşamada da bunu kullanır. */
+async function categorySlugIndex() {
+  const categories = await prisma.category.findMany({ select: { id: true, slug: true } });
+  return new Map(categories.map((c) => [c.slug, c.id]));
+}
+
 /** AŞAMA 1 — beslemeyi oku, yeni başlıkları taslak olarak kuyruğa al. */
 async function collect(
   { source, limit }: IngestContext,
@@ -96,6 +103,10 @@ async function collect(
         : "Veritabanında hiç kategori yok",
     );
   }
+
+  // Konu bazlı yönlendirme için slug → id tablosu. Kaynağın kendi kategorisi
+  // yalnızca hiçbir kural eşleşmediğinde kullanılır (bkz. route-category.ts).
+  const categoryIds = await categorySlugIndex();
 
   const xml = await fetchText(source.endpoint, { timeoutMs: 20_000 });
   const items = [...extractBlocks(xml, "item"), ...extractBlocks(xml, "entry")].slice(0, limit);
@@ -166,7 +177,8 @@ async function collect(
           content: draftBody(spot, sourceName, url),
           image: feedImage(item) ?? PLACEHOLDER_IMAGE,
           imageCredit: sourceName,
-          categoryId: category.id,
+          categoryId:
+            categoryIds.get(routeCategory(category.slug, title, spot)) ?? category.id,
           readTime: estimateReadTime(spot),
           publishedAt,
           // Yeniden yazılmadan hiçbir kayıt yayına çıkmaz.
@@ -215,8 +227,20 @@ async function rewritePending(
     },
     orderBy: { publishedAt: "desc" },
     take: REWRITE_BATCH,
-    select: { id: true, title: true, spot: true, sourceUrl: true, image: true },
+    select: {
+      id: true,
+      title: true,
+      spot: true,
+      sourceUrl: true,
+      image: true,
+      category: { select: { slug: true } },
+    },
   });
+
+  // Toplama aşamasında yönlendirme kaynağın ÖZGÜN (çoğu zaman İngilizce)
+  // başlığına bakar. Yeniden yazımdan sonra metin Türkçedir, dolayısıyla
+  // Türkçe kurallar da devreye girsin diye yönlendirme bir kez daha çalışır.
+  const categoryIds = await categorySlugIndex();
 
   // Her taslak için kaynak sayfa indirilir ve model çağrılır; ikisi de
   // ağ beklemesidir. Sıradan bir döngüde toplam süre kayıt sayısıyla doğru
@@ -260,6 +284,10 @@ async function rewritePending(
           continue;
         }
 
+        const routedId = categoryIds.get(
+          routeCategory(draft.category.slug, result.title, result.spot, result.tags.join(" ")),
+        );
+
         await prisma.article.update({
           where: { id: draft.id },
           data: {
@@ -267,6 +295,7 @@ async function rewritePending(
             spot: result.spot,
             content: result.contentHtml,
             tags: result.tags,
+            ...(routedId ? { categoryId: routedId } : {}),
             readTime: estimateReadTime(result.contentHtml),
             // Kaynak görseli yalnızca yerel yer tutucu duruyorsa devralınır;
             // her durumda imageCredit ile atıf verilir.

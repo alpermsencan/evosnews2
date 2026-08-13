@@ -3,6 +3,8 @@ import NewsCard from "@/components/news/NewsCard";
 import LeadForm from "@/components/ui/LeadForm";
 import { getByCategory } from "@/lib/queries";
 import { IconLayers } from "@/components/ui/Icons";
+import { prisma } from "@/lib/prisma";
+import GarageExplorer from "@/components/tools/GarageExplorer";
 
 // Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
 // render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
@@ -52,7 +54,12 @@ const FEATURES = [
 ];
 
 export default async function GaragePage() {
-  const news = await getByCategory("dijital-garaj", 4);
+  const [news, features] = await Promise.all([
+    getByCategory("dijital-garaj", 4),
+    prisma.garageFeature.findMany({
+      orderBy: [{ brand: "asc" }, { model: "asc" }, { order: "asc" }],
+    }),
+  ]);
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
@@ -67,6 +74,19 @@ export default async function GaragePage() {
           harcamaları. Erken erişim için kaydolabilirsiniz.
         </p>
       </header>
+
+      {/* YAZILIM ÖZELLİKLERİ — gerçek, doğrulanmış veri.
+          Sayfanın geri kalanı ürün hedefidir; bu bölüm ise bugün elimizde
+          olan bilgiyi gösterir: hangi modelde hangi yazılım özelliği var,
+          hangisi ek donanım/abonelik istiyor. */}
+      <section>
+        <SectionTitle
+          title="ELEKTRİKLİ ARAÇ YAZILIM ÖZELLİKLERİ"
+          color="#0369a1"
+          subtitle="Marka ve modele göre aktif, opsiyonel ve abonelik gerektiren özellikler"
+        />
+        <GarageExplorer features={features} />
+      </section>
 
       <section>
         <SectionTitle title="PLANLANAN ÖZELLİKLER" color="#0369a1" />

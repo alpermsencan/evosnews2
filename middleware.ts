@@ -9,6 +9,8 @@ const MEMBER_PATHS = [
   "/akis",
   "/arkadaslar",
   "/reels/yeni",
+  "/ilanlarim",
+  "/ilanlar/yeni",
 ];
 
 /**
@@ -22,6 +24,7 @@ const ADMIN_API = [
   /^\/api\/authors(\/|$)/,
   /^\/api\/vehicles(\/|$)/,
   /^\/api\/stations(\/|$)/,
+  /^\/api\/tariffs(\/|$)/,
   /^\/api\/listings(\/|$)/,
   /^\/api\/community(\/|$)/,
   /^\/api\/ticker(\/|$)/,
@@ -36,11 +39,24 @@ const ADMIN_API = [
 const PUBLIC_WRITES = [
   /^\/api\/articles\/[^/]+\/(like|bookmark)$/, // üye beğeni/kaydetme
   /^\/api\/community\/[^/]+$/, // topluluk gönderisi beğenisi (POST)
+  // Üye ilan verir; ilan PENDING düşer ve moderasyondan geçmeden yayına
+  // çıkmaz (bkz. app/api/listings/route.ts). Favorileme de üyeye açıktır.
+  /^\/api\/listings$/,
+  /^\/api\/listings\/[^/]+\/favorite$/,
 ];
+
+/**
+ * Sahibinin de yazabildiği uçlar: yetki kontrolü kaydın sahipliğine bağlı
+ * olduğu için middleware'de değil, route handler'ın içinde yapılır.
+ * (İlan sahibi kendi ilanını düzenler/siler; moderasyon alanlarına dokunamaz.)
+ */
+const OWNER_WRITES = [/^\/api\/listings\/[^/]+$/];
 
 function needsAdmin(pathname: string, method: string) {
   if (method === "GET" || method === "HEAD" || method === "OPTIONS") return false;
   if (PUBLIC_WRITES.some((re) => re.test(pathname)) && method === "POST") return false;
+  // PUT/DELETE dahil: sahiplik kontrolü handler'ın içinde yapılır.
+  if (OWNER_WRITES.some((re) => re.test(pathname))) return false;
   return ADMIN_API.some((re) => re.test(pathname));
 }
 

@@ -11,6 +11,8 @@ export const TAGS = {
   categories: "categories",
   vehicles: "vehicles",
   stations: "stations",
+  tariffs: "tariffs",
+  listings: "listings",
   community: "community",
   tickers: "tickers",
   prices: "prices",

@@ -62,7 +62,26 @@ export const vehicleFields: Field[] = [
   { name: "bodyType", label: "KASA TİPİ", type: "text", placeholder: "SUV" },
   { name: "price", label: "FİYAT (₺)", type: "number", required: true },
   { name: "otvRate", label: "ÖTV ORANI (%)", type: "number" },
-  { name: "rangeKm", label: "MENZİL (km)", type: "number" },
+  { name: "rangeKm", label: "MENZİL — WLTP (km)", type: "number" },
+  {
+    name: "rangeSummerKm",
+    label: "GERÇEK YAZ MENZİLİ (km)",
+    type: "number",
+    placeholder: "Ölçüm yoksa boş bırakın",
+    help: "WLTP'den katsayıyla türetmeyin; yalnızca ölçülmüş değer girin",
+  },
+  {
+    name: "rangeWinterKm",
+    label: "GERÇEK KIŞ MENZİLİ (km)",
+    type: "number",
+    placeholder: "Ölçüm yoksa boş bırakın",
+  },
+  {
+    name: "rangeSource",
+    label: "MENZİL KAYNAĞI",
+    type: "text",
+    placeholder: "ör. EV Database gerçek menzil ölçümü",
+  },
   { name: "batteryKwh", label: "BATARYA (kWh)", type: "number" },
   { name: "motorPowerKw", label: "MOTOR (kW)", type: "number" },
   { name: "motorPowerHp", label: "MOTOR (HP)", type: "number" },
@@ -107,6 +126,35 @@ export const stationFields: Field[] = [
   { name: "amenities", label: "OLANAKLAR", type: "tags", placeholder: "Kafe, WC, Market" },
   { name: "isFast", label: "HIZLI ŞARJ", type: "checkbox", placeholder: "DC hızlı şarj" },
   { name: "is24h", label: "7/24", type: "checkbox", placeholder: "Kesintisiz hizmet" },
+];
+
+/**
+ * Operatör tarifesi.
+ *
+ * Fiyat alanları boş bırakılabilir: operatörün o kademede hizmeti yoksa hücre
+ * "—" görünür. Sıfır yazmak "ücretsiz şarj" anlamına gelir ve uydurma veridir.
+ */
+export const tariffFields: Field[] = [
+  { name: "operator", label: "OPERATÖR", type: "text", required: true, full: true },
+  { name: "slug", label: "SLUG", type: "text", help: "Boş bırakılırsa addan üretilir" },
+  { name: "website", label: "WEB SİTESİ", type: "url", placeholder: "https://" },
+  { name: "acPrice", label: "AC ≤22 kW (₺/kWh)", type: "number" },
+  { name: "acPriceMax", label: "AC ÜST SINIR", type: "number", help: "Yalnızca aralık ilan edildiyse" },
+  { name: "dcPrice", label: "DC <150 kW (₺/kWh)", type: "number" },
+  { name: "dcPriceMax", label: "DC ÜST SINIR", type: "number", help: "Yalnızca aralık ilan edildiyse" },
+  { name: "ultraPrice", label: "DC ≥150 kW (₺/kWh)", type: "number" },
+  { name: "ultraPriceMax", label: "ULTRA ÜST SINIR", type: "number", help: "Yalnızca aralık ilan edildiyse" },
+  { name: "sourceUrl", label: "FİYAT KAYNAĞI", type: "url", placeholder: "Operatörün tarife sayfası" },
+  { name: "isActive", label: "YAYINDA", type: "checkbox", placeholder: "Tabloda göster" },
+  {
+    name: "aliases",
+    label: "ALTERNATİF ADLAR",
+    type: "tags",
+    full: true,
+    placeholder: "İstasyon envanterindeki farklı yazımlar",
+    help: "Open Charge Map operatör adı farklıysa buraya yazın (ör. Tesla)",
+  },
+  { name: "note", label: "NOT", type: "text", full: true, placeholder: "Kademe sınırı, kampanya, bölgesel fark" },
 ];
 
 export const communityFields: Field[] = [

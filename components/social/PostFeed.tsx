@@ -5,10 +5,12 @@ import PostCard from "./PostCard";
 import type { SocialPost } from "./types";
 
 export type FeedQuery = {
-  scope: "feed" | "explore" | "user" | "article";
+  scope: "feed" | "explore" | "user" | "article" | "vehicle";
   kind?: "text" | "reel";
   username?: string;
   articleId?: string;
+  /** scope = "vehicle": model topluluğu */
+  vehicleId?: string;
 };
 
 /**
@@ -57,6 +59,7 @@ export default function PostFeed({
       if (query.kind) params.set("kind", query.kind);
       if (query.username) params.set("username", query.username);
       if (query.articleId) params.set("articleId", query.articleId);
+      if (query.vehicleId) params.set("vehicleId", query.vehicleId);
 
       const res = await fetch(`/api/posts?${params}`);
       const data = await res.json();

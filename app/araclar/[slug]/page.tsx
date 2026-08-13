@@ -64,7 +64,11 @@ export default async function VehicleDetail({ params }: Props) {
     ["Segment", vehicle.segment],
     ["Kasa tipi", vehicle.bodyType],
     ["Model yılı", String(vehicle.year)],
-    ["Menzil", `${vehicle.rangeKm} km`],
+    ["Menzil (WLTP)", `${vehicle.rangeKm} km`],
+    // Gerçek mevsimsel menzil yalnızca ÖLÇÜLDÜYSE doldurulur; ölçüm yoksa
+    // "—" görünür. WLTP'den katsayıyla türetmek uydurma veri üretmek olurdu.
+    ["Gerçek yaz menzili", spec(vehicle.rangeSummerKm, " km")],
+    ["Gerçek kış menzili", spec(vehicle.rangeWinterKm, " km")],
     ["Batarya kapasitesi", `${vehicle.batteryKwh} kWh`],
     ["Motor gücü", `${vehicle.motorPowerKw} kW / ${vehicle.motorPowerHp} HP`],
     ["0-100 km/s", `${vehicle.acceleration} sn`],
@@ -128,7 +132,7 @@ export default async function VehicleDetail({ params }: Props) {
           )}
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <KeySpec label="MENZİL" value={`${vehicle.rangeKm}`} unit="km" />
+            <KeySpec label="MENZİL (WLTP)" value={`${vehicle.rangeKm}`} unit="km" />
             <KeySpec label="BATARYA" value={`${vehicle.batteryKwh}`} unit="kWh" />
             {vehicle.dcChargeKw != null ? (
               <KeySpec label="DC ŞARJ" value={`${vehicle.dcChargeKw}`} unit="kW" />
@@ -194,8 +198,10 @@ export default async function VehicleDetail({ params }: Props) {
             <p className="mt-2 text-[11px] leading-relaxed text-neutral-500">
               Fiyat kaynağı: {vehicle.priceSource}
               {vehicle.priceUpdatedAt && ` · ${formatDate(vehicle.priceUpdatedAt)} tarihinde doğrulandı`}
-              . Menzil ve tüketim değerleri gerçek kullanım ortalamalarıdır (EV Database).
-              Fiyatlar sık değişir; kesin bilgi için yetkili satıcıya danışın.
+              . Fiyatlar sık değişir; kesin bilgi için yetkili satıcıya danışın.
+              {vehicle.rangeSource
+                ? ` Mevsimsel menzil kaynağı: ${vehicle.rangeSource}.`
+                : " Gerçek yaz/kış menzili için doğrulanmış ölçüm henüz girilmedi."}
             </p>
           )}
         </section>

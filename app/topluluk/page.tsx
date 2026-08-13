@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import CommunityBoard from "@/components/community/CommunityBoard";
 import SectionTitle from "@/components/news/SectionTitle";
+import Image from "next/image";
+import Link from "next/link";
 import NewsCard from "@/components/news/NewsCard";
 import PollWidget from "@/components/ui/PollWidget";
 import { getActivePoll, getByCategory } from "@/lib/queries";
@@ -49,6 +51,11 @@ export default async function CommunityPage() {
           <Stat label="Yanıt" value={`${stats._sum.replies ?? 0}`} />
         </div>
       </header>
+
+      {/* MODEL TOPLULUKLARI — her araç kendi tartışma alanına sahip.
+          Genel forumda "hangi model" sorusu her başlıkta tekrar ediyordu;
+          model bazlı gruplar aynı aracı kullananları bir araya getirir. */}
+      <ModelCommunities />
 
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="min-w-0 flex-1">
@@ -134,5 +141,58 @@ function Stat({ label, value }: { label: string; value: string }) {
       <span className="text-[11px] font-semibold text-white/70">{label}</span>
       <span className="text-lg font-black">{value}</span>
     </div>
+  );
+}
+
+/**
+ * Model toplulukları şeridi.
+ *
+ * Paylaşımı olan modeller önce gelir; hiç paylaşımı olmayanlar da listelenir
+ * çünkü topluluğun başlaması için birinin ilk paylaşımı yapması gerekir —
+ * boş topluluk gizlenirse hiç doldurulamaz.
+ */
+async function ModelCommunities() {
+  const vehicles = await prisma.vehicle.findMany({
+    select: {
+      slug: true,
+      brand: true,
+      model: true,
+      image: true,
+      _count: { select: { posts: true } },
+    },
+    orderBy: [{ posts: { _count: "desc" } }, { brand: "asc" }],
+    take: 12,
+  });
+
+  if (vehicles.length === 0) return null;
+
+  return (
+    <section>
+      <SectionTitle
+        title="MODEL TOPLULUKLARI"
+        color="#c2410c"
+        subtitle="Aynı aracı kullananların deneyimleri tek yerde"
+      />
+      <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1 sm:grid sm:grid-cols-4 sm:overflow-visible lg:grid-cols-6">
+        {vehicles.map((v) => (
+          <Link
+            key={v.slug}
+            href={`/topluluk/${v.slug}`}
+            className="flex w-[150px] shrink-0 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white transition hover:shadow-md sm:w-auto"
+          >
+            <div className="relative aspect-[16/10] w-full bg-neutral-100">
+              <Image src={v.image} alt={v.model} fill sizes="180px" className="object-cover" />
+            </div>
+            <div className="flex flex-col gap-0.5 p-2.5">
+              <span className="text-[10px] font-bold text-neutral-400">{v.brand}</span>
+              <span className="truncate text-[12px] font-black text-neutral-900">{v.model}</span>
+              <span className="text-[10px] text-neutral-500">
+                {v._count.posts} paylaşım
+              </span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }

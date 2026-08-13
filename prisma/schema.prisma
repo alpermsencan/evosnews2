@@ -156,6 +156,10 @@ model User {
   friendsRequested Friendship[]  @relation("FriendRequester")
   friendsReceived  Friendship[]  @relation("FriendAddressee")
 
+  // Pazaryeri
+  listings         Listing[]         @relation("ListingSeller")
+  listingFavorites ListingFavorite[]
+
   @@index([createdAt])
 }
 
@@ -355,8 +359,19 @@ model Vehicle {
   warranty   String?
   /// Editör puanı. Otomatik atanmaz; yalnızca gerçek bir inceleme yapıldıysa dolar.
   rating     Float?
+
+  /// GERÇEK MEVSİMSEL MENZİL
+  /// `rangeKm` üreticinin ilan ettiği WLTP değeridir; gerçek kullanımda yazın
+  /// klima, kışın ısıtma ve batarya sıcaklığı bunu düşürür. Bu iki alan ölçüme
+  /// dayalı değerler içindir ve ölçüm yoksa BOŞ kalır — WLTP'den bir katsayıyla
+  /// türetmek uydurma veri üretmek olurdu.
+  rangeSummerKm Int?
+  rangeWinterKm Int?
+  /// Mevsimsel menzilin nereden geldiği (ör. "EV Database WLTP city/highway").
+  rangeSource   String?
   createdAt    DateTime @default(now())
   posts        Post[]
+  listings     Listing[]
 
   // --- Kaynak izlenebilirliği ---
   externalId     String?
@@ -425,11 +440,127 @@ model Listing {
   isSponsored   Boolean  @default(false)
   description   String   @default("")
   createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   posts         Post[]
+
+  /// SIFIR | IKINCI_EL — sıfır araç ilanları katalogla eşleşir, ikinci el
+  /// ilanlarda batarya raporu ve VoltScore devreye girer.
+  condition String @default("IKINCI_EL")
+
+  /// PENDING | PUBLISHED | REJECTED | SOLD
+  /// İlan üyeden gelir ve moderasyondan geçmeden yayına ÇIKMAZ.
+  status String @default("PENDING")
+
+  /// İlanı veren üye. Panelden girilen ilanlarda boş kalabilir.
+  userId String? @db.ObjectId
+  user   User?   @relation("ListingSeller", fields: [userId], references: [id], onDelete: SetNull)
+
+  /// Katalogdaki modelle bağ — teknik veriyi ilanda tekrar girmeye gerek kalmaz.
+  vehicleId String?  @db.ObjectId
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  /// --- VoltScore girdileri ---
+  /// Hiçbiri zorunlu değildir; eksik kriter puanlamada ATLANIR ve ağırlığı
+  /// kalan kriterlere dağıtılır (bkz. lib/voltscore.ts). Varsayılan bir değer
+  /// yazmak, bilinmeyen bir aracı bilinen gibi göstermek olurdu.
+  warrantyMonthsLeft Int?
+  /// TAM | KISMI | YOK
+  serviceHistory     String?
+  /// DUSUK | ORTA | YUKSEK — DC hızlı şarj kullanım yoğunluğu
+  fastChargeHabit    String?
+  /// Kullanıcının bildirdiği gerçek menzil; katalog menziliyle uyumu puanlanır.
+  realRangeKm        Int?
+
+  /// Sunucuda hesaplanan güven puanı (0-100). Girdiler değiştikçe yeniden yazılır.
+  voltScore     Int?
+  voltScoreAt   DateTime?
+  /// Kriter kırılımı — kullanıcıya "puan neden bu?" diye gösterilir.
+  voltScoreBreakdown Json?
+
+  batteryReport BatteryReport?
+  favorites     ListingFavorite[]
 
   @@index([brand])
   @@index([price])
   @@index([city])
+  @@index([status, createdAt])
+  @@index([condition])
+  @@index([userId])
+}
+
+model BatteryReport {
+  /// DOĞRULANMIŞ BATARYA RAPORU
+  ///
+  /// İkinci el elektrikli araçta en pahalı bileşen bataryadır ve gözle
+  /// kontrol edilemez. Bu model, yetkili servis veya ekspertiz firmasının
+  /// ÖLÇTÜĞÜ değerleri tutar; kalan ömür ve risk seviyesi bu ölçümlerden
+  /// SUNUCUDA hesaplanır (bkz. lib/battery-report.ts) — elle girilmez.
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  listingId String  @unique @db.ObjectId
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  /// --- ÖLÇÜLEN DEĞERLER ---
+  /// State of Health: fabrika kapasitesine göre kalan yüzde. Broşür değeri değil.
+  sohPercent      Float
+  /// Tam şarj çevrimi sayısı.
+  cycleCount      Int?
+  /// Toplam şarjın yüzde kaçı DC hızlı şarj (0-100).
+  fastChargeRatio Int?
+  odometerKm      Int?
+
+  /// --- HESAPLANAN DEĞERLER (sunucu) ---
+  estimatedYearsLeft Float?
+  /// DUSUK | ORTA | YUKSEK
+  riskLevel          String?
+
+  /// --- İZLENEBİLİRLİK ---
+  measuredBy String
+  measuredAt DateTime
+  /// Rapor Evos tarafından doğrulanana kadar ilanda rozet ÇIKMAZ.
+  verifiedAt DateTime?
+  verifiedBy String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([verifiedAt])
+}
+
+model ListingFavorite {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  listingId String   @db.ObjectId
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([listingId, userId])
+  @@index([userId])
+}
+
+model GarageFeature {
+  /// DİJİTAL GARAJ — MODEL BAZLI YAZILIM ÖZELLİĞİ
+  ///
+  /// Aynı modelin donanım paketine göre bir özelliği olabilir ya da olmayabilir;
+  /// bazıları ayrı abonelik ister. Durum bu yüzden dört değerlidir.
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  brand  String
+  model  String
+  /// Katalogdaki araca bağ (varsa).
+  vehicleSlug String?
+  name   String
+  /// AKTIF | OPSIYONEL | ABONELIK | PASIF
+  status String @default("AKTIF")
+  /// "GT-Line paketi", "Uygulamadan", "Yalnızca GT donanımı" gibi koşul notu.
+  note   String?
+  order  Int    @default(0)
+
+  /// Bilginin alındığı yer (marka donanım listesi / kullanım kılavuzu).
+  source String?
+  verifiedAt DateTime?
+
+  @@unique([brand, model, name])
+  @@index([brand, model])
 }
 
 model CommunityPost {
@@ -588,4 +719,49 @@ model IngestRun {
 
   @@index([sourceKey, startedAt])
   @@index([startedAt])
+}
+
+model OperatorTariff {
+  /// ŞARJ OPERATÖRÜ TARİFESİ
+  ///
+  /// Open Charge Map istasyon envanterinde tarife bilgisi YOKTUR; operatörler
+  /// fiyatlarını yalnızca kendi sitelerinde yayımlar. Bu model o fiyatları
+  /// operatör bazında, kaynağı ve doğrulama tarihiyle birlikte tutar.
+  /// Fiyat kademeleri operatörlerin ilan ettiği yapıyla aynıdır:
+  /// AC (≤22 kW) / DC hızlı (<150 kW) / DC ultra (≥150 kW).
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  operator String @unique
+  slug     String @unique
+
+  /// Open Charge Map operatör adları bizimkiyle birebir aynı olmayabiliyor
+  /// ("ZES" ↔ "ZES (Zorlu)"). Otomatik eşleşmenin tutmadığı durumlarda
+  /// panelden ek ad yazılır.
+  aliases String[] @default([])
+
+  /// Operatör tek fiyat ilan ettiyse yalnızca alt sınır dolar; aralık
+  /// ilan ettiyse (ör. sokete göre değişen AC fiyatı) üst sınır da yazılır.
+  /// Operatörün o kademede hizmeti yoksa alan BOŞ kalır ve arayüz "—" gösterir.
+  acPrice       Float?
+  acPriceMax    Float?
+  dcPrice       Float?
+  dcPriceMax    Float?
+  ultraPrice    Float?
+  ultraPriceMax Float?
+
+  website String?
+  /// Kademe sınırı, kampanya, bölgesel fark gibi operatöre özel açıklama.
+  note    String?
+
+  /// --- Kaynak izlenebilirliği ---
+  /// Her satır ya bir dış derlemeden ya da operatörün kendi ilanından gelir;
+  /// kaynağı olmayan fiyat yazılmaz.
+  source     String? // "volthaber" | "operator" | "manuel"
+  sourceUrl  String?
+  verifiedAt DateTime?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
 }

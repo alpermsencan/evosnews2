@@ -4,14 +4,19 @@ import { fail, ok } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
 import { runKind, ensureSources } from "@/lib/ingest/runner";
 import { pruneArchive } from "@/lib/ingest/prune";
+import { recategorizeArchive } from "@/lib/ingest/recategorize";
+import { checkFreshness, summarize } from "@/lib/freshness";
 import { TAGS } from "@/lib/cache";
 import type { SourceKind } from "@/lib/ingest/types";
 
 export const dynamic = "force-dynamic";
 /**
- * Vercel Hobby planında üst sınır 60 sn; Pro'da bu değer geçerli olur.
+ * 300 sn, Vercel'de Hobby dâhil tüm planlarda geçerli üst sınırdır (fluid
+ * compute ile birlikte); Pro'da 800 sn'ye çıkarılabilir.
+ *
  * Haber yeniden yazımı yavaş olduğundan iş, süre bütçesine göre kendini
  * durdurur: kalan taslaklar bir sonraki çalışmada işlenir (bkz. news-rss.ts).
+ * Ölçüm: günlük çalışmada tüm beslemeler ~30 sn, iki gün birikmişse ~150 sn.
  */
 export const maxDuration = 300;
 
@@ -92,6 +97,22 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     return ok({ job, revalidated: tags, durationMs: Date.now() - startedAt });
   }
 
+  // Arşivi konu kurallarına göre yeniden dağıtır. Günlük cron zaten çalıştırır;
+  // bu uç kurallar değiştiğinde elle tetiklemek içindir.
+  if (job === "recategorize") {
+    const result = await recategorizeArchive();
+    if (result.moved > 0) revalidateTag(TAGS.articles, "max");
+    return ok({ job, durationMs: Date.now() - startedAt, ...result });
+  }
+
+  // Salt okunur tazelik denetimi. Dış izleme (UptimeRobot vb.) buraya
+  // bakabilir: bayat küme varsa 207 döner.
+  if (job === "health") {
+    const report = await checkFreshness();
+    const summary = summarize(report);
+    return ok({ job, ...summary, datasets: report }, summary.ok ? 200 : 207);
+  }
+
   if (job === "prune") {
     const result = await pruneArchive();
     if (result.archived + result.drafts + result.offTopic > 0) revalidateTag(TAGS.articles, "max");
@@ -133,19 +154,44 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
       }
     }
 
+    // Yeni gelen haberler kaynağın tek kategorisinde kalmasın: konu
+    // yönlendirmesi her gün arşivin tamamına uygulanır. Ucuz bir iştir
+    // (yalnızca eşleşmeyen kayıtlar yazılır) ve kurallar değiştiğinde
+    // arşivin kendiliğinden hizalanmasını sağlar.
+    const recategorized = await recategorizeArchive();
+    if (recategorized.moved > 0) tags.add(TAGS.articles);
+
     const pruned = await pruneArchive();
     if (pruned.archived + pruned.drafts + pruned.offTopic > 0) tags.add(TAGS.articles);
 
     for (const tag of tags) revalidateTag(tag, "max");
 
-    return ok({
-      job,
-      durationMs: Date.now() - startedAt,
-      revalidated: [...tags],
-      changed,
-      pruned,
-      sources: sections,
-    });
+    // Cron'un çalışmış olması verinin taze olduğunu KANITLAMAZ: besleme sessizce
+    // boş dönebilir, anahtar süresi dolabilir. Her çalışmanın sonunda tazelik
+    // denetlenir ve bayat küme varsa yanıt 207 döner — Vercel cron kaydında ve
+    // dış izlemede görünür olsun.
+    const health = await checkFreshness();
+    const summary = summarize(health);
+
+    return ok(
+      {
+        job,
+        durationMs: Date.now() - startedAt,
+        revalidated: [...tags],
+        changed,
+        recategorized,
+        pruned,
+        health: health.map((h) => ({
+          key: h.key,
+          status: h.status,
+          ageHours: h.ageHours,
+          maxAgeHours: h.maxAgeHours,
+        })),
+        stale: summary.stale,
+        sources: sections,
+      },
+      summary.ok ? 200 : 207,
+    );
   }
 
   const config = JOBS[job];

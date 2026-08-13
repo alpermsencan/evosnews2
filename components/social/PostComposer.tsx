@@ -17,11 +17,16 @@ export default function PostComposer({
   onCreated,
   articleId,
   articleTitle,
+  vehicleId,
+  vehicleTitle,
   placeholder,
 }: {
   onCreated?: (post: SocialPost) => void;
   articleId?: string;
   articleTitle?: string;
+  /** Model topluluğundan paylaşımda gönderi o araca iliştirilir. */
+  vehicleId?: string;
+  vehicleTitle?: string;
   placeholder?: string;
 }) {
   const { user } = useSession();
@@ -92,6 +97,7 @@ export default function PostComposer({
           images,
           visibility,
           articleId,
+          vehicleId,
         }),
       });
       const data = await res.json();
@@ -134,12 +140,12 @@ export default function PostComposer({
         />
       </div>
 
-      {articleTitle && (
+      {(articleTitle || vehicleTitle) && (
         <div className="flex items-center gap-2 rounded-md bg-neutral-50 px-3 py-2 text-[12px] font-bold text-neutral-500">
           <span className="rounded bg-evos px-1.5 py-0.5 text-[9px] font-black text-white">
             HABER
           </span>
-          <span className="line-clamp-1">{articleTitle}</span>
+          <span className="line-clamp-1">{articleTitle ?? vehicleTitle}</span>
         </div>
       )}
 

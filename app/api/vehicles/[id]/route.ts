@@ -17,7 +17,11 @@ const NUMERIC = [
  * Boş bırakılabilen sayısal alanlar. Form boş gönderdiğinde 0 değil null
  * yazılır; aksi hâlde "0 kW DC şarj" gibi yanlış bir veri üretilirdi.
  */
-const OPTIONAL_NUMERIC = ["dcChargeKw", "chargeMin", "trunkLiter", "rating"] as const;
+const OPTIONAL_NUMERIC = [
+  "dcChargeKw", "chargeMin", "trunkLiter", "rating",
+  // Gerçek mevsimsel menzil: ölçüm yoksa boş kalır, WLTP'den türetilmez.
+  "rangeSummerKm", "rangeWinterKm",
+] as const;
 
 export async function GET(_req: NextRequest, { params }: Ctx) {
   const { id } = await params;
@@ -34,7 +38,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     const b = await req.json();
     const data: Record<string, unknown> = {};
 
-    for (const key of ["brand", "model", "segment", "bodyType", "image", "driveType", "description"]) {
+    for (const key of ["brand", "model", "segment", "bodyType", "image", "driveType", "description", "rangeSource"]) {
       if (b[key] !== undefined) data[key] = b[key];
     }
     for (const key of NUMERIC) {

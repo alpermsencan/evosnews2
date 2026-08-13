@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { emptyStats, type IngestContext, type IngestResult, type SourceJob } from "../types";
+import { tierSummary } from "../../tariffs";
 
 /**
  * PAZAR GÖSTERGELERİ — TÜRETİLMİŞ VERİ
@@ -66,14 +67,22 @@ async function run(_ctx: IngestContext): Promise<IngestResult> {
   const stats = emptyStats();
   const notes: string[] = [];
 
-  const [vehicles, stationAgg, stationCount, fastCount] = await Promise.all([
+  const [vehicles, stationAgg, stationCount, fastCount, tariffs] = await Promise.all([
     prisma.vehicle.findMany({ select: { price: true, rangeKm: true } }),
     prisma.chargeStation.aggregate({ _sum: { socketCount: true } }),
     prisma.chargeStation.count(),
     prisma.chargeStation.count({ where: { isFast: true } }),
+    prisma.operatorTariff.findMany({ where: { isActive: true } }),
   ]);
 
   const rows: Row[] = [];
+
+  // Şarj maliyeti: operatörlerin ilan ettiği tarifelerin ORTANCASI.
+  // Ortalama değil ortanca — tek bir operatörün yüksek sabit tarifesi
+  // "tipik fiyat"ı yanıltacak kadar yukarı çekiyor. Tarife girilmemişse
+  // gösterge hiç üretilmez, uydurma bir sayı yazılmaz.
+  const acMedian = tierSummary(tariffs, "ac")?.median ?? null;
+  const dcMedian = tierSummary(tariffs, "dc")?.median ?? null;
 
   // --- Araç kataloğundan türetilenler ---
   if (vehicles.length > 0) {
@@ -140,6 +149,30 @@ async function run(_ctx: IngestContext): Promise<IngestResult> {
     notes.push("Şarj envanteri boş — istasyon göstergeleri üretilmedi");
   }
 
+  // --- Operatör tarifelerinden türetilenler ---
+  if (acMedian != null || dcMedian != null) {
+    if (acMedian != null) {
+      rows.push({
+        key: "ac-charge-cost",
+        label: "AC ŞARJ",
+        value: trNumber(acMedian, 2),
+        unit: "₺/kWh",
+        order: TICKER_ORDER_BASE + 6,
+      });
+    }
+    if (dcMedian != null) {
+      rows.push({
+        key: "dc-charge-cost",
+        label: "DC ŞARJ",
+        value: trNumber(dcMedian, 2),
+        unit: "₺/kWh",
+        order: TICKER_ORDER_BASE + 7,
+      });
+    }
+  } else {
+    notes.push("Operatör tarifesi yok — şarj maliyeti göstergeleri üretilmedi");
+  }
+
   for (const row of rows) await upsertTicker(row, stats);
 
   // --- Aylık fiyat endeksi anlık görüntüsü ---
@@ -160,6 +193,10 @@ async function run(_ctx: IngestContext): Promise<IngestResult> {
       avgEvPrice,
       avgRangeKm,
       modelCount: vehicles.length,
+      // Kaynağı olmayan alanlar (batarya $/kWh, EV pazar payı) boş kalır;
+      // şarj maliyeti ise doğrulanmış operatör tarifelerinden gelir.
+      acChargeCost: acMedian,
+      dcChargeCost: dcMedian,
       source: "katalog",
       fetchedAt: new Date(),
     };

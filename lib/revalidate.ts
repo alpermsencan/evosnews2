@@ -27,6 +27,10 @@ export const touchArticles = () => touch(TAGS.articles);
 export const touchCategories = () => touch(TAGS.categories, TAGS.articles);
 export const touchVehicles = () => touch(TAGS.vehicles);
 export const touchStations = () => touch(TAGS.stations);
+/** Operatör tarifesi değişti — şarj fiyatları sayfası ve şarj ağı özeti. */
+export const touchTariffs = () => touch(TAGS.tariffs, TAGS.stations);
+/** İlan eklendi/güncellendi/moderasyondan geçti. */
+export const touchListings = () => touch(TAGS.listings);
 export const touchCommunity = () => touch(TAGS.community);
 export const touchTickers = () => touch(TAGS.tickers);
 export const touchPrices = () => touch(TAGS.prices);

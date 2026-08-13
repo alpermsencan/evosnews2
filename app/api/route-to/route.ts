@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { fail, ok } from "@/lib/api";
 import { fetchWithRetry } from "@/lib/ingest/http";
+import { haversineKm } from "@/lib/geo";
 
 export const dynamic = "force-dynamic";
 
@@ -29,19 +30,6 @@ const coord = (raw: string | null, max: number) => {
   return Number.isFinite(n) && Math.abs(n) <= max ? n : null;
 };
 
-/** Haversine — düz çizgi mesafesi (km). */
-function straightLineKm(aLat: number, aLng: number, bLat: number, bLng: number) {
-  const R = 6371;
-  const dLat = ((bLat - aLat) * Math.PI) / 180;
-  const dLng = ((bLng - aLng) * Math.PI) / 180;
-  const s =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((aLat * Math.PI) / 180) *
-      Math.cos((bLat * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
-}
-
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const fromLat = coord(sp.get("fromLat"), 90);
@@ -55,7 +43,7 @@ export async function GET(req: NextRequest) {
 
   const fallback = {
     mode: "straight" as const,
-    distanceKm: Number(straightLineKm(fromLat, fromLng, toLat, toLng).toFixed(1)),
+    distanceKm: Number(haversineKm(fromLat, fromLng, toLat, toLng).toFixed(1)),
     durationMin: null as number | null,
     // Kuş uçuşu: iki uç nokta.
     geometry: [

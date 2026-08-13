@@ -125,7 +125,10 @@ export default async function HomePage() {
               PLATFORM <IconChevronRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="no-scrollbar flex gap-3 overflow-x-auto p-3 sm:grid sm:grid-cols-5 sm:gap-4 sm:overflow-visible lg:grid-cols-10">
+          {/* Sütun sayısı SERVICES uzunluğuyla hizalı: Evos Market kaldırılıp
+              Voice Intelligence AI Danışman'la birleştiğinde şerit 8 öğeye
+              düştü; 10 sütunluk grid sonda iki boş hücre bırakıyordu. */}
+          <div className="no-scrollbar flex gap-3 overflow-x-auto p-3 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible lg:grid-cols-8">
             {SERVICES.map(({ label, href, Icon, color }, i) => (
               <Link
                 key={href + label}

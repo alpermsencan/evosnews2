@@ -10,6 +10,7 @@ npm install
 npm run db:generate     # Prisma client üret
 npm run db:push         # MongoDB koleksiyon + indexleri oluştur
 npm run db:vehicles     # Araç kataloğunu doğrulanmış verilerle doldur
+npm run db:tariffs      # Şarj operatörü tarifelerini aktar
 npm run dev
 
 # Kaynak tanımlarını oluştur ve ilk veri çekimini yap (sunucu ayakta iken):
@@ -47,6 +48,14 @@ app/
   araclar, araclar/[slug]  Araçları Keşfet: filtreler, karşılaştırma tablosu, detay
   arac-merkezi             Araç Merkezi: incelemeler, segment şampiyonları
   sarj-agi                 Şarj ağı: Open Charge Map envanteri, filtre, il dağılımı, rota
+  sarj-fiyatlari           Şarj fiyatları: operatör tarife karşılaştırması (AC / DC / ultra)
+  ilanlar, ilanlar/[slug]  Pazaryeri: sıfır + ikinci el ilanlar, VoltScore, batarya raporu
+  ilanlar/yeni, ilanlarim  Üye ilan verme ve kendi ilanlarını yönetme
+  karsilastir              Sıfır katalog modeli + ikinci el ilan aynı tabloda
+  batarya-raporu           Batarya raporu nedir, nasıl üretilir
+  finansman                Vergi + kredi taksiti + enerji maliyeti hesaplayıcı
+  topluluk/[slug]          Model bazlı topluluk (araç slug'ı)
+  hakkinda, iletisim, pro  Kurumsal sayfalar ve ticari katman
   otv-rehberi              ÖTV dilimleri + canlı ÖTV/KDV hesaplayıcı
   fiyat-analizi            Katalogdan hesaplanan fiyat/menzil/segment analizi
   ai-danisman              AI Danışman sihirbazı (/api/advisor skorlaması) + sesli asistan
@@ -124,6 +133,9 @@ anonim olarak korunur.
 | `/admin/yorumlar` | Yorum moderasyonu / silme |
 | `/admin/araclar` | Araç kataloğu CRUD (tüm teknik alanlar) |
 | `/admin/istasyonlar` | Şarj istasyonu CRUD |
+| `/admin/tarifeler` | Şarj operatörü tarifeleri (AC / DC / ultra ₺/kWh) |
+| `/admin/ilanlar` | İlan moderasyonu + batarya raporu girişi ve doğrulama |
+| `/admin/garaj` | Dijital garaj: model bazlı yazılım özellikleri |
 | `/admin/topluluk` | Topluluk gönderileri |
 | `/admin/gosterge` | Üst veri şeridi + anket sonuçları |
 | `/admin/aboneler` | Bülten aboneleri |
@@ -166,6 +178,11 @@ Sitedeki veri her sabah **07:00'de (TRT)** tek bir cron ile tazelenir:
 `vercel.json` → `/api/cron/daily` (04:00 UTC). Uç nokta `CRON_SECRET` ile korunur;
 sır tanımlı değilse tamamen kapalıdır. Elle tetiklemek için `?key=$CRON_SECRET`.
 
+Günlük çalışma sırayla şunları yapar: kur → (haftada bir) şarj envanteri →
+pazar göstergeleri → haber toplama ve yeniden yazım → konu yönlendirmesi →
+arşiv temizliği → **tazelik denetimi**. Bayat veri kümesi varsa yanıt **HTTP 207**
+döner, böylece Vercel cron kaydında ve dış izlemede görünür.
+
 | Kaynak | Ne getirir | Sıklık |
 |---|---|---|
 | TCMB `today.xml` | USD / EUR / GBP kuru | Her gün |
@@ -195,11 +212,72 @@ olarak kuyrukta bekler; kaynağın metni asla yayına düşmez.
 Cron'un süre bütçesi dolduğunda kalan taslaklar bir sonraki çalışmaya bırakılır
 (`IngestContext.deadline`), böylece iş yarım kalmaz.
 
+### Tazelik denetimi
+
+"Cron çalıştı" ile "veri güncel" aynı şey DEĞİLDİR: bir besleme sessizce boş
+dönebilir, bir API anahtarının süresi dolabilir, ya da hiçbir cron'un dokunmadığı
+bir küme (araç kataloğu, operatör tarifeleri) aylarca eskiyebilir.
+
+`lib/freshness.ts` her veri kümesine "en son ne zaman tazelendin?" diye sorar ve
+eşiği aşanı işaretler. Eşikler cron sıklığından türetilir, tahmin değildir.
+
+| Küme | Eşik | Tazeleme |
+|---|---|---|
+| Haberler | 36 saat | otomatik (günlük) |
+| Döviz kurları | 96 saat | otomatik — TCMB hafta sonu yayın yapmaz, eşik tatili kapsar |
+| Şarj istasyonları | 10 gün | otomatik (haftalık) |
+| Fiyat endeksi | 36 saat | otomatik (günlük) |
+| Şarj tarifeleri | 30 gün | **elle** |
+| Araç kataloğu | 45 gün | **elle** |
+
+Rapor iki yerde görünür: `/admin/kaynaklar` sayfasının üstünde tablo olarak ve
+`/api/cron/health` ucunda JSON olarak. Bayat küme varsa uç nokta HTTP 207 döner —
+UptimeRobot benzeri bir izleyici bu kodu alarm olarak kullanabilir.
+
 ### Arşiv temizliği
 
 Aynı cron, 30 günden eski **otomatik** haberleri siler (`lib/ingest/prune.ts`).
 Elle girilen haberlere (`ingestedAt` boş) dokunulmaz. Yayına alınamamış
 taslaklar 7 gün sonra kuyruktan düşer.
+
+### Kategori yönlendirmesi
+
+Kaynak tanımındaki `categorySlug` bir beslemenin TAMAMI için tek hedef belirler;
+bu yüzden Electrek'ten gelen her haber "dunya"da yığılıyor, konu sayfaları
+(şarj ağı, araç merkezi, test sürüşü, fiyat analizi) hiç haber görmüyordu.
+`lib/ingest/route-category.ts` haberi başlık, spot ve etiketlerindeki konuya
+göre doğru kategoriye taşır. Kurallar sıralıdır ve dardan genişe gider
+("ötv indirimi" haberi ÖTV'ye gider, fiyat analizine değil). Hiçbir kural
+eşleşmezse kaynağın kendi kategorisi korunur — emin olunmayan haber taşınmaz.
+
+Yönlendirme iki kez çalışır: toplama sırasında (başlık çoğu zaman İngilizcedir)
+ve yeniden yazımdan sonra (metin artık Türkçedir). Kurallar değiştiğinde arşiv
+yeniden dağıtılabilir:
+
+```bash
+curl "$SITE_URL/api/cron/recategorize?key=$CRON_SECRET"
+```
+
+Bu uç yalnızca otomatik gelen haberlere dokunur; elle girilmiş haberde
+editörün seçtiği kategori korunur.
+
+### Şarj tarifeleri
+
+Şarj fiyatı Open Charge Map verisinde YOKTUR — operatörler tarifelerini yalnızca
+kendi sitelerinde yayımlar. `OperatorTariff` bu fiyatları operatör bazında,
+kademeleriyle (AC ≤22 kW / DC <150 kW / DC ultra ≥150 kW), kaynağıyla ve
+doğrulama tarihiyle tutar. Operatörün o kademede hizmeti yoksa alan BOŞ kalır ve
+arayüz "—" gösterir; 0 yazmak "ücretsiz şarj" anlamına gelirdi.
+
+İstasyon envanterindeki operatör adları tarife kayıtlarıyla birebir aynı değildir
+("ZES" ↔ "ZES (Zorlu)"); `lib/tariffs.ts` parantezli ekleri atıp Türkçe harfleri
+katlayarak eşleştirir, tutmayan istisnalar için panelden alias yazılır.
+Eşleşme bulunamazsa tarife GÖSTERİLMEZ.
+
+Tarifeler üç yerde görünür: `/sarj-fiyatlari` (tam karşılaştırma tablosu),
+`/sarj-agi` operatör özeti ve pazar göstergeleri — anasayfadaki "AC şarj" /
+"DC şarj" satırları tarifelerin ORTANCASIDIR (ortalama değil: tek bir yüksek
+sabit tarife tipik fiyatı yanıltacak kadar yukarı çekiyor).
 
 ### Yeni kaynak eklemek
 
@@ -240,6 +318,13 @@ NEXT_PUBLIC_SITE_URL=""          # sitemap, RSS, OG etiketleri
 | GET/POST/PUT/DELETE | `/api/comments`, `/api/comments/[id]`, `/api/comments/[id]/like` | Yorum |
 | GET/POST/PUT/DELETE | `/api/vehicles`, `/api/vehicles/[id]` | Araç kataloğu + filtreler |
 | GET/POST/PUT/DELETE | `/api/stations`, `/api/stations/[id]` | Şarj istasyonları |
+| GET/POST/PUT/DELETE | `/api/tariffs`, `/api/tariffs/[id]` | Şarj operatörü tarifeleri |
+| GET/POST | `/api/listings` | İlan listesi (yayındakiler) / üye ilan verir (PENDING) |
+| GET/PUT/DELETE | `/api/listings/[id]` | Tekil ilan (sahibi veya yönetici) |
+| POST | `/api/listings/[id]/favorite` | Favoriye ekle / çıkar (üye) |
+| POST/PUT | `/api/listings/[id]/battery-report` | Ölçüm kaydı / doğrulama (admin) |
+| GET | `/api/compare` | Karşılaştırma sepetindeki kayıtları ortak şemada döndürür |
+| GET/POST/DELETE | `/api/garage` | Dijital garaj yazılım özellikleri (admin) |
 | GET/POST/PUT/DELETE | `/api/community`, `/api/community/[id]` | Topluluk (POST = beğeni) |
 | GET/POST/DELETE | `/api/newsletter` | Bülten kaydı |
 | GET/POST/PUT/DELETE | `/api/leads` | İletişim/teklif talebi |
@@ -247,13 +332,63 @@ NEXT_PUBLIC_SITE_URL=""          # sitemap, RSS, OG etiketleri
 | GET/POST | `/api/otv` | ÖTV dilimleri / hesaplama |
 | GET | `/api/prices` | Aylık fiyat endeksi ve katalogdan türetilen sayaçlar |
 | GET | `/api/route-to` | İstasyona gerçek sürüş rotası (OpenRouteService) |
-| GET | `/api/cron/[job]` | `daily` \| `news` \| `stations` \| `fx` \| `prices` \| `prune` \| `setup` (CRON_SECRET) |
+| GET | `/api/cron/[job]` | `daily` \| `news` \| `stations` \| `fx` \| `prices` \| `prune` \| `recategorize` \| `health` \| `revalidate` \| `setup` (CRON_SECRET) |
 | GET/PUT | `/api/sources` | Veri kaynağı tanımları (admin) |
 | GET/PUT | `/api/moderation` | Moderasyon kuyruğu: yayınla / reddet (admin) |
 | POST | `/api/advisor` | Kullanım profiline göre araç önerisi + 5 yıllık maliyet |
 | GET | `/api/search` | Birleşik arama |
 | GET | `/api/stats` | Admin özet istatistikleri |
 | POST/DELETE | `/api/auth` | Admin giriş / çıkış |
+
+## Pazaryeri, VoltScore ve batarya raporu
+
+İlanlar üyeden gelir ve **PENDING** olarak düşer; moderasyondan geçmeden sitede
+görünmez. Örnek ilanla doldurulmaz — pazaryeri gerçek satıcı ilan verene kadar
+boş açılır ve bunu kullanıcıya açıkça söyler.
+
+### VoltScore (`lib/voltscore.ts`)
+
+0-100 arası güven puanı, yedi kriterin ağırlıklı ortalamasıdır: batarya sağlığı
+%30, km/yaş dengesi %15, hızlı şarj kullanımı %15, kaza/değişen %12, garanti %10,
+servis geçmişi %10, gerçek menzil uyumu %8.
+
+Tasarımın kritik kararı: **eksik kriter uydurulmaz.** Verisi olmayan kriter
+puanlamaya hiç girmez ve ağırlığı kalan kriterlere orantılı dağıtılır. Buna
+karşılık `coverage` (veri kapsamı) döndürülür ve arayüzde gösterilir — %40
+kapsamla çıkan 95 ile %100 kapsamla çıkan 95 aynı şey değildir. Kapsam %35'in
+altındaysa puan hiç üretilmez.
+
+### Batarya raporu (`lib/battery-report.ts`)
+
+Rapora yalnızca ÖLÇÜLEN değerler girilir (SOH, çevrim sayısı, DC şarj oranı, km).
+Kalan ömür ve risk seviyesi sunucuda hesaplanır; ne form ne API bu alanları
+dışarıdan kabul eder — kabul etseydi her rapora "risk: düşük" yazılırdı.
+
+Kapasite kaybı hızı, araç 2+ yaşındaysa kendi geçmişinden ölçülür, değilse tipik
+değere düşülür. Doğrulanmamış rapor VoltScore'a KATILMAZ ve ilanda rozet çıkmaz;
+satıcı beyanından farkı yoktur. Ölçüm değiştirilirse doğrulama düşer.
+
+## Karşılaştırma sepeti
+
+Seçim `localStorage`'da tutulur ve sayfalar arasında yaşar (`CompareProvider`).
+Sepette katalog aracı ile ikinci el ilan BİR ARADA durabilir — "sıfır mı ikinci
+el mi" karşılaştırması bu sepetin asıl sebebidir. `/api/compare` iki türü ortak
+bir şemaya indirger; ilanın teknik verisi bağlı olduğu katalog modelinden gelir.
+
+## Harita
+
+Şarj ağı haritası hiçbir dış döşeme (tile) sunucusuna bağlanmaz. Ülke sınırı
+Natural Earth 1:50m verisinden (kamu malı) tek seferde üretilip `lib/tr-map.ts`
+içinde ~5 KB'lık bir SVG yolu olarak saklanır; istasyonlar aynı izdüşümle
+üzerine oturur.
+
+Sebebi: OSM'in genel döşeme sunucusu politikası ticari siteler için erişimin
+haber verilmeden kesilebileceğini yazar, ücretli sağlayıcılar yükleme başına
+ücretlendirir, ücretsiz katmanların çoğu ticari kullanıma kapalıdır. Bu çözümde
+API anahtarı, kota ve sağlayıcı bağımlılığı yoktur.
+
+İşaretler güce göre renklenir ve ızgara tabanlı kümelenir; yakınlaştırma
+arttıkça hücre küçülür ve kümeler açılır.
 
 ## Veri tazeliği
 

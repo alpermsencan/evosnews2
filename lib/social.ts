@@ -172,7 +172,7 @@ export function normalizeVisibility(value: unknown): Visibility {
 // Akış
 // ---------------------------------------------------------------------------
 
-export type FeedScope = "feed" | "explore" | "user" | "article";
+export type FeedScope = "feed" | "explore" | "user" | "article" | "vehicle";
 
 export type FeedOptions = {
   viewerId: string | null;
@@ -182,6 +182,8 @@ export type FeedOptions = {
   authorId?: string;
   /** scope = "article" için hedef haber */
   articleId?: string;
+  /** scope = "vehicle" için hedef araç (model topluluğu) */
+  vehicleId?: string;
   /** bu tarihten eski gönderiler (imleç) */
   before?: string | null;
   limit?: number;
@@ -193,6 +195,7 @@ export type FeedOptions = {
  *  - explore : görebildiğim herkes (keşfet / reels)
  *  - user    : tek kullanıcının profili
  *  - article : bir habere iliştirilmiş gönderiler
+ *  - vehicle : bir modele iliştirilmiş gönderiler (model topluluğu)
  */
 export async function getFeed(opts: FeedOptions): Promise<FeedPost[]> {
   const limit = Math.min(Math.max(opts.limit ?? 12, 1), 40);
@@ -209,6 +212,8 @@ export async function getFeed(opts: FeedOptions): Promise<FeedPost[]> {
     where.authorId = opts.authorId;
   } else if (opts.scope === "article" && opts.articleId) {
     where.articleId = opts.articleId;
+  } else if (opts.scope === "vehicle" && opts.vehicleId) {
+    where.vehicleId = opts.vehicleId;
   } else if (opts.scope === "feed") {
     if (!viewerId) return [];
     const followingIds = await getFollowingIds(viewerId);
