@@ -53,3 +53,4 @@ ${items}
     },
   });
 }
+export const dynamic = "force-dynamic";
