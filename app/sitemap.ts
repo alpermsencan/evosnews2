@@ -5,6 +5,7 @@ import { siteUrl } from "@/lib/site";
 
 /** Sitemap içerikle birlikte tazelensin. */
 export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const STATIC_PATHS = [
   { path: "", priority: 1, freq: "hourly" as const },
