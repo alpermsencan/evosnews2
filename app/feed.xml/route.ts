@@ -4,6 +4,7 @@ import { toDate } from "@/lib/utils";
 
 /** RSS içerik akışıyla birlikte tazelensin. */
 export const revalidate = 900;
+export const dynamic = "force-dynamic";
 
 /** XML'de güvenli olmayan karakterleri kaçırır. */
 function escapeXml(value: string) {
