@@ -139,6 +139,26 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
         )}
       </label>
 
+      {isRegister && (
+        <label className="flex items-start gap-2.5 cursor-pointer select-none">
+          <input
+            required
+            type="checkbox"
+            className="mt-1 h-4 w-4 rounded border-neutral-300 text-evos focus:ring-evos"
+          />
+          <span className="text-[12px] leading-tight text-neutral-500">
+            <Link href="/yasal/uyelik-sozlesmesi" target="_blank" className="font-bold text-neutral-600 hover:underline">
+              Üyelik Sözleşmesi
+            </Link>{" "}
+            ve{" "}
+            <Link href="/yasal/kvkk" target="_blank" className="font-bold text-neutral-600 hover:underline">
+              KVKK Aydınlatma Metni
+            </Link>
+            'ni okudum, kabul ediyorum.
+          </span>
+        </label>
+      )}
+
       {error && (
         <span className="rounded-md bg-red-50 px-3 py-2 text-xs font-bold text-evos">
           {error}
