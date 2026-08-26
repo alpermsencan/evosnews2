@@ -45,7 +45,6 @@ const STAT = "flex flex-col items-center gap-0.5 px-4";
 
 const TABS = [
   { key: "gonderiler", label: "GÖNDERİLER" },
-  { key: "reels", label: "REELS" },
   { key: "yorumlar", label: "YORUMLAR" },
   { key: "begeniler", label: "BEĞENDİKLERİ" },
 ] as const;
@@ -241,13 +240,6 @@ export default async function ProfilePage({ params, searchParams }: Props) {
                 className="block rounded-md border border-neutral-300 px-5 py-2.5 text-center text-[13px] font-black text-neutral-600 transition hover:border-evos hover:text-evos"
               >
                 PROFİLİ DÜZENLE
-              </Link>
-              <Link
-                href="/reels/yeni"
-                className="flex items-center justify-center gap-1.5 rounded-md bg-neutral-900 px-5 py-2.5 text-[13px] font-black text-white transition hover:bg-evos"
-              >
-                <IconPlay className="h-4 w-4" />
-                REEL YÜKLE
               </Link>
             </>
           ) : (

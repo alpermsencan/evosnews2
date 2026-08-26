@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  IconBolt,
   IconCar,
   IconHome,
-  IconPlay,
   IconUser,
   IconUsers,
 } from "@/components/ui/Icons";
@@ -14,8 +14,8 @@ import { useSession } from "@/components/user/SessionProvider";
 const ITEMS = [
   { href: "/", label: "Anasayfa", Icon: IconHome },
   { href: "/akis", label: "Akışım", Icon: IconUsers },
-  { href: "/reels", label: "Reels", Icon: IconPlay },
-  { href: "/araclar", label: "Araçlar", Icon: IconCar },
+  { href: "/ilanlar", label: "İlanlar", Icon: IconCar },
+  { href: "/sarj-agi", label: "Şarj Ağı", Icon: IconBolt },
 ];
 
 export default function MobileBottomNav() {

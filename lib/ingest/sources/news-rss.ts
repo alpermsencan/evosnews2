@@ -212,7 +212,37 @@ async function rewritePending(
   notes: string[],
 ) {
   if (!rewriteEnabled()) {
-    notes.push("OPENAI_API_KEY yok — taslaklar yeniden yazılmadan kuyrukta bekliyor");
+    notes.push("OPENAI_API_KEY yok — taslaklar doğrudan otomatik yayınlanıyor (Yapay zekasız mod)");
+    
+    const pending = await prisma.article.findMany({
+      where: {
+        sourceName: source.name,
+        status: "DRAFT",
+        OR: [{ rewrittenAt: null }, { rewrittenAt: { isSet: false } }],
+      },
+      take: REWRITE_BATCH,
+    });
+
+    for (const draft of pending) {
+      await prisma.article.update({
+        where: { id: draft.id },
+        data: {
+          status: source.autoPublish ? "PUBLISHED" : "DRAFT",
+          rewrittenAt: new Date(),
+          content: [
+            `<p>${draft.spot}</p>`,
+            `<p class="mt-4 font-bold text-xs text-neutral-400">`,
+            `  Bu haber otomatik olarak <strong>${source.name}</strong> kaynağından derlenmiştir. `,
+            `  Haberin detaylarını okumak için kaynağı ziyaret edebilirsiniz: `,
+            `  <a href="${draft.sourceUrl}" target="_blank" rel="noopener nofollow" class="text-evos hover:underline">`,
+            `    Orijinal Kaynağa Git ›`,
+            `  </a>`,
+            `</p>`
+          ].join("\n"),
+        }
+      });
+      stats.created++;
+    }
     return;
   }
 

@@ -14,7 +14,6 @@ export type NavGroup = {
 export const TOP_NAV: NavItem[] = [
   { label: "ANASAYFA", href: "/" },
   { label: "AKIŞIM", href: "/akis" },
-  { label: "REELS", href: "/reels" },
   { label: "HABER MERKEZİ", href: "/kategori/haber-merkezi" },
   { label: "ARAÇ MERKEZİ", href: "/arac-merkezi" },
   { label: "ARAÇLARI KEŞFET", href: "/araclar" },
@@ -43,12 +42,6 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
         label: "Akışım",
         href: "/akis",
         desc: "Takip ettiklerin ve arkadaşlarının paylaşımları",
-        badge: "YENİ",
-      },
-      {
-        label: "Reels",
-        href: "/reels",
-        desc: "Kullanıcılardan kısa dikey videolar",
         badge: "YENİ",
       },
       {
