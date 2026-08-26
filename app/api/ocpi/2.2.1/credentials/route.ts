@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
       data: {
         token: serverToken,
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://orange-tarsier-725070.hostingersite.com"}/api/ocpi/2.2.1`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://evotopilot.com"}/api/ocpi/2.2.1`,
         roles: [
           {
             role: "EMSP",

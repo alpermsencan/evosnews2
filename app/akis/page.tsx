@@ -25,6 +25,9 @@ export const metadata: Metadata = {
 
 const PAGE = 10;
 
+/** Sunucu tipini istemci tipine dönüştürür (alanlar birebir aynıdır) */
+const toClient = (p: FeedPost) => p as unknown as SocialPost;
+
 export default async function FeedPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/giris?devam=/akis");
@@ -93,11 +96,6 @@ export default async function FeedPage() {
         </section>
 
         <PostComposer />
-
-        {/* Mobilde reels şeridi akışın üstünde durur */}
-        <div className="lg:hidden">
-          <ReelRail reels={reels.map(toClient)} />
-        </div>
 
         <PostFeed
           query={{ scope: "feed" }}

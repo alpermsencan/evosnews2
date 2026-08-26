@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
  * OCPI Handshake - Desteklenen versiyonları listeler.
  */
 export async function GET(req: NextRequest) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://orange-tarsier-725070.hostingersite.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://evotopilot.com";
   
   return NextResponse.json({
     status_code: 1000,
