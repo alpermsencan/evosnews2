@@ -105,6 +105,13 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     return ok({ job, durationMs: Date.now() - startedAt, ...result });
   }
 
+  if (job === "ocpi-sync") {
+    const { syncAllCpos } = await import("@/lib/ingest/sources/ocpi-sync");
+    const result = await syncAllCpos();
+    revalidateTag(TAGS.stations, "max");
+    return ok({ job, durationMs: Date.now() - startedAt, results: result });
+  }
+
   // Salt okunur tazelik denetimi. Dış izleme (UptimeRobot vb.) buraya
   // bakabilir: bayat küme varsa 207 döner.
   if (job === "health") {

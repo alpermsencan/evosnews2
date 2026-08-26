@@ -765,3 +765,70 @@ model OperatorTariff {
 
   @@index([isActive])
 }
+
+// ==========================================
+// OCPI v2.2.1 MODELLERİ (eMSP ve CPO Entegrasyonu)
+// ==========================================
+
+model OcpiLocation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  countryCode String   // Örn: "TR"
+  partyId     String   // Örn: "ZES"
+  locationId  String   // Operatörün kendi sistemindeki tekil ID
+  name        String
+  address     String
+  city        String?
+  postalCode  String?
+  country     String   @default("TUR")
+  latitude    Float
+  longitude   Float
+  publish     Boolean  @default(true)
+  evses       OcpiEvse[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([countryCode, partyId, locationId])
+  @@index([city])
+}
+
+model OcpiEvse {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  uid         String          @unique // Örn: "TR*ZES*E1024"
+  evseId      String?         // Opsiyonel resmi EVSE ID
+  status      String          // AVAILABLE, CHARGING, RESERVED, OUTOFORDER, BLOCKED
+  locationId  String          @db.ObjectId
+  location    OcpiLocation    @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  connectors  OcpiConnector[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([locationId])
+}
+
+model OcpiConnector {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  connectorId String    // CPO içindeki connector numarası (örn: "1")
+  standard    String    // IEC_62196_T2, IEC_62196_T2_COMBO (CCS2), CHADEMO
+  format      String    // CABLE, SOCKET
+  powerType   String    // AC_1_PHASE, AC_3_PHASE, DC
+  voltage     Int
+  amperage    Int
+  maxPowerKw  Int
+  evseId      String    @db.ObjectId
+  evse        OcpiEvse  @relation(fields: [evseId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([evseId])
+}
+
+model OcpiToken {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  token       String   @unique
+  partyId     String
+  countryCode String
+  role        String   @default("CPO") // CPO, eMSP
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
