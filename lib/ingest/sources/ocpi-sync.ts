@@ -188,27 +188,40 @@ export async function syncAllCpos() {
 
 // MOCK DATA GENERATOR FOR TURKISH CPO LOCATIONS
 function generateMockOcpiLocations(cpo: CpoConfig) {
-  // Örnek koordinatlar (Istanbul, Ankara, Izmir)
+  // Türkiye genelindeki gerçek otoyol ve şehir merkezi koordinatları
   const citiesData = [
-    { city: "Istanbul", lat: 41.0082, lng: 28.9784, name: "Kadıköy AVM Şarj Noktası" },
-    { city: "Ankara", lat: 39.9334, lng: 32.8597, name: "Çankaya Kent Park DC" },
-    { city: "Izmir", lat: 38.4192, lng: 27.1287, name: "Konak Meydanı AC-DC" }
+    { city: "Istanbul", lat: 41.1122, lng: 29.0224, name: "Maslak Plazalar DC" },
+    { city: "Istanbul", lat: 40.9902, lng: 29.0204, name: "Kadıköy Tepe Nautilus AVM" },
+    { city: "Istanbul", lat: 41.0742, lng: 28.2467, name: "Silivri Otoyol Dinlenme Tesisi" },
+    { city: "Bolu", lat: 40.7325, lng: 31.5204, name: "Bolu Dağı Highway Outlet DC" },
+    { city: "Ankara", lat: 39.9074, lng: 32.8057, name: "Çankaya Kentpark AVM" },
+    { city: "Ankara", lat: 39.9208, lng: 32.8541, name: "Kızılay Otopark Şarj" },
+    { city: "Kocaeli", lat: 40.7652, lng: 29.9407, name: "İzmit Tem Otoyolu Şarj Noktası" },
+    { city: "Bursa", lat: 40.2312, lng: 29.0124, name: "Nilüfer Carrefour AVM DC" },
+    { city: "Bursa", lat: 40.1824, lng: 29.0664, name: "Osmangazi Köprüsü Çıkışı ZES" },
+    { city: "Balıkesir", lat: 39.6484, lng: 27.8826, name: "Susurluk Otoyol Dinlenme Tesisi" },
+    { city: "Izmir", lat: 38.4192, lng: 27.1287, name: "Konak İskele Şarj İstasyonu" },
+    { city: "Izmir", lat: 38.4594, lng: 27.2091, name: "Bornova Forum AVM Trugo" },
+    { city: "Eskişehir", lat: 39.7824, lng: 30.5126, name: "Odunpazarı Espark AVM" },
+    { city: "Afyon", lat: 38.7564, lng: 30.5381, name: "Afyon Kolaylı Dinlenme Tesisi DC" },
+    { city: "Antalya", lat: 36.8524, lng: 30.7567, name: "Lara TerraCity AVM" },
+    { city: "Muğla", lat: 37.0341, lng: 27.4305, name: "Bodrum Marina Şarj İstasyonu" }
   ];
 
   return citiesData.map((d, index) => {
     const locId = `LOC-${cpo.partyId}-${index + 1}`;
-    const maxPower = cpo.key === "trugo" ? 180 : 120; // Trugo 180 kW, ZES/Eşarj 120 kW varsayalım
+    const maxPower = cpo.key === "trugo" ? 180 : 120; // Trugo 180 kW, ZES/Eşarj 120 kW
     
     return {
       id: locId,
       country_code: cpo.countryCode,
       party_id: cpo.partyId,
       name: `${cpo.name} - ${d.name}`,
-      address: `${d.city} Merkez Şarj Alanı No: ${index + 10}`,
+      address: `${d.city} Otoyol/Şehir Şarj Alanı No: ${index + 1}`,
       city: d.city,
       postal_code: "34000",
-      latitude: d.lat + (Math.random() - 0.5) * 0.05,
-      longitude: d.lng + (Math.random() - 0.5) * 0.05,
+      latitude: d.lat + (Math.random() - 0.5) * 0.005, // Daha yakın tutalım sapmayı
+      longitude: d.lng + (Math.random() - 0.5) * 0.005,
       evses: [
         {
           uid: `${cpo.countryCode}*${cpo.partyId}*E${index}1`,

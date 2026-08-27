@@ -101,7 +101,7 @@ export default async function VehiclesPage({
         />
       </Suspense>
 
-      <section>
+      <section className="flex flex-col gap-8">
         <SectionTitle
           title={`ELEKTRİKLİ MODELLER (${vehicles.length})`}
           color="#0f766e"
@@ -111,10 +111,29 @@ export default async function VehiclesPage({
             Filtrelerinize uygun araç bulunamadı.
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {vehicles.map((v) => (
-              <VehicleCard key={v.id} vehicle={v} />
-            ))}
+          <div className="flex flex-col gap-8">
+            {Object.keys(
+              vehicles.reduce((acc, v) => {
+                if (!acc[v.brand]) acc[v.brand] = [];
+                acc[v.brand].push(v);
+                return acc;
+              }, {} as Record<string, typeof vehicles>)
+            ).sort().map((brandName) => {
+              const brandVehicles = vehicles.filter((v) => v.brand === brandName);
+              return (
+                <div key={brandName} className="flex flex-col gap-3">
+                  <h3 className="text-base font-black text-neutral-800 border-b border-neutral-150 pb-2 uppercase tracking-widest flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-teal-600"></span>
+                    {brandName}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    {brandVehicles.map((v) => (
+                      <VehicleCard key={v.id} vehicle={v} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </section>
