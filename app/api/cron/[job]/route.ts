@@ -25,7 +25,7 @@ const BUDGET_RESERVE_MS = 5_000;
 
 const JOBS: Record<string, { kind: SourceKind; limit: number }> = {
   news: { kind: "news", limit: 40 },
-  stations: { kind: "stations", limit: 500 },
+  stations: { kind: "stations", limit: 5000 },
   fx: { kind: "fx", limit: 10 },
   prices: { kind: "prices", limit: 20 },
 };
