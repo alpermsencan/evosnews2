@@ -29,7 +29,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
       const link = document.createElement("link");
       link.id = "leaflet-css";
       link.rel = "stylesheet";
-      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      link.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
       document.head.appendChild(link);
     }
 
@@ -37,7 +37,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
     if (!document.getElementById("leaflet-js")) {
       const script = document.createElement("script");
       script.id = "leaflet-js";
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
       script.onload = () => setLeafletLoaded(true);
       document.head.appendChild(script);
     } else {
