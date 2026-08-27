@@ -42,12 +42,13 @@ export const dynamic = "force-dynamic";
 const SERVICES = [
   { label: "Araçları Keşfet", href: "/araclar", Icon: IconCar, color: "from-blue-600 to-sky-500" },
   { label: "Şarj Ağı", href: "/sarj-agi", Icon: IconBolt, color: "from-emerald-600 to-teal-400" },
+  { label: "İlanlar", href: "/ilanlar", Icon: IconTag, color: "from-rose-600 to-pink-500" },
   { label: "AI Danışman", href: "/ai-danisman", Icon: IconSparkles, color: "from-indigo-600 to-purple-500" },
   { label: "Volt Score", href: "/evos-intelligence/volt-score", Icon: IconChart, color: "from-amber-500 to-orange-400" },
   { label: "Batarya Analizi", href: "/evos-intelligence/batarya-analizi", Icon: IconShield, color: "from-blue-800 to-indigo-600" },
-  { label: "Fiyat Analizi", href: "/fiyat-analizi", Icon: IconTag, color: "from-violet-600 to-fuchsia-500" },
-  { label: "ÖTV Rehberi", href: "/otv-rehberi", Icon: IconLayers, color: "from-teal-600 to-cyan-500" },
-  { label: "Topluluk", href: "/topluluk", Icon: IconUsers, color: "from-rose-600 to-pink-500" },
+  { label: "Fiyat Analizi", href: "/fiyat-analizi", Icon: IconLayers, color: "from-violet-600 to-fuchsia-500" },
+  { label: "ÖTV Rehberi", href: "/otv-rehberi", Icon: IconTag, color: "from-teal-600 to-cyan-500" },
+  { label: "Topluluk", href: "/topluluk", Icon: IconUsers, color: "from-orange-600 to-amber-500" },
 ];
 
 export default async function HomePage() {
@@ -164,7 +165,7 @@ export default async function HomePage() {
               PLATFORM <IconChevronRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 p-3 sm:grid-cols-4 lg:grid-cols-8">
+          <div className="grid grid-cols-3 gap-3 p-3 sm:grid-cols-5 lg:grid-cols-9">
             {SERVICES.map(({ label, href, Icon, color }) => (
               <Link
                 key={href + label}
