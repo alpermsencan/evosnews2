@@ -70,10 +70,23 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     // varsayılanlara döndürür (panelden yapılan ayarları ezer).
     const reset = req.nextUrl.searchParams.get("reset") === "1";
     await ensureSources({ reset });
+    
+    if (reset) {
+      // Çeviri gereksinimini kaldırdığımız için eski yabancı haberleri temizliyoruz.
+      await prisma.article.deleteMany({
+        where: {
+          sourceName: {
+            in: ["Electrek", "Charged EVs", "electrive", "InsideEVs"]
+          }
+        }
+      });
+      revalidateTag(TAGS.articles, "max");
+    }
+
     return ok({
       job,
       ok: true,
-      message: reset ? "Kaynak tanımları varsayılanlara sıfırlandı" : "Kaynak tanımları hazır",
+      message: reset ? "Kaynak tanımları ve yabancı haberler temizlendi, varsayılanlara sıfırlandı" : "Kaynak tanımları hazır",
     });
   }
 
