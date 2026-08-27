@@ -65,7 +65,7 @@ function estimateReadTime(text: string) {
   return Math.max(1, Math.round(text.split(/\s+/).length / 200));
 }
 
-/** RSS öğesindeki görsel (media:content / media:thumbnail / enclosure). */
+/** RSS öğesindeki görsel (media:content / media:thumbnail / enclosure / description <img>). */
 function feedImage(item: string): string | null {
   for (const [tag, attr] of [
     ["media:content", "url"],
@@ -75,6 +75,14 @@ function feedImage(item: string): string | null {
     const url = tagAttr(item, tag, attr);
     if (/^https?:\/\//i.test(url)) return url;
   }
+
+  // Fallback: description veya content:encoded içindeki ilk <img> etiketini tara
+  const description = tagText(item, "description") || tagText(item, "content:encoded") || "";
+  const match = description.match(/<img[^>]+src=["'](https?:\/\/[^"']+)["']/i);
+  if (match && match[1]) {
+    return match[1];
+  }
+
   return null;
 }
 

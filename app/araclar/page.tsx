@@ -32,6 +32,7 @@ export default async function VehiclesPage({
   if (sp.marka) where.brand = sp.marka;
   if (sp.segment) where.segment = sp.segment;
   if (sp.kasa) where.bodyType = sp.kasa;
+  if (sp.durum) where.marketStatus = sp.durum;
   const minFiyat = Number(sp.minFiyat);
   const maxFiyat = Number(sp.maxFiyat);
   const minMenzil = Number(sp.minMenzil);
@@ -83,6 +84,16 @@ export default async function VehiclesPage({
             { key: "marka", label: "Marka", type: "select", options: brands.map((b) => ({ value: b.brand, label: b.brand })) },
             { key: "segment", label: "Segment", type: "select", options: segments.map((s) => ({ value: s.segment, label: s.segment })) },
             { key: "kasa", label: "Kasa tipi", type: "select", options: bodyTypes.map((b) => ({ value: b.bodyType, label: b.bodyType })) },
+            {
+              key: "durum",
+              label: "Pazar Durumu",
+              type: "select",
+              options: [
+                { value: "TR_YAYINDA", label: "Türkiye'de Satışta" },
+                { value: "TR_YAKINDA", label: "Yakında Türkiye'de" },
+                { value: "TR_YOK", label: "Yurt Dışında / TR'de Yok" },
+              ],
+            },
             { key: "maxFiyat", label: "Maks. fiyat (₺)", type: "number", placeholder: "2000000" },
             { key: "minMenzil", label: "Min. menzil (km)", type: "number", placeholder: "400" },
             {

@@ -50,7 +50,9 @@ export default function OtvCalculator({
     if (!v) return;
     // Etiket fiyatından yaklaşık matrahı geri hesapla (%20 KDV + ÖTV)
     setMotorKw(String(v.motorPowerKw));
-    const guessRate = v.motorPowerKw <= 160 ? (v.price > 2_400_000 ? 40 : 10) : 50;
+    const guessRate = v.motorPowerKw <= 160
+      ? (v.price > 1914000 ? 40 : 10)
+      : (v.price > 2430000 ? 60 : 50);
     setBasePrice(String(Math.round(v.price / (1.2 * (1 + guessRate / 100)))));
   };
 

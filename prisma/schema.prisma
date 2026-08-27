@@ -334,6 +334,8 @@ model Vehicle {
   segment      String
   bodyType     String
   image        String
+  images       String[] @default([])
+  marketStatus String   @default("TR_YAYINDA") // "TR_YAYINDA" | "TR_YAKINDA" | "TR_YOK"
   price        Int
   otvRate      Int      @default(10)
   rangeKm      Int

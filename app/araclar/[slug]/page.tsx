@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import VehicleCard from "@/components/vehicles/VehicleCard";
+import VehicleGallery from "@/components/vehicles/VehicleGallery";
 import SectionTitle from "@/components/news/SectionTitle";
 import { calcOtv, formatDate, formatTL } from "@/lib/utils";
 import { IconCheck, IconClose } from "@/components/ui/Icons";
@@ -93,16 +94,13 @@ export default async function VehicleDetail({ params }: Props) {
       </nav>
 
       <div className="flex flex-col gap-5 overflow-hidden rounded-lg border border-neutral-200 bg-white lg:flex-row">
-        <div className="relative aspect-[16/10] w-full shrink-0 bg-neutral-100 lg:w-[52%]">
-          <Image
-            src={vehicle.image}
+        <div className="relative w-full shrink-0 bg-neutral-100 lg:w-[52%] flex flex-col justify-between">
+          <VehicleGallery
+            defaultImage={vehicle.image}
+            images={vehicle.images}
             alt={`${vehicle.brand} ${vehicle.model}`}
-            fill
-            priority
-            sizes="(max-width:1024px) 100vw, 660px"
-            className="object-cover"
           />
-          <span className="absolute left-3 top-3 rounded bg-evos-ink/85 px-2.5 py-1 text-[11px] font-black text-white backdrop-blur">
+          <span className="absolute left-3 top-3 rounded bg-evos-ink/85 px-2.5 py-1 text-[11px] font-black text-white backdrop-blur z-10">
             {vehicle.segment} · {vehicle.year}
           </span>
         </div>

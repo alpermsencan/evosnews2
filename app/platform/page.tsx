@@ -31,21 +31,6 @@ const MODULES = [
   { t: "Evos Protect", d: "Batarya güvencesi ve genişletilmiş garanti danışmanlığı. Talep toplama aşamasında.", href: "/evos-protect", live: false },
 ];
 
-/** Gerçekten yayında olan, herkese açık okuma uçları. */
-const ENDPOINTS = [
-  { m: "GET", p: "/api/articles", d: "Haber listesi (kategori, arama, sayfalama)" },
-  { m: "GET", p: "/api/vehicles", d: "Araç kataloğu ve teknik filtreler" },
-  { m: "GET", p: "/api/stations", d: "Şarj istasyonları, il/operatör/güç filtreleri" },
-  { m: "GET", p: "/api/prices", d: "Aylık fiyat endeksi ve katalogdan türetilen pazar sayaçları" },
-  { m: "GET", p: "/api/search", d: "Haber, araç ve istasyonda birleşik arama" },
-  { m: "GET", p: "/api/ticker", d: "Üst veri şeridi: TCMB kurları ve katalog sayaçları" },
-  { m: "GET", p: "/api/otv", d: "Güncel ÖTV dilimleri" },
-  { m: "POST", p: "/api/otv", d: "Matrah ve motor gücünden ÖTV/KDV hesaplar" },
-  { m: "POST", p: "/api/advisor", d: "Kullanım profiline göre araç önerisi üretir" },
-  { m: "GET", p: "/api/route-to", d: "Bir istasyona gerçek sürüş rotası ve mesafe" },
-  { m: "POST", p: "/api/leads", d: "İletişim / teklif talebi kaydeder" },
-  { m: "GET", p: "/feed.xml", d: "Yayındaki haberlerin RSS beslemesi" },
-];
 
 export default async function PlatformPage() {
   const [news, counts] = await Promise.all([
@@ -108,37 +93,24 @@ export default async function PlatformPage() {
         </div>
       </section>
 
-      <section>
-        <SectionTitle title="AÇIK API UÇLARI" color="#334155" />
-        <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-          <table className="w-full min-w-[520px] text-left text-sm">
-            <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
-              <tr>
-                <th className="px-4 py-3">METOT</th>
-                <th className="px-4 py-3">UÇ NOKTA</th>
-                <th className="px-4 py-3">AÇIKLAMA</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {ENDPOINTS.map((e) => (
-                <tr key={e.p + e.m} className="hover:bg-neutral-50">
-                  <td className="px-4 py-2.5">
-                    <span
-                      className={`rounded px-2 py-1 text-[10px] font-black text-white ${
-                        e.m === "GET" ? "bg-volt" : "bg-evos"
-                      }`}
-                    >
-                      {e.m}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2.5 font-mono text-[13px] font-bold text-neutral-800">
-                    {e.p}
-                  </td>
-                  <td className="px-4 py-2.5 text-neutral-600">{e.d}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <section className="rounded-lg border border-neutral-200 bg-white p-6">
+        <h2 className="text-lg font-black text-neutral-900 mb-2">KURUMSAL ENTEGRASYON VE OCPI ROAMING</h2>
+        <p className="text-sm text-neutral-600 leading-relaxed">
+          EVOtoPilot, açık dolaşım standartlarını destekler. Operatörler arası entegrasyonu kolaylaştırmak için OCPI (Open Charge Point Interface) v2.2.1 protokolünü tam uyumlu olarak sunmaktayız. Kurumsal ortaklarımız, filo yöneticileri ve şarj noktası işletmecileri (CPO) sisteme güvenle dahil olabilir.
+        </p>
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded border border-neutral-150 p-4 bg-neutral-50">
+            <h3 className="text-sm font-black text-neutral-800 mb-1">OCPI v2.2.1 Entegrasyonu</h3>
+            <p className="text-xs text-neutral-500 leading-relaxed">
+              Konum (Locations), Tarifeler (Tariffs), Token Handshake ve EVSE durum verilerini içeren standardizasyon.
+            </p>
+          </div>
+          <div className="rounded border border-neutral-150 p-4 bg-neutral-50">
+            <h3 className="text-sm font-black text-neutral-800 mb-1">Filo Çözümleri</h3>
+            <p className="text-xs text-neutral-500 leading-relaxed">
+              Şirket araçlarınızın dolum maliyetlerini, şarj kartlarını ve tüketim analizlerini tek bir portal üzerinden izleyin.
+            </p>
+          </div>
         </div>
       </section>
 

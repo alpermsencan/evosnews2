@@ -14,7 +14,8 @@ export default function EvosIntelligence() {
     realRangeKm: 420,
     dcChargeKw: 150,
     warrantyMonthsLeft: 36,
-    serviceHistory: "Yetkili Servis Bakımlı (Sıkıntısız)"
+    serviceHistory: "Yetkili Servis Bakımlı (Sıkıntısız)",
+    image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1200&q=80"
   };
 
   return (
@@ -39,12 +40,19 @@ export default function EvosIntelligence() {
         <div className="grid grid-cols-1 gap-6 p-5 sm:grid-cols-3">
           {/* Sol: Araç Başlığı & VoltScore Daire Göstergesi */}
           <div className="flex flex-col items-center justify-center border-b border-neutral-800 pb-5 sm:border-b-0 sm:border-r sm:pb-0 sm:pr-5">
-            <h3 className="text-center text-lg font-black text-white">
+            <div className="relative w-full aspect-[16/10] mb-3 overflow-hidden rounded bg-neutral-950 border border-neutral-800">
+              <img
+                src={featuredEv.image}
+                alt={`${featuredEv.brand} ${featuredEv.model}`}
+                className="object-cover w-full h-full opacity-85 hover:opacity-100 transition duration-300"
+              />
+            </div>
+            <h3 className="text-center text-base font-black text-white">
               {featuredEv.brand} {featuredEv.model}
             </h3>
-            <p className="text-xs text-neutral-400 mt-0.5">{featuredEv.year} · {featuredEv.km.toLocaleString("tr-TR")} km</p>
+            <p className="text-[11px] text-neutral-400 mt-0.5">{featuredEv.year} · {featuredEv.km.toLocaleString("tr-TR")} km</p>
             
-            <div className="relative mt-4 flex items-center justify-center">
+            <div className="relative mt-3 flex items-center justify-center">
               {/* Daire Grafik */}
               <svg className="h-28 w-28 transform -rotate-90">
                 <circle cx="56" cy="56" r="48" className="stroke-neutral-800" strokeWidth="8" fill="transparent" />

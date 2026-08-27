@@ -55,15 +55,14 @@ export default function Sidebar({
         aria-hidden={!open}
       >
         {/* Sidebar başlık */}
-        <div className="flex shrink-0 items-center justify-between bg-evos px-4 py-3.5 text-white">
+        <div className="flex shrink-0 items-center justify-between bg-[#0B1E3F] px-4 py-3.5 text-white">
           <Link
             href="/"
             onClick={onClose}
             className="flex items-center gap-2 text-2xl font-black tracking-tight"
           >
-            <IconBolt className="h-7 w-7 text-white" />
-            <span>
-              Evos<span className="text-white/70">Gazete</span>
+            <span className="text-sky-400">
+              EVOtoPilot
             </span>
           </Link>
           <button
@@ -77,19 +76,19 @@ export default function Sidebar({
 
         {/* Giriş bloğu */}
         <div className="flex shrink-0 items-center gap-3 border-b border-neutral-200 bg-neutral-50 px-4 py-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-evos/10 text-evos">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sky-600">
             <IconUser className="h-5 w-5" />
           </div>
           <div className="flex flex-1 flex-col leading-tight">
             <span className="text-sm font-bold text-neutral-800">
-              Evos hesabına giriş yap
+              EVOtoPilot hesabına giriş yap
             </span>
             <span className="text-xs text-neutral-500">
               Dijital garajın ve takip listen seni bekliyor
             </span>
           </div>
           <Link href="/giris">
-            <button className="shrink-0 rounded-md bg-evos px-3 py-1.5 text-xs font-bold text-white transition hover:bg-evos-dark">
+            <button className="shrink-0 rounded-md bg-[#0B1E3F] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-sky-950">
               GİRİŞ
             </button>
           </Link>
