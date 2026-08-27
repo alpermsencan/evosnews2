@@ -56,7 +56,8 @@ export default async function RootLayout({
 
   // Şerit verileri her istekte okunduğu için önbellekli sorgulardan gelir;
   // içerik değişince revalidateTag anında tazeler (bkz. lib/revalidate.ts).
-  const [breaking, currentUser] = await Promise.all([
+  const [tickers, breaking, currentUser] = await Promise.all([
+    getTickers(),
     getBreakingBar(8),
     getCurrentUser(),
   ]);
@@ -84,7 +85,7 @@ export default async function RootLayout({
         >
           <Header />
           <BreakingBar items={breaking} />
-          <TickerBar />
+          <TickerBar items={tickers} />
           {/* Karşılaştırma sepeti sayfalar arasında yaşar, bu yüzden sağlayıcı
               kökte durur; çubuk yalnızca sepette öğe varken render edilir. */}
           <CompareProvider>

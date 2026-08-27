@@ -157,18 +157,92 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
         />
       </Suspense>
 
-      <section>
-        <SectionTitle title={`İLANLAR (${listings.length})`} color="#0f172a" />
-        {listings.length > 0 ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {listings.map((l) => (
-              <ListingCard key={l.id} listing={l} />
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Sol Sütun: Dikey Kategori ve Marka Seçimi */}
+        <aside className="lg:col-span-1 flex flex-col gap-4">
+          <div className="rounded-lg border border-neutral-200 bg-white p-4">
+            <h3 className="text-sm font-black text-neutral-900 border-b border-neutral-100 pb-2 mb-3">
+              KATEGORİ / DURUM
+            </h3>
+            <div className="flex flex-col gap-1.5 text-xs font-bold text-neutral-600">
+              <Link
+                href="/ilanlar"
+                className={`flex items-center justify-between rounded px-2.5 py-2 hover:bg-neutral-50 hover:text-sky-600 ${!sp.durum && !sp.marka && !sp.rapor ? "bg-sky-50 text-sky-600 font-black" : ""}`}
+              >
+                <span>Tüm İlanlar</span>
+                <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-500 font-bold">{total}</span>
+              </Link>
+              <Link
+                href="/ilanlar?durum=SIFIR"
+                className={`flex items-center justify-between rounded px-2.5 py-2 hover:bg-neutral-50 hover:text-sky-600 ${sp.durum === "SIFIR" ? "bg-sky-50 text-sky-600 font-black" : ""}`}
+              >
+                <span>Sıfır Elektrikli Araçlar</span>
+              </Link>
+              <Link
+                href="/ilanlar?durum=IKINCI_EL"
+                className={`flex items-center justify-between rounded px-2.5 py-2 hover:bg-neutral-50 hover:text-sky-600 ${sp.durum === "IKINCI_EL" ? "bg-sky-50 text-sky-600 font-black" : ""}`}
+              >
+                <span>İkinci El İlanları</span>
+              </Link>
+              <Link
+                href="/ilanlar?rapor=1"
+                className={`flex items-center justify-between rounded px-2.5 py-2 hover:bg-neutral-50 hover:text-sky-600 ${sp.rapor === "1" ? "bg-sky-50 text-sky-600 font-black" : ""}`}
+              >
+                <span>Batarya Raporlu İlanlar</span>
+                <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-600 font-bold">{reported}</span>
+              </Link>
+            </div>
+
+            <h3 className="text-sm font-black text-neutral-900 border-b border-neutral-100 pb-2 mt-5 mb-3">
+              MARKALAR
+            </h3>
+            <div className="flex flex-col gap-1.5 text-xs font-bold text-neutral-600">
+              {brands.map((b) => (
+                <Link
+                  key={b.brand}
+                  href={`/ilanlar?marka=${b.brand}`}
+                  className={`flex items-center justify-between rounded px-2.5 py-2 hover:bg-neutral-50 hover:text-sky-600 ${sp.marka === b.brand ? "bg-sky-50 text-sky-600 font-black" : ""}`}
+                >
+                  <span>{b.brand}</span>
+                </Link>
+              ))}
+            </div>
           </div>
-        ) : (
-          <EmptyState hasFilters={Object.keys(sp).length > 0} total={total} />
-        )}
-      </section>
+        </aside>
+
+        {/* Sağ Sütun: İlan Vitrini & Liste */}
+        <div className="lg:col-span-3 flex flex-col gap-6">
+          {/* Vitrin / Öne Çıkan İlanlar */}
+          {listings.some((l) => l.isSponsored) && (
+            <section className="rounded-lg border border-sky-100 bg-sky-50/20 p-4">
+              <h3 className="text-sm font-black text-sky-950 mb-3 tracking-wide flex items-center gap-1.5">
+                <span>⭐</span> <span>ÖNE ÇIKAN VİTRİN İLANLARI</span>
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {listings.filter((l) => l.isSponsored).map((l) => (
+                  <ListingCard key={l.id} listing={l} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Normal İlanlar */}
+          <section>
+            <h3 className="text-sm font-black text-neutral-900 mb-3 tracking-wide">
+              TÜM İLANLAR ({listings.length})
+            </h3>
+            {listings.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {listings.filter((l) => !l.isSponsored).map((l) => (
+                  <ListingCard key={l.id} listing={l} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState hasFilters={Object.keys(sp).length > 0} total={total} />
+            )}
+          </section>
+        </div>
+      </div>
 
       <section className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-6 lg:flex-row lg:items-center">
         <div className="flex min-w-0 flex-1 flex-col gap-2">

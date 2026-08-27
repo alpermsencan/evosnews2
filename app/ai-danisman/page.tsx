@@ -6,6 +6,7 @@ import LeadForm from "@/components/ui/LeadForm";
 import { getByCategory } from "@/lib/queries";
 import { IconSparkles, IconMic, IconCheck } from "@/components/ui/Icons";
 import { toDate } from "@/lib/utils";
+import ElevenLabsVoiceAdvisor from "@/components/tools/ElevenLabsVoiceAdvisor";
 
 // Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
 // render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
@@ -107,7 +108,14 @@ export default async function AiAdvisorPage() {
         </p>
       </header>
 
-      <AdvisorWizard bodyTypes={bodyTypes.map((b) => b.bodyType)} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2">
+          <AdvisorWizard bodyTypes={bodyTypes.map((b) => b.bodyType)} />
+        </div>
+        <div className="lg:col-span-1">
+          <ElevenLabsVoiceAdvisor />
+        </div>
+      </div>
 
       <section>
         <SectionTitle title="DANIŞMAN NASIL ÇALIŞIYOR?" color="#4f46e5" />

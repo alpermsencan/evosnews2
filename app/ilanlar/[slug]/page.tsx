@@ -11,6 +11,8 @@ import FavoriteButton from "@/components/listings/FavoriteButton";
 import CompareButton from "@/components/compare/CompareButton";
 import SectionTitle from "@/components/news/SectionTitle";
 import { IconBattery, IconCheck, IconMap, IconShield } from "@/components/ui/Icons";
+import ListingGallery from "@/components/listings/ListingGallery";
+import VoltScoreWidget from "@/components/listings/VoltScoreWidget";
 
 export const dynamic = "force-dynamic";
 
@@ -72,34 +74,12 @@ export default async function ListingDetail({
 
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex min-w-0 flex-1 flex-col gap-5">
-          <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-            <div className="relative aspect-[16/10] w-full bg-neutral-100">
-              <Image
-                src={listing.image}
-                alt={listing.title}
-                fill
-                priority
-                sizes="(max-width:1024px) 100vw, 720px"
-                className="object-cover"
-              />
-              {verified && (
-                <span className="absolute left-3 top-3 rounded bg-volt px-2.5 py-1 text-[11px] font-black text-white">
-                  ✓ EVOS DOĞRULAMALI BATARYA RAPORU
-                </span>
-              )}
-            </div>
-
-            {gallery.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto p-3">
-                {gallery.map((src, i) => (
-                  <div
-                    key={`${src}-${i}`}
-                    className="relative h-16 w-24 shrink-0 overflow-hidden rounded bg-neutral-100"
-                  >
-                    <Image src={src} alt="" fill sizes="96px" className="object-cover" />
-                  </div>
-                ))}
-              </div>
+          <div className="relative">
+            <ListingGallery defaultImage={listing.image} images={listing.images} alt={listing.title} />
+            {verified && (
+              <span className="absolute left-3 top-3 rounded bg-volt px-2.5 py-1 text-[11px] font-black text-white z-10 shadow-md">
+                ✓ EVOS DOĞRULAMALI BATARYA RAPORU
+              </span>
             )}
           </div>
 
@@ -215,50 +195,34 @@ export default async function ListingDetail({
               </p>
             </section>
           )}
+
+          {/* VOLTSCORE RADİAL GÜVEN PUANI */}
+          <section className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-5">
+            <h2 className="text-base font-black text-neutral-900 border-b border-neutral-100 pb-2 mb-1">
+              VoltScore™ Elektrikli Araç Güven Puanı
+            </h2>
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              <div className="w-full max-w-[280px] shrink-0">
+                <VoltScoreWidget score={listing.voltScore ?? 0} breakdown={breakdown} />
+              </div>
+              <div className="flex flex-col gap-2.5">
+                <p className="text-sm font-semibold text-neutral-850 leading-snug">
+                  VoltScore, aracın batarya ve şarj kondisyonunu tek bir güven endeksine indirger.
+                </p>
+                <p className="text-xs leading-relaxed text-neutral-500">
+                  Bu puan; batarya yönetim sisteminden (BMS) okunan anlık batarya kapasite kaybı (SOH), geçmiş hızlı şarj kullanım sıklığı, aracın yaşı ile yaptığı kilometre dengesi, kaza geçmişi ve üretici batarya garanti süreleri dikkate alınarak hesaplanır.
+                </p>
+                <div className="flex items-center gap-1.5 mt-1 bg-sky-50 text-sky-850 px-3 py-2 rounded text-xs font-semibold">
+                  <span>⚡</span>
+                  <span>Bu araç için hesaplanan veri kapsamı: %{breakdown?.coverage ?? 100}</span>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
 
-        {/* SAĞ SÜTUN — VOLTSCORE */}
+        {/* SAĞ SÜTUN — DETAYLAR & SATICI */}
         <aside className="flex w-full shrink-0 flex-col gap-5 lg:w-[340px]">
-          <section className="flex flex-col items-center gap-4 rounded-lg border border-neutral-200 bg-white p-5">
-            <h2 className="text-sm font-black tracking-wide text-neutral-800">
-              VOLTSCORE™ GÜVEN PUANI
-            </h2>
-            <VoltScoreBadge score={listing.voltScore} coverage={breakdown?.coverage} size="lg" />
-
-            {breakdown ? (
-              <ul className="flex w-full flex-col divide-y divide-neutral-100">
-                {breakdown.criteria.map((c) => (
-                  <li key={c.key} className="flex items-center justify-between gap-2 py-2">
-                    <div className="flex min-w-0 flex-col">
-                      <span className="truncate text-[12px] font-bold text-neutral-700">
-                        {c.label}
-                      </span>
-                      <span className="text-[10px] text-neutral-400">
-                        ağırlık %{c.weight} · {c.display}
-                      </span>
-                    </div>
-                    <span
-                      className={`shrink-0 text-[13px] font-black ${
-                        c.score == null ? "text-neutral-300" : "text-neutral-900"
-                      }`}
-                    >
-                      {c.score == null ? "veri yok" : Math.round(c.score)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-[12px] text-neutral-500">
-                Puanı hesaplamak için yeterli veri yok.
-              </p>
-            )}
-
-            <p className="text-[10px] leading-relaxed text-neutral-400">
-              Puan sunucuda hesaplanır ve her araca aynı formül uygulanır. Verisi
-              olmayan kriter puana KATILMAZ, ağırlığı diğerlerine dağıtılır —
-              bu yüzden kapsam oranı ayrıca gösterilir.
-            </p>
-          </section>
 
           <section className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5">
             <h2 className="text-sm font-black tracking-wide text-neutral-800">SATICI</h2>

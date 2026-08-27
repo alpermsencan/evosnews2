@@ -35,18 +35,19 @@ import { formatTL, timeAgo } from "@/lib/utils";
 import EvosIntelligence from "@/components/home/EvosIntelligence";
 import EvosVoiceIntelligence from "@/components/home/EvosVoiceIntelligence";
 import ListingCard from "@/components/listings/ListingCard";
+import FeaturesTicker from "@/components/home/FeaturesTicker";
 
 export const dynamic = "force-dynamic";
 
 const SERVICES = [
-  { label: "Araçları Keşfet", href: "/araclar", Icon: IconCar, color: "bg-evos" },
-  { label: "Şarj Ağı", href: "/sarj-agi", Icon: IconBolt, color: "bg-volt" },
-  { label: "AI Danışman", href: "/ai-danisman", Icon: IconSparkles, color: "bg-indigo-600" },
-  { label: "Evos Protect", href: "/evos-protect", Icon: IconShield, color: "bg-blue-700" },
-  { label: "ÖTV Rehberi", href: "/otv-rehberi", Icon: IconTag, color: "bg-violet-600" },
-  { label: "Fiyat Analizi", href: "/fiyat-analizi", Icon: IconChart, color: "bg-amber-600" },
-  { label: "Dijital Garaj", href: "/dijital-garaj", Icon: IconLayers, color: "bg-sky-700" },
-  { label: "Topluluk", href: "/topluluk", Icon: IconUsers, color: "bg-orange-600" },
+  { label: "Araçları Keşfet", href: "/araclar", Icon: IconCar, color: "from-blue-600 to-sky-500" },
+  { label: "Şarj Ağı", href: "/sarj-agi", Icon: IconBolt, color: "from-emerald-600 to-teal-400" },
+  { label: "AI Danışman", href: "/ai-danisman", Icon: IconSparkles, color: "from-indigo-600 to-purple-500" },
+  { label: "Volt Score", href: "/evos-intelligence/volt-score", Icon: IconChart, color: "from-amber-500 to-orange-400" },
+  { label: "Batarya Analizi", href: "/evos-intelligence/batarya-analizi", Icon: IconShield, color: "from-blue-800 to-indigo-600" },
+  { label: "Fiyat Analizi", href: "/fiyat-analizi", Icon: IconTag, color: "from-violet-600 to-fuchsia-500" },
+  { label: "ÖTV Rehberi", href: "/otv-rehberi", Icon: IconLayers, color: "from-teal-600 to-cyan-500" },
+  { label: "Topluluk", href: "/topluluk", Icon: IconUsers, color: "from-rose-600 to-pink-500" },
 ];
 
 export default async function HomePage() {
@@ -64,6 +65,8 @@ export default async function HomePage() {
     stations,
     tech,
     listings,
+    editorArticles,
+    authorArticles,
   ] = await Promise.all([
     getHeadlines(6),
     getLatest(16),
@@ -107,6 +110,18 @@ export default async function HomePage() {
         }
       }
     }),
+    prisma.article.findMany({
+      where: { status: "PUBLISHED", author: { title: { contains: "Editör" } } },
+      take: 4,
+      orderBy: { publishedAt: "desc" },
+      include: { author: true, category: true }
+    }),
+    prisma.article.findMany({
+      where: { status: "PUBLISHED", author: { title: { contains: "Yazar" } } },
+      take: 4,
+      orderBy: { publishedAt: "desc" },
+      include: { author: true, category: true }
+    })
   ]);
 
   const last = priceIndex[priceIndex.length - 1];
@@ -135,37 +150,33 @@ export default async function HomePage() {
         <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
           <div className="flex items-center justify-between border-b border-neutral-100 px-4 py-2.5">
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded bg-evos text-white">
-                <IconBolt className="h-4 w-4" />
+              <span className="flex h-6 w-6 items-center justify-center rounded bg-[#0B1E3F] text-white">
+                <IconBolt className="h-4 w-4 text-sky-400" />
               </span>
               <h2 className="text-sm font-black tracking-wide text-neutral-800">
-                EVOS SERVİSLERİ
+                EVOTOPILOT SERVİSLERİ
               </h2>
             </div>
             <Link
               href="/platform"
-              className="flex items-center gap-1 text-xs font-bold text-neutral-400 hover:text-evos"
+              className="flex items-center gap-1 text-xs font-bold text-neutral-400 hover:text-sky-600"
             >
               PLATFORM <IconChevronRight className="h-3 w-3" />
             </Link>
           </div>
-          {/* Sütun sayısı SERVICES uzunluğuyla hizalı: Evos Market kaldırılıp
-              Voice Intelligence AI Danışman'la birleştiğinde şerit 8 öğeye
-              düştü; 10 sütunluk grid sonda iki boş hücre bırakıyordu. */}
-          <div className="no-scrollbar flex gap-3 overflow-x-auto p-3 sm:grid sm:grid-cols-4 sm:gap-4 sm:overflow-visible lg:grid-cols-8">
-            {SERVICES.map(({ label, href, Icon, color }, i) => (
+          <div className="grid grid-cols-2 gap-3 p-3 sm:grid-cols-4 lg:grid-cols-8">
+            {SERVICES.map(({ label, href, Icon, color }) => (
               <Link
                 key={href + label}
                 href={href}
-                style={{ animationDelay: `${i * 45}ms` }}
-                className="evos-service flex w-[88px] shrink-0 flex-col items-center gap-2 rounded-lg p-1.5 text-center transition hover:bg-neutral-50 sm:w-auto"
+                className="group flex flex-col items-center justify-center rounded-xl border border-neutral-100 bg-neutral-50/50 p-4 text-center transition duration-300 hover:bg-sky-50/50 hover:border-sky-200 hover:shadow-sm"
               >
                 <span
-                  className={`evos-service-icon flex h-16 w-16 items-center justify-center rounded-2xl text-white ${color}`}
+                  className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${color} text-white shadow group-hover:scale-110 transition duration-300`}
                 >
-                  <Icon className="h-8 w-8" />
+                  <Icon className="h-5.5 w-5.5" />
                 </span>
-                <span className="text-[11px] font-bold leading-tight text-neutral-600">
+                <span className="text-[11px] font-black text-neutral-800 mt-2.5 group-hover:text-sky-800 transition leading-tight">
                   {label}
                 </span>
               </Link>
@@ -174,8 +185,69 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* EVOS INTELLIGENCE (Canlı Araç Verisi) */}
-      <EvosIntelligence />
+      {/* GÜNLÜK YAZILAR (Editörün Kaleminden & Yazarlardan) */}
+      <section className="px-3 sm:px-0 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Sol: Editörün Kaleminden */}
+        <div className="flex flex-col gap-3">
+          <SectionTitle
+            title="EDİTÖRÜN KALEMİNDEN"
+            color="#0f172a"
+            href="/kategori/haber-merkezi"
+          />
+          <div className="flex flex-col gap-3.5 bg-white border border-neutral-200 rounded-lg p-4 shadow-sm min-h-[360px] justify-between">
+            {editorArticles.map((a) => (
+              <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-3 group border-b border-neutral-150 last:border-0 pb-3 last:pb-0">
+                <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded bg-neutral-100">
+                  <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-105 transition duration-300" />
+                </div>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <h4 className="text-xs font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
+                    {a.title}
+                  </h4>
+                  <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
+                    <img src={a.author?.avatar || ""} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
+                    <span className="truncate">{a.author?.name}</span>
+                    <span>·</span>
+                    <span className="shrink-0">{timeAgo(a.publishedAt)}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Sağ: Yazarlardan */}
+        <div className="flex flex-col gap-3">
+          <SectionTitle
+            title="YAZARLARDAN"
+            color="#0f172a"
+            href="/kategori/teknoloji"
+          />
+          <div className="flex flex-col gap-3.5 bg-white border border-neutral-200 rounded-lg p-4 shadow-sm min-h-[360px] justify-between">
+            {authorArticles.map((a) => (
+              <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-3 group border-b border-neutral-150 last:border-0 pb-3 last:pb-0">
+                <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded bg-neutral-100">
+                  <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-105 transition duration-300" />
+                </div>
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <h4 className="text-xs font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
+                    {a.title}
+                  </h4>
+                  <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
+                    <img src={a.author?.avatar || ""} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
+                    <span className="truncate">{a.author?.name}</span>
+                    <span>·</span>
+                    <span className="shrink-0">{timeAgo(a.publishedAt)}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AKAN BANT (Site Servisleri & Özellikleri) */}
+      <FeaturesTicker />
 
       {/* EVOS İLAN MERKEZİ (Öne Çıkan İlanlar) */}
       <section className="px-3 sm:px-0">
