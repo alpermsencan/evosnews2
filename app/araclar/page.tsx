@@ -54,7 +54,7 @@ export default async function VehiclesPage({
       : { price: "asc" };
 
   const [vehicles, brands, segments, bodyTypes, stats, news] = await Promise.all([
-    prisma.vehicle.findMany({ where, orderBy }),
+    prisma.vehicle.findMany({ where, orderBy, include: { syncImages: true } }),
     prisma.vehicle.findMany({ select: { brand: true }, distinct: ["brand"], orderBy: { brand: "asc" } }),
     prisma.vehicle.findMany({ select: { segment: true }, distinct: ["segment"], orderBy: { segment: "asc" } }),
     prisma.vehicle.findMany({ select: { bodyType: true }, distinct: ["bodyType"], orderBy: { bodyType: "asc" } }),

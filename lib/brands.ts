@@ -21,7 +21,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Güney Kore",
     foundedYear: 1944,
     badgeColor: "#05141F",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939100/evos/brands/kia-logo.svg",
+    logo: "/images/brands/kia.svg",
   },
   hyundai: {
     name: "Hyundai",
@@ -29,7 +29,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Güney Kore",
     foundedYear: 1967,
     badgeColor: "#002C6C",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939101/evos/brands/hyundai-logo.svg",
+    logo: "/images/brands/hyundai.svg",
   },
   togg: {
     name: "Togg",
@@ -37,7 +37,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Türkiye",
     foundedYear: 2018,
     badgeColor: "#006699",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939102/evos/brands/togg-logo.svg",
+    logo: "/images/brands/togg.svg",
   },
   byd: {
     name: "BYD",
@@ -45,7 +45,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Çin",
     foundedYear: 1995,
     badgeColor: "#C00000",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939103/evos/brands/byd-logo.svg",
+    logo: "/images/brands/byd.svg",
   },
   tesla: {
     name: "Tesla",
@@ -53,7 +53,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "ABD",
     foundedYear: 2003,
     badgeColor: "#E82127",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939104/evos/brands/tesla-logo.svg",
+    logo: "/images/brands/tesla.svg",
   },
   bmw: {
     name: "BMW",
@@ -61,7 +61,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Almanya",
     foundedYear: 1916,
     badgeColor: "#0066B1",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939105/evos/brands/bmw-logo.svg",
+    logo: "/images/brands/bmw.svg",
   },
   "mercedes-benz": {
     name: "Mercedes-Benz",
@@ -69,7 +69,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Almanya",
     foundedYear: 1926,
     badgeColor: "#000000",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939106/evos/brands/mercedes-logo.svg",
+    logo: "/images/brands/mercedes.svg",
   },
   porsche: {
     name: "Porsche",
@@ -77,7 +77,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Almanya",
     foundedYear: 1931,
     badgeColor: "#9B111E",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939107/evos/brands/porsche-logo.svg",
+    logo: "/images/brands/porsche.svg",
   },
   renault: {
     name: "Renault",
@@ -85,7 +85,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Fransa",
     foundedYear: 1899,
     badgeColor: "#FFCC00",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939108/evos/brands/renault-logo.svg",
+    logo: "/images/brands/renault.svg",
   },
   xiaomi: {
     name: "Xiaomi",
@@ -93,7 +93,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Çin",
     foundedYear: 2010,
     badgeColor: "#FF6900",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939109/evos/brands/xiaomi-logo.svg",
+    logo: "/images/brands/xiaomi.svg",
   },
   audi: {
     name: "Audi",
@@ -101,7 +101,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Almanya",
     foundedYear: 1909,
     badgeColor: "#BB0A30",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939110/evos/brands/audi-logo.svg",
+    logo: "/images/brands/audi.svg",
   },
   volkswagen: {
     name: "Volkswagen",
@@ -109,7 +109,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Almanya",
     foundedYear: 1937,
     badgeColor: "#001E50",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939111/evos/brands/vw-logo.svg",
+    logo: "/images/brands/volkswagen.svg",
   },
   volvo: {
     name: "Volvo",
@@ -117,7 +117,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "İsveç",
     foundedYear: 1927,
     badgeColor: "#003057",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939112/evos/brands/volvo-logo.svg",
+    logo: "/images/brands/volvo.svg",
   },
   peugeot: {
     name: "Peugeot",
@@ -125,7 +125,7 @@ export const BRANDS: Record<string, BrandConfig> = {
     country: "Fransa",
     foundedYear: 1810,
     badgeColor: "#000000",
-    logo: "https://res.cloudinary.com/y8thxjao/image/upload/v1787939113/evos/brands/peugeot-logo.svg",
+    logo: "/images/brands/peugeot.svg",
   },
 };
 

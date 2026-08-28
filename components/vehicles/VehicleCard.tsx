@@ -21,9 +21,26 @@ export type VehicleLite = {
   dcChargeKw: number | null;
   /** Editör puanı; gerçek bir inceleme yoksa boştur. */
   rating: number | null;
+  syncImages?: {
+    id: string;
+    url: string;
+    type: string;
+    isPrimary: boolean;
+  }[];
 };
 
 export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
+  // Prioritize verified syncImages over legacy static image URL
+  const syncImages = vehicle.syncImages || [];
+
+  let displayImage = vehicle.image;
+  if (syncImages && syncImages.length > 0) {
+    const primaryImg = syncImages.find((img) => img.isPrimary) || syncImages[0];
+    if (primaryImg) {
+      displayImage = primaryImg.url;
+    }
+  }
+
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white transition hover:shadow-lg">
       <Link
@@ -31,7 +48,7 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
         className="relative block aspect-[16/10] w-full bg-neutral-100"
       >
         <Image
-          src={vehicle.image}
+          src={displayImage}
           alt={`${vehicle.brand} ${vehicle.model}`}
           fill
           sizes="(max-width:640px) 100vw, 340px"

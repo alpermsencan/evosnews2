@@ -27,6 +27,7 @@ export default async function SearchPage({
             ],
           },
           take: 8,
+          include: { syncImages: true },
         }),
         prisma.chargeStation.findMany({
           where: {

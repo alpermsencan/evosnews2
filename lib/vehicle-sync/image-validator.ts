@@ -29,9 +29,10 @@ export interface ValidationResult {
 export function validateVehicleImage(ctx: ImageValidationContext): ValidationResult {
   const brand = ctx.brand.toLowerCase();
   const model = ctx.model.toLowerCase();
-  const src = (ctx.sourceUrl || ctx.url || "").toLowerCase();
+  const src = (ctx.url || "").toLowerCase();
+  const source = (ctx.sourceUrl || "").toLowerCase();
   const alt = (ctx.alt || "").toLowerCase();
-  const full = `${src} ${alt}`;
+  const full = `${src} ${source} ${alt}`;
 
   // 1. NON-VEHICLE / MARKETING ASSET REJECTION RULES
   const nonVehiclePatterns = [
@@ -110,16 +111,30 @@ export function validateVehicleImage(ctx: ImageValidationContext): ValidationRes
   }
 
   if (brand === "hyundai") {
-    if (model.includes("inster") && (full.includes("ioniq-5") || full.includes("ioniq-6") || full.includes("kona"))) {
+    if (model.includes("inster") && (full.includes("ioniq-5") || full.includes("ioniq5") || full.includes("ioniq-6") || full.includes("ioniq6") || full.includes("kona"))) {
       return { isValid: false, reason: "Hyundai Inster cross-model contamination", type: "gallery" };
     }
-    if (model.includes("ioniq 5") && (full.includes("inster") || full.includes("ioniq-6") || full.includes("kona") || full.includes("ioniq3") || full.includes("building"))) {
-      return { isValid: false, reason: "Hyundai IONIQ 5 cross-model/building contamination", type: "gallery" };
+    if (model === "ioniq 5") {
+      const hasN = full.includes("_n") || full.includes("-n") || full.includes("n_line") || full.includes("n-line") || full.includes("nline") || full.includes("ioniq5n") || full.includes("ioniq-5-n");
+      const hasOther = full.includes("inster") || full.includes("ioniq-6") || full.includes("ioniq6") || full.includes("kona") || full.includes("ioniq3") || full.includes("ioniq-9") || full.includes("ioniq9") || full.includes("building");
+      if (hasN || hasOther) {
+        return { isValid: false, reason: "Hyundai IONIQ 5 cross-model/N-Line contamination", type: "gallery" };
+      }
     }
-    if (model.includes("ioniq 6") && (full.includes("inster") || full.includes("ioniq-5") || full.includes("kona") || full.includes("ioniq3") || full.includes("building"))) {
+    if (model === "ioniq 5 n") {
+      const hasOther = full.includes("inster") || full.includes("ioniq-6") || full.includes("ioniq6") || full.includes("kona") || full.includes("ioniq3") || full.includes("ioniq-9") || full.includes("ioniq9");
+      const hasNSignature = full.includes("_n") || full.includes("-n") || full.includes("n_line") || full.includes("n-line") || full.includes("nline") || full.includes("ioniq5n") || full.includes("ioniq-5-n");
+      if (hasOther || !hasNSignature) {
+        return { isValid: false, reason: "Hyundai IONIQ 5 N missing N signature or contains other model", type: "gallery" };
+      }
+    }
+    if (model.includes("ioniq 6") && (full.includes("inster") || full.includes("ioniq-5") || full.includes("ioniq5") || full.includes("kona") || full.includes("ioniq3") || full.includes("ioniq-9") || full.includes("ioniq9") || full.includes("building"))) {
       return { isValid: false, reason: "Hyundai IONIQ 6 cross-model/building contamination", type: "gallery" };
     }
-    if (model.includes("kona") && (full.includes("inster") || full.includes("ioniq-5") || full.includes("ioniq-6") || full.includes("ioniq3"))) {
+    if (model.includes("ioniq 9") && (full.includes("inster") || full.includes("ioniq-5") || full.includes("ioniq5") || full.includes("ioniq-6") || full.includes("ioniq6") || full.includes("kona") || full.includes("ioniq3"))) {
+      return { isValid: false, reason: "Hyundai IONIQ 9 cross-model contamination", type: "gallery" };
+    }
+    if (model.includes("kona") && (full.includes("inster") || full.includes("ioniq-5") || full.includes("ioniq5") || full.includes("ioniq-6") || full.includes("ioniq6") || full.includes("ioniq3") || full.includes("ioniq-9") || full.includes("ioniq9"))) {
       return { isValid: false, reason: "Hyundai Kona cross-model contamination", type: "gallery" };
     }
   }

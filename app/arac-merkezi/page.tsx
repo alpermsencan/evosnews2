@@ -31,11 +31,12 @@ export default async function VehicleHubPage() {
       prisma.vehicle.findMany({
         orderBy: [{ rating: "desc" }, { rangeKm: "desc" }],
         take: 8,
+        include: { syncImages: true },
       }),
       getMostRead(8),
-      prisma.vehicle.findFirst({ orderBy: { price: "asc" } }),
-      prisma.vehicle.findFirst({ orderBy: { rangeKm: "desc" } }),
-      prisma.vehicle.findFirst({ orderBy: { acceleration: "asc" } }),
+      prisma.vehicle.findFirst({ orderBy: { price: "asc" }, include: { syncImages: true } }),
+      prisma.vehicle.findFirst({ orderBy: { rangeKm: "desc" }, include: { syncImages: true } }),
+      prisma.vehicle.findFirst({ orderBy: { acceleration: "asc" }, include: { syncImages: true } }),
     ]);
 
   const champions = [

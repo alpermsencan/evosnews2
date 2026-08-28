@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { getBrandConfig } from "@/lib/brands";
 
 interface BrandBadgeProps {
@@ -18,34 +18,35 @@ export default function BrandBadge({
 }: BrandBadgeProps) {
   const config = getBrandConfig(brand);
   const displayName = config?.name || brand;
+  const [logoFailed, setLogoFailed] = useState(false);
 
-  const sizeClasses = {
-    sm: "h-4 text-xs gap-1.5",
-    md: "h-5 text-sm gap-2",
-    lg: "h-7 text-base gap-2.5",
-  };
-
-  const logoSizes = {
-    sm: "w-4 h-4 text-[10px]",
-    md: "w-5 h-5 text-xs",
-    lg: "w-7 h-7 text-sm",
+  const heightClasses = {
+    sm: "h-4",
+    md: "h-5",
+    lg: "h-7",
   };
 
   return (
-    <div className={`inline-flex items-center font-black tracking-tight ${sizeClasses[size]} ${className}`}>
+    <div className={`inline-flex items-center gap-1.5 ${className}`}>
       {/* Brand Icon / Vector Badge */}
-      <div
-        className={`flex shrink-0 items-center justify-center rounded bg-neutral-900 font-black text-white ${logoSizes[size]}`}
-        style={{
-          backgroundColor: config?.badgeColor || "#171717",
-        }}
-        title={displayName}
-      >
-        {displayName.slice(0, 2).toUpperCase()}
-      </div>
+      {config?.logo && !logoFailed && (
+        <div
+          className={`flex shrink-0 items-center justify-center overflow-hidden ${heightClasses[size]}`}
+          title={displayName}
+        >
+          <img
+            src={config.logo}
+            alt={displayName}
+            className="h-full w-auto object-contain"
+            onError={() => setLogoFailed(true)}
+          />
+        </div>
+      )}
 
       {showName && (
-        <span className="font-black uppercase tracking-wider text-neutral-900">
+        <span className={`font-black uppercase tracking-wider text-neutral-900 ${
+          size === "sm" ? "text-xs" : size === "md" ? "text-sm" : "text-base"
+        }`}>
           {displayName}
         </span>
       )}

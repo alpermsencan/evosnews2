@@ -72,12 +72,8 @@ async function scrapeHyundaiImages(
         continue;
       }
 
-      // Strip trailing HTML entities, quotes, commas, newlines, and aspect ratio suffix (:16x9, :4x3 etc.)
-      let cleanUrl = imgUrl
-        .trim()
-        .replace(/(&quot;|&#34;|"|'|}|;|,|\\|&lt;|&gt;|&amp;)[\s\S]*$/gi, "")
-        .replace(/:[0-9xX]+$/, "");
-
+      // Strip aspect ratio suffix if any to get the high quality original (e.g. :4x3, :16x9)
+      let cleanUrl = imgUrl.replace(/(&quot;|&#34;|"|'|}|;|,|\\|&lt;|&gt;).*$/, "");
       const lastColon = cleanUrl.lastIndexOf(":");
       if (lastColon > 5) {
         cleanUrl = cleanUrl.substring(0, lastColon);

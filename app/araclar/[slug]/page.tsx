@@ -45,6 +45,7 @@ export default async function VehicleDetail({ params }: Props) {
       where: { segment: vehicle.segment, NOT: { id: vehicle.id } },
       take: 4,
       orderBy: { price: "asc" },
+      include: { syncImages: true },
     }),
     // Aracın DC şarj gücü bilinmiyorsa "uyumlu istasyon" eşiği kurulamaz;
     // bu durumda en güçlü istasyonlar gösterilir.

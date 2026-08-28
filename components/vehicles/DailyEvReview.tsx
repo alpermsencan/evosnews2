@@ -28,10 +28,19 @@ type Vehicle = {
   rating: number | null;
   chargeMin: number | null;
   dcChargeKw: number | null;
+  syncImages?: {
+    id: string;
+    url: string;
+    type: string;
+    isPrimary: boolean;
+  }[];
 };
 
 export default function DailyEvReview({ vehicle }: { vehicle: Vehicle }) {
   const [activeTab, setActiveTab] = useState<"live" | "theory">("live");
+
+  const primaryImg = vehicle.syncImages?.find((img) => img.isPrimary) || vehicle.syncImages?.[0];
+  const displayImage = primaryImg?.url || vehicle.image;
 
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-200 bg-neutral-900 text-white shadow-xl">
@@ -83,7 +92,7 @@ export default function DailyEvReview({ vehicle }: { vehicle: Vehicle }) {
         {/* Left: Vehicle Image & Info */}
         <div className="relative aspect-[16/10] bg-neutral-950 lg:col-span-5 lg:aspect-auto">
           <Image
-            src={vehicle.image}
+            src={displayImage}
             alt={`${vehicle.brand} ${vehicle.model}`}
             fill
             className="object-cover opacity-90 transition hover:opacity-100"
