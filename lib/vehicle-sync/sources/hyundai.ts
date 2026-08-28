@@ -1,5 +1,6 @@
 import { fetchText } from "@/lib/ingest/http";
 import { slugify } from "../normalize";
+import { validateVehicleImage } from "../image-validator";
 import type { VehicleSyncData, VehicleVariantData } from "../types";
 
 const HYUNDAI_PRICE_LIST_URL = "https://www.hyundai.com/tr/tr/satis/fiyat-listesi.html";
@@ -86,6 +87,19 @@ async function scrapeHyundaiImages(
         continue;
       }
 
+      // Use generic image validation engine
+      const validation = validateVehicleImage({
+        brand: "Hyundai",
+        model,
+        url: cleanUrl,
+        sourceUrl: pageUrl,
+        alt: `${model} Resmi Görseli`,
+      });
+
+      if (!validation.isValid) {
+        continue; // skip rejected non-vehicle / duplicate / building / award
+      }
+
       const hash = crypto.createHash("sha1").update(cleanUrl).digest("hex");
       const externalId = `hyundai-img-${hash}`;
 
@@ -93,20 +107,10 @@ async function scrapeHyundaiImages(
         continue;
       }
 
-      // Simple type heuristic
-      const type =
-        lower.includes("int") ||
-        lower.includes("kab") ||
-        lower.includes("interior") ||
-        lower.includes("konsol") ||
-        lower.includes("display")
-          ? "interior"
-          : "exterior";
-
       images.push({
         url: cleanUrl,
-        type,
-        alt: `${model} Resmi ${type === "interior" ? "İç Mekan" : "Dış Mekan"} Görseli`,
+        type: validation.type,
+        alt: `${model} Resmi ${validation.type === "interior" ? "İç Mekan" : "Dış Mekan"} Görseli`,
         externalId,
       });
     }

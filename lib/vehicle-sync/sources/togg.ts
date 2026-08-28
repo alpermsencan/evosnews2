@@ -1,5 +1,6 @@
 import { fetchText } from "@/lib/ingest/http";
 import { parsePrice, slugify } from "../normalize";
+import { validateVehicleImage } from "../image-validator";
 import type { VehicleSyncData, VehicleVariantData } from "../types";
 
 const TOGG_PRICE_LIST_URL = "https://www.togg.com.tr/price-list";
@@ -56,51 +57,27 @@ async function scrapeToggImages(
 
     for (const imgUrl of uniqueUrls) {
       if (imgUrl === primaryUrl) continue;
-      const lower = imgUrl.toLowerCase();
 
-      // Filter out icons, logos, favicons, placeholders, ui buttons, small assets
-      if (
-        lower.includes("favicon") ||
-        lower.includes("logo") ||
-        lower.includes("icon") ||
-        lower.includes("placeholder") ||
-        lower.includes("btn") ||
-        lower.includes("banner") ||
-        lower.includes("badge") ||
-        lower.includes("32.png") ||
-        lower.includes("256px.png") ||
-        lower.includes("-en.") ||
-        lower.includes("-tr.") ||
-        lower.includes("_en.webp") ||
-        lower.includes("_tr.webp") ||
-        lower.includes("/en.webp") ||
-        lower.includes("/tr.webp") ||
-        lower.includes("euro-ncap") ||
-        lower.includes("video-pause") ||
-        lower.includes("video-play") ||
-        lower.includes("speaker")
-      ) {
-        continue;
+      // Use generic image validation engine
+      const validation = validateVehicleImage({
+        brand: "Togg",
+        model,
+        url: imgUrl,
+        sourceUrl: pageUrl,
+        alt: `${model} Resmi Görseli`,
+      });
+
+      if (!validation.isValid) {
+        continue; // skip rejected non-vehicle / duplicate / banner / other model
       }
 
       const hash = crypto.createHash("sha1").update(imgUrl).digest("hex");
       const externalId = `togg-img-${hash}`;
 
-      const type =
-        lower.includes("int") ||
-        lower.includes("kab") ||
-        lower.includes("kokpit") ||
-        lower.includes("display") ||
-        lower.includes("konsol") ||
-        lower.includes("interior") ||
-        lower.includes("trunk")
-          ? "interior"
-          : "exterior";
-
       images.push({
         url: imgUrl,
-        type,
-        alt: `${model} Resmi ${type === "interior" ? "İç Mekan" : "Dış Mekan"} Görseli`,
+        type: validation.type,
+        alt: `${model} Resmi ${validation.type === "interior" ? "İç Mekan" : "Dış Mekan"} Görseli`,
         externalId,
       });
     }

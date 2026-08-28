@@ -1,5 +1,6 @@
 import { fetchText } from "@/lib/ingest/http";
 import { parsePrice, slugify } from "../normalize";
+import { validateVehicleImage } from "../image-validator";
 import type { VehicleSyncData, VehicleVariantData } from "../types";
 
 const KIA_PRICE_LIST_URL = "https://www.kia.com/tr/satis-merkezi/fiyat-listesi.html";
@@ -49,42 +50,26 @@ async function scrapeKiaImages(
       for (const imgUrl of uniquePageUrls) {
         const lower = imgUrl.toLowerCase();
         
-        // Ensure the image belongs to the current model (avoids other recommended cars)
-        if (!lower.includes(cleanModelName)) {
-          continue;
-        }
+        // Use generic image validation engine
+        const validation = validateVehicleImage({
+          brand: "Kia",
+          model,
+          url: imgUrl,
+          sourceUrl: pageUrl,
+          alt: `${model} Resmi Görseli`,
+        });
 
-        // Exclude icons, logos, buttons, color chips, and 360-viewer frame sequences
-        if (
-          lower.includes("icon") ||
-          lower.includes("logo") ||
-          lower.includes("chip") ||
-          lower.includes("color") ||
-          lower.includes("btn") ||
-          lower.includes("pictogram") ||
-          lower.includes("thumb") ||
-          lower.includes("360") ||
-          /[-_]\d{3,4}\.(png|jpg|jpeg|webp)$/i.test(lower)
-        ) {
-          continue; // skip
+        if (!validation.isValid) {
+          continue; // skip rejected non-vehicle / duplicate / low quality / cross-model
         }
 
         const hash = crypto.createHash("sha1").update(imgUrl).digest("hex");
         const externalId = `kia-img-${hash}`;
 
-        // Determine simple type
-        const type =
-          lower.includes("int") ||
-          lower.includes("kab") ||
-          lower.includes("konsol") ||
-          lower.includes("display")
-            ? "interior"
-            : "exterior";
-
         images.push({
           url: imgUrl,
-          type,
-          alt: `${model} Resmi ${type === "interior" ? "İç Mekan" : "Dış Mekan"} Görseli`,
+          type: validation.type,
+          alt: `${model} Resmi ${validation.type === "interior" ? "İç Mekan" : "Dış Mekan"} Görseli`,
           externalId,
         });
       }

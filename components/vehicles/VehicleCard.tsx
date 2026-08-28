@@ -3,6 +3,7 @@ import Link from "next/link";
 import { formatTL } from "@/lib/utils";
 import { IconBattery, IconBolt, IconGauge } from "@/components/ui/Icons";
 import CompareButton from "@/components/compare/CompareButton";
+import BrandBadge from "@/components/ui/BrandBadge";
 
 export type VehicleLite = {
   id: string;
@@ -47,6 +48,10 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-3">
+        <div className="flex items-center justify-between">
+          <BrandBadge brand={vehicle.brand} size="sm" />
+        </div>
+
         <Link href={`/araclar/${vehicle.slug}`}>
           <h3 className="text-[15px] font-black leading-tight text-neutral-900 transition group-hover:text-evos">
             {vehicle.brand}{" "}

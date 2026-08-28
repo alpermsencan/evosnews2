@@ -1,5 +1,6 @@
 import { fetchText } from "@/lib/ingest/http";
 import { parsePrice, slugify } from "../normalize";
+import { validateVehicleImage } from "../image-validator";
 import type { VehicleSyncData, VehicleVariantData } from "../types";
 
 const BYD_PRICE_LIST_URL = "https://www.bydauto.com.tr/fiyat-listesi";
@@ -73,38 +74,25 @@ async function scrapeBydImages(
     const uniqueUrls = [...new Set(matches)];
 
     for (const imgUrl of uniqueUrls) {
-      const lower = imgUrl.toLowerCase();
+      // Use generic image validation engine
+      const validation = validateVehicleImage({
+        brand: "BYD",
+        model: modelKey,
+        url: imgUrl,
+        sourceUrl: pageUrl,
+        alt: `BYD ${modelKey.toUpperCase()} Resmi Görseli`,
+      });
 
-      // Filter out icons, logos, favicons, placeholders, ui buttons, thumbnails, small assets
-      if (
-        lower.includes("favicon") ||
-        lower.includes("logo") ||
-        lower.includes("icon") ||
-        lower.includes("placeholder") ||
-        lower.includes("thumb") ||
-        lower.includes("model-menu") ||
-        lower.includes("blindlook") ||
-        lower.includes("svg") ||
-        lower.includes("social") ||
-        lower.includes("btn") ||
-        lower.includes("footer")
-      ) {
-        continue;
+      if (!validation.isValid) {
+        continue; // skip rejected non-vehicle / duplicate / banner / other model
       }
 
       const hash = crypto.createHash("sha1").update(imgUrl).digest("hex");
-      const isInterior =
-        lower.includes("ic-mekan") ||
-        lower.includes("interior") ||
-        lower.includes("kokpit") ||
-        lower.includes("direksiyon") ||
-        lower.includes("koltuk") ||
-        lower.includes("ekran");
 
       images.push({
         url: imgUrl,
-        type: isInterior ? "interior" : "exterior",
-        alt: `BYD ${modelKey.toUpperCase()} Resmi Görseli`,
+        type: validation.type,
+        alt: `BYD ${modelKey.toUpperCase()} Resmi ${validation.type === "interior" ? "İç Mekan" : "Dış Mekan"} Görseli`,
         externalId: `byd-img-${hash}`,
       });
     }
