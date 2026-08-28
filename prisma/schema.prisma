@@ -374,6 +374,8 @@ model Vehicle {
   createdAt    DateTime @default(now())
   posts        Post[]
   listings     Listing[]
+  variants     VehicleVariant[]
+  syncImages   VehicleImage[]
 
   // --- Kaynak izlenebilirliği ---
   externalId     String?
@@ -383,6 +385,107 @@ model Vehicle {
   @@index([brand])
   @@index([price])
   @@index([externalId])
+}
+
+model VehicleImage {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleId          String   @db.ObjectId
+  vehicle            Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  url                String
+  cloudinaryPublicId String
+  type               String   @default("gallery") // "exterior" | "interior" | "gallery"
+  alt                String?
+  source             String
+  sourceUrl          String
+  externalId         String
+  isPrimary          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@unique([vehicleId, externalId])
+  @@index([vehicleId])
+  @@index([externalId])
+}
+
+model VehicleVariant {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleId      String   @db.ObjectId
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  name           String
+  listPrice      Int
+  campaignPrice  Int?
+  campaignAmount Int?
+  batteryKwh     Float?
+  rangeKm        Int?
+  motorPowerKw   Int?
+  motorPowerHp   Int?
+  source         String
+  sourceUrl      String
+  externalId     String
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  priceHistories VehiclePriceHistory[]
+
+  @@unique([vehicleId, name])
+  @@index([vehicleId])
+  @@index([externalId])
+}
+
+model VehiclePriceHistory {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleId             String   @db.ObjectId
+  variantId             String   @db.ObjectId
+  variant               VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  listPrice             Int
+  campaignPrice         Int?
+  campaignAmount        Int?
+  previousPrice         Int?
+  previousCampaignPrice Int?
+  source                String
+  sourceUrl             String
+  recordedAt            DateTime @default(now())
+
+  @@index([vehicleId])
+  @@index([variantId])
+  @@index([recordedAt])
+}
+
+model VehicleSyncLog {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  source          String    // "kia-official" | "hyundai-official" | "togg-official"
+  brand           String    // "Kia" | "Hyundai" | "Togg"
+  status          String    // "SUCCESS" | "FAILED" | "RUNNING"
+  triggerType     String    @default("MANUAL") // "CRON" | "MANUAL"
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  durationMs      Int?
+  
+  // Variant metrics
+  fetched         Int       @default(0)
+  created         Int       @default(0)
+  updated         Int       @default(0)
+  unchanged       Int       @default(0)
+  skipped         Int       @default(0)
+  failed          Int       @default(0)
+
+  // Image metrics
+  imagesFound     Int       @default(0)
+  imagesUploaded  Int       @default(0)
+  imagesUpdated   Int       @default(0)
+  imagesUnchanged Int       @default(0)
+  imagesSkipped   Int       @default(0)
+  imageErrors     Int       @default(0)
+
+  errorMessage    String?
+  metadata        String?
+
+  createdAt       DateTime  @default(now())
+
+  @@index([source, startedAt])
+  @@index([status, startedAt])
+  @@index([startedAt])
 }
 
 model ChargeStation {

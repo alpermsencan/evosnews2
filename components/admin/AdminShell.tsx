@@ -25,6 +25,7 @@ const NAV = [
   { href: "/admin/yorumlar", label: "Yorumlar", Icon: IconUsers },
   { href: "/admin/gonderiler", label: "Gönderiler & Reels", Icon: IconLayers },
   { href: "/admin/araclar", label: "Araçlar", Icon: IconCar },
+  { href: "/admin/arac-senkronizasyon", label: "Araç Senkronizasyonu", Icon: IconBolt },
   { href: "/admin/ilanlar", label: "İlanlar & Batarya Raporu", Icon: IconCar },
   { href: "/admin/garaj", label: "Dijital Garaj", Icon: IconLayers },
   { href: "/admin/istasyonlar", label: "Şarj İstasyonları", Icon: IconBolt },

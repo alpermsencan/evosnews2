@@ -1,24 +1,41 @@
 import "server-only";
 import { v2 as cloudinary } from "cloudinary";
 
-const cloudName =
+const cloudinaryUrl = process.env.CLOUDINARY_URL;
+let cloudName =
   process.env.CLOUDINARY_CLOUD_NAME ||
   process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-const apiKey = process.env.CLOUDINARY_API_KEY;
-const apiSecret = process.env.CLOUDINARY_API_SECRET;
+let apiKey = process.env.CLOUDINARY_API_KEY;
+let apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+if (cloudinaryUrl && (!cloudName || !apiKey || !apiSecret)) {
+  const match = /cloudinary:\/\/([^:]+):([^@]+)@(.+)/.exec(cloudinaryUrl);
+  if (match) {
+    apiKey = match[1].replace(/[<>]/g, "");
+    apiSecret = match[2].replace(/[<>]/g, "");
+    cloudName = match[3].replace(/[<>]/g, "");
+  }
+}
 
 export const CLOUDINARY_FOLDER = process.env.CLOUDINARY_FOLDER || "evos";
 
 /** Cloudinary anahtarları .env dosyasında tanımlı mı? */
-export const isCloudinaryReady = Boolean(cloudName && apiKey && apiSecret);
+export const isCloudinaryReady = Boolean((cloudName && apiKey && apiSecret) || cloudinaryUrl);
 
 if (isCloudinaryReady) {
-  cloudinary.config({
-    cloud_name: cloudName,
-    api_key: apiKey,
-    api_secret: apiSecret,
-    secure: true,
-  });
+  if (cloudName && apiKey && apiSecret) {
+    cloudinary.config({
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
+      secure: true,
+    });
+  } else if (cloudinaryUrl) {
+    cloudinary.config({
+      cloudinary_url: cloudinaryUrl.replace(/[<>]/g, ""),
+      secure: true,
+    });
+  }
 }
 
 export type UploadedImage = {
@@ -139,4 +156,35 @@ export function publicIdFromUrl(url: string): string | null {
   const match = /\/upload\/(?:v\d+\/)?(.+)\.[a-z0-9]+$/i.exec(url);
   if (!url.includes("res.cloudinary.com") || !match) return null;
   return match[1];
+}
+
+/** Görseli harici bir URL'den doğrudan Cloudinary'ye yükler */
+export async function uploadImageFromUrl(
+  imageUrl: string,
+  folder = CLOUDINARY_FOLDER,
+  customPublicId?: string
+): Promise<UploadedImage> {
+  const { createHash } = await import("node:crypto");
+  const hash = createHash("sha1").update(imageUrl).digest("hex");
+  const publicId = customPublicId || `img-${hash}`;
+
+  const result = await cloudinary.uploader.upload(imageUrl, {
+    folder,
+    public_id: publicId,
+    resource_type: "image",
+    overwrite: false,
+    transformation: [
+      { width: 2000, height: 2000, crop: "limit" },
+      { quality: "auto", fetch_format: "auto" },
+    ],
+  });
+
+  return {
+    url: String(result.secure_url),
+    publicId: String(result.public_id),
+    width: Number(result.width) || 0,
+    height: Number(result.height) || 0,
+    format: String(result.format ?? ""),
+    bytes: Number(result.bytes) || 0,
+  };
 }

@@ -184,6 +184,67 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     const pruned = await pruneArchive();
     if (pruned.archived + pruned.drafts + pruned.offTopic > 0) tags.add(TAGS.articles);
 
+    // Araç fiyat senkronizasyonu entegrasyonu (Faz 1, 2 & 3 - Kia, Hyundai & Togg)
+    let kiaVehicleSync = null;
+    let hyundaiVehicleSync = null;
+    let toggVehicleSync = null;
+    try {
+      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
+      kiaVehicleSync = await syncBrandVehicles("kia-official", "CRON");
+      if (kiaVehicleSync.status === "ok" && (kiaVehicleSync.created > 0 || kiaVehicleSync.updated > 0)) {
+        tags.add(TAGS.vehicles);
+      }
+    } catch (e) {
+      console.error("[CRON][ERROR] Kia vehicle sync failed", e);
+      kiaVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
+    }
+
+    try {
+      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
+      hyundaiVehicleSync = await syncBrandVehicles("hyundai-official", "CRON");
+      if (hyundaiVehicleSync.status === "ok" && (hyundaiVehicleSync.created > 0 || hyundaiVehicleSync.updated > 0)) {
+        tags.add(TAGS.vehicles);
+      }
+    } catch (e) {
+      console.error("[CRON][ERROR] Hyundai vehicle sync failed", e);
+      hyundaiVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
+    }
+
+    try {
+      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
+      toggVehicleSync = await syncBrandVehicles("togg-official", "CRON");
+      if (toggVehicleSync.status === "ok" && (toggVehicleSync.created > 0 || toggVehicleSync.updated > 0)) {
+        tags.add(TAGS.vehicles);
+      }
+    } catch (e) {
+      console.error("[CRON][ERROR] Togg vehicle sync failed", e);
+      toggVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
+    }
+
+    let bydVehicleSync = null;
+    try {
+      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
+      bydVehicleSync = await syncBrandVehicles("byd-official", "CRON");
+      if (bydVehicleSync.status === "ok" && (bydVehicleSync.created > 0 || bydVehicleSync.updated > 0)) {
+        tags.add(TAGS.vehicles);
+      }
+    } catch (e) {
+      console.error("[CRON][ERROR] BYD vehicle sync failed", e);
+      bydVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
+    }
+
+    let teslaVehicleSync = null;
+    try {
+      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
+      teslaVehicleSync = await syncBrandVehicles("tesla-official", "CRON");
+      if (teslaVehicleSync.status === "ok" && (teslaVehicleSync.created > 0 || teslaVehicleSync.updated > 0)) {
+        tags.add(TAGS.vehicles);
+      }
+    } catch (e) {
+      console.error("[CRON][ERROR] Tesla vehicle sync failed", e);
+      teslaVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
+    }
+
     for (const tag of tags) revalidateTag(tag, "max");
 
     // Cron'un çalışmış olması verinin taze olduğunu KANITLAMAZ: besleme sessizce
@@ -201,6 +262,11 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
         changed,
         recategorized,
         pruned,
+        kiaVehicleSync,
+        hyundaiVehicleSync,
+        toggVehicleSync,
+        bydVehicleSync,
+        teslaVehicleSync,
         health: health.map((h) => ({
           key: h.key,
           status: h.status,
