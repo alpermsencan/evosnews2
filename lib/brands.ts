@@ -129,11 +129,27 @@ export const BRANDS: Record<string, BrandConfig> = {
   },
 };
 
+const BRAND_ALIASES: Record<string, string> = {
+  "mercedes": "mercedes-benz",
+  "mercedes benz": "mercedes-benz",
+  "vw": "volkswagen",
+};
+
 /**
  * Returns the brand configuration for a given brand name or slug.
+ * Includes a normalization layer to resolve common variations (e.g. Mercedes -> Mercedes-Benz).
  */
 export function getBrandConfig(brandNameOrSlug: string): BrandConfig | null {
   if (!brandNameOrSlug) return null;
-  const key = brandNameOrSlug.toLowerCase().trim().replace(/\s+/g, "-");
-  return BRANDS[key] || BRANDS[brandNameOrSlug.toLowerCase().trim()] || null;
+  const rawKey = brandNameOrSlug.toLowerCase().trim();
+  let key = rawKey.replace(/\s+/g, "-");
+  
+  // Apply aliases
+  if (BRAND_ALIASES[rawKey]) {
+    key = BRAND_ALIASES[rawKey];
+  } else if (BRAND_ALIASES[key]) {
+    key = BRAND_ALIASES[key];
+  }
+
+  return BRANDS[key] || BRANDS[rawKey] || null;
 }
