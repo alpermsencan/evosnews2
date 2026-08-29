@@ -171,7 +171,7 @@ export function validateVehicleImage(ctx: ImageValidationContext): ValidationRes
     if ((model === "seal" || model.includes("excellence")) && (full.includes("sealion") || full.includes("tang") || full.includes("han") || full.includes("atto") || full.includes("dolphin"))) {
       return { isValid: false, reason: "BYD Seal cross-model contamination", type: "gallery" };
     }
-    if (model.includes("sealion") && (full.includes("atto") || full.includes("han") || full.includes("tang") || full.includes("dolphin") || (full.includes("seal_") && !full.includes("sealion")))) {
+    if (model.includes("sealion") && (full.includes("atto") || full.includes("han") || full.includes("tang") || full.includes("dolphin") || ((full.includes("seal_") || full.includes("seal/") || full.includes("/seal/")) && !full.includes("sealion")))) {
       return { isValid: false, reason: "BYD Sealion cross-model contamination", type: "gallery" };
     }
     if (model.includes("han") && (full.includes("seal") || full.includes("tang") || full.includes("atto") || full.includes("dolphin"))) {
