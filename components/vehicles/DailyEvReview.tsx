@@ -39,8 +39,43 @@ type Vehicle = {
 export default function DailyEvReview({ vehicle }: { vehicle: Vehicle }) {
   const [activeTab, setActiveTab] = useState<"live" | "theory">("live");
 
-  const primaryImg = vehicle.syncImages?.find((img) => img.isPrimary) || vehicle.syncImages?.[0];
-  const displayImage = primaryImg?.url || vehicle.image;
+  // Prioritize verified syncImages over legacy static image URL
+  const syncImages = (vehicle.syncImages || []).filter(
+    (img) => img.type !== "ignored" && img.type !== "deleted"
+  );
+
+  let displayImage = vehicle.image;
+  if (syncImages.length > 0) {
+    let coverImg = syncImages.find((img) => img.isPrimary && img.type === "exterior");
+    if (!coverImg) {
+      coverImg = syncImages.find((img) => img.isPrimary && img.type !== "interior");
+    }
+    if (!coverImg) {
+      coverImg = syncImages.find((img) => img.type === "exterior");
+    }
+    if (!coverImg) {
+      coverImg = syncImages.find((img) => img.type !== "interior");
+    }
+    if (!coverImg) {
+      coverImg = syncImages[0];
+    }
+
+    if (coverImg) {
+      displayImage = coverImg.url;
+    }
+  }
+
+  const isPlaceholder = (url: string) => {
+    if (!url) return true;
+    const lower = url.toLowerCase();
+    return lower.includes("placeholder") || lower.includes("unspl");
+  };
+
+  if (isPlaceholder(displayImage) && vehicle.image && !isPlaceholder(vehicle.image)) {
+    displayImage = vehicle.image;
+  } else if (isPlaceholder(displayImage)) {
+    displayImage = "/arac-placeholder.svg";
+  }
 
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-200 bg-neutral-900 text-white shadow-xl">

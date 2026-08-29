@@ -31,14 +31,41 @@ export type VehicleLite = {
 
 export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
   // Prioritize verified syncImages over legacy static image URL
-  const syncImages = vehicle.syncImages || [];
+  const syncImages = (vehicle.syncImages || []).filter(
+    (img) => img.type !== "ignored" && img.type !== "deleted"
+  );
 
   let displayImage = vehicle.image;
-  if (syncImages && syncImages.length > 0) {
-    const primaryImg = syncImages.find((img) => img.isPrimary) || syncImages[0];
-    if (primaryImg) {
-      displayImage = primaryImg.url;
+  if (syncImages.length > 0) {
+    let coverImg = syncImages.find((img) => img.isPrimary && img.type === "exterior");
+    if (!coverImg) {
+      coverImg = syncImages.find((img) => img.isPrimary && img.type !== "interior");
     }
+    if (!coverImg) {
+      coverImg = syncImages.find((img) => img.type === "exterior");
+    }
+    if (!coverImg) {
+      coverImg = syncImages.find((img) => img.type !== "interior");
+    }
+    if (!coverImg) {
+      coverImg = syncImages[0];
+    }
+
+    if (coverImg) {
+      displayImage = coverImg.url;
+    }
+  }
+
+  const isPlaceholder = (url: string) => {
+    if (!url) return true;
+    const lower = url.toLowerCase();
+    return lower.includes("placeholder") || lower.includes("unspl");
+  };
+
+  if (isPlaceholder(displayImage) && vehicle.image && !isPlaceholder(vehicle.image)) {
+    displayImage = vehicle.image;
+  } else if (isPlaceholder(displayImage)) {
+    displayImage = "/arac-placeholder.svg";
   }
 
   return (

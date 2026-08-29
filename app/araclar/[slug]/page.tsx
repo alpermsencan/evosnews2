@@ -93,13 +93,50 @@ export default async function VehicleDetail({ params }: Props) {
   ];
 
   // Prioritize verified official syncImages (Cloudinary)
-  const officialImages = vehicle.syncImages.map((img) => img.url);
-  const galleryImages =
-    officialImages.length > 0
-      ? officialImages
-      : [vehicle.image, ...(vehicle.images || [])].filter(Boolean);
+  const syncImages = (vehicle.syncImages || []).filter(
+    (img) => img.type !== "ignored" && img.type !== "deleted"
+  );
 
-  const defaultImg = galleryImages[0] || vehicle.image;
+  let coverImg = syncImages.find((img) => img.isPrimary && img.type === "exterior");
+  if (!coverImg) {
+    coverImg = syncImages.find((img) => img.isPrimary && img.type !== "interior");
+  }
+  if (!coverImg) {
+    coverImg = syncImages.find((img) => img.type === "exterior");
+  }
+  if (!coverImg) {
+    coverImg = syncImages.find((img) => img.type !== "interior");
+  }
+  if (!coverImg) {
+    coverImg = syncImages[0];
+  }
+
+  let defaultImg = coverImg ? coverImg.url : vehicle.image;
+
+  const isPlaceholder = (url: string) => {
+    if (!url) return true;
+    const lower = url.toLowerCase();
+    return lower.includes("placeholder") || lower.includes("unspl");
+  };
+
+  if (isPlaceholder(defaultImg) && vehicle.image && !isPlaceholder(vehicle.image)) {
+    defaultImg = vehicle.image;
+  } else if (isPlaceholder(defaultImg)) {
+    defaultImg = "/arac-placeholder.svg";
+  }
+
+  let galleryUrls: string[] = [];
+  if (syncImages.length > 0) {
+    const coverUrl = coverImg ? coverImg.url : syncImages[0].url;
+    const remainingUrls = syncImages
+      .filter((img) => img.url !== coverUrl)
+      .map((img) => img.url);
+    galleryUrls = [coverUrl, ...remainingUrls];
+  } else {
+    galleryUrls = [vehicle.image, ...(vehicle.images || [])].filter(Boolean);
+  }
+
+  const galleryImages = galleryUrls;
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">

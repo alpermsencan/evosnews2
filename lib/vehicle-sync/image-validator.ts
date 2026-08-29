@@ -61,7 +61,35 @@ export function validateVehicleImage(ctx: ImageValidationContext): ValidationRes
     "sarj-icon",
     "batarya-icon",
     "video_background",
-    "poster"
+    "poster",
+    // New rules for Faz 3C image cleanup (graphics, diagrams, advertisements, etc.)
+    "speed",
+    "range",
+    "-km",
+    "_km",
+    "km-h",
+    "km_h",
+    "0-100",
+    "0_100",
+    "diagram",
+    "blueprint",
+    "brochure",
+    "broşür",
+    "points",
+    "tvc",
+    "walkthrough",
+    "campaign",
+    "advertisement",
+    "şema",
+    "hizlanma",
+    "ivme",
+    "infografik",
+    "infographics",
+    "menzil",
+    "points",
+    "point-map",
+    "charging-station",
+    "charge-point"
   ];
 
   for (const pattern of nonVehiclePatterns) {
