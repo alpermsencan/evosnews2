@@ -59,6 +59,26 @@ interface VehicleHubClientProps {
   testDriveVehicle: Vehicle;
 }
 
+// Brand Popularity Ranking Map
+const BRAND_POPULARITY: Record<string, number> = {
+  "togg": 1,
+  "tesla": 2,
+  "byd": 3,
+  "renault": 4,
+  "hyundai": 5,
+  "kia": 6,
+  "bmw": 7,
+  "mercedes-benz": 8,
+  "volvo": 9,
+  "audi": 10,
+  "zeekr": 11,
+};
+
+const getPopularityScore = (brand: string) => {
+  const key = brand.toLowerCase().trim();
+  return BRAND_POPULARITY[key] ?? 100;
+};
+
 export default function VehicleHubClient({ vehicles, articles, testDriveVehicle }: VehicleHubClientProps) {
   // --- STATE FOR FILTER & DISCOVER ---
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -127,8 +147,19 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
     return [v.image, ...(v.images || [])].filter(Boolean);
   };
 
-  // --- FILTER LOGIC ---
-  const filteredVehicles = vehicles.filter((v) => {
+  // --- FILTER & SORT LOGIC ---
+  const sortedVehicles = [...vehicles].sort((a, b) => {
+    const scoreA = getPopularityScore(a.brand);
+    const scoreB = getPopularityScore(b.brand);
+    if (scoreA !== scoreB) return scoreA - scoreB;
+    // Fallback to brand name alphabetical
+    const brandComp = a.brand.localeCompare(b.brand);
+    if (brandComp !== 0) return brandComp;
+    // Fallback to model name
+    return a.model.localeCompare(b.model);
+  });
+
+  const filteredVehicles = sortedVehicles.filter((v) => {
     const matchesBrand = !selectedBrand || v.brand.toLowerCase() === selectedBrand.toLowerCase();
     const matchesSegment = !selectedSegment || v.segment.toLowerCase() === selectedSegment.toLowerCase();
     const matchesBodyType = !selectedBodyType || v.bodyType.toLowerCase() === selectedBodyType.toLowerCase();
@@ -145,8 +176,13 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
     (v) => v.marketStatus === "TR_YOK"
   );
 
-  // --- UNIQUE OPTIONS FOR FILTER PANEL ---
-  const distinctBrands = Array.from(new Set(vehicles.map((v) => v.brand))).sort();
+  // --- UNIQUE OPTIONS FOR FILTER PANEL (SORTED BY POPULARITY) ---
+  const distinctBrands = Array.from(new Set(vehicles.map((v) => v.brand))).sort((a, b) => {
+    const scoreA = getPopularityScore(a);
+    const scoreB = getPopularityScore(b);
+    if (scoreA !== scoreB) return scoreA - scoreB;
+    return a.localeCompare(b);
+  });
   const distinctSegments = Array.from(new Set(vehicles.map((v) => v.segment))).sort();
   const distinctBodyTypes = Array.from(new Set(vehicles.map((v) => v.bodyType))).sort();
 
@@ -154,10 +190,10 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
   const today = new Date();
   const dayIndex = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
 
-  const allTrVarVehicles = vehicles.filter(
+  const allTrVarVehicles = sortedVehicles.filter(
     (v) => v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA"
   );
-  const allTrYokVehicles = vehicles.filter(
+  const allTrYokVehicles = sortedVehicles.filter(
     (v) => v.marketStatus === "TR_YOK"
   );
 
@@ -292,7 +328,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                 <tr key={v.id} className="border-b border-neutral-100 hover:bg-neutral-50 transition text-xs">
                   <td className="py-3 px-3 text-center font-black text-neutral-800">#{index + 1}</td>
                   <td className="py-3 px-3">
-                    <div className="relative h-9 w-14 rounded overflow-hidden border border-neutral-200">
+                    <div className="relative h-9 w-14 rounded overflow-hidden border border-neutral-200 bg-neutral-50">
                       <Image
                         src={getVehicleDisplayImage(v)}
                         alt={`${v.brand} ${v.model}`}
@@ -315,7 +351,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
         </div>
       </section>
 
-      {/* C) ARAÇLARI KEŞFET (SIDEBAR FILTERS + RIGHT VEHICLE LISTS) */}
+      {/* C) ARAÇLARI KEŞFET (SIDEBAR FILTERS + RIGHT VEHICLE LISTS IN SIDE-BY-SIDE COLUMNS) */}
       <section className="flex flex-col gap-6 lg:flex-row">
         {/* Mobile Filter Toggle Button */}
         <button 
@@ -415,20 +451,20 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
           </div>
         </aside>
 
-        {/* Right Side Vehicle Lists */}
-        <div className="flex-1 flex flex-col gap-8 min-w-0">
+        {/* Right Side Category Columns (Side-by-side on Desktop) */}
+        <div className="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-6 min-w-0">
           
-          {/* TR'DE VAR LIST */}
+          {/* COLUMN 1: TR'DE VAR */}
           {(selectedTrStatus === "" || selectedTrStatus === "tr_var") && (
-            <div className="flex flex-col gap-4">
-              <h2 className="text-lg font-black text-neutral-800 border-b border-neutral-100 pb-2 uppercase tracking-wide flex items-center justify-between">
+            <div className="flex flex-col gap-4 border-r border-neutral-100 pr-1">
+              <h2 className="text-base font-black text-neutral-800 border-b border-neutral-150 pb-2.5 uppercase tracking-wide flex items-center justify-between">
                 <span>TÜRKİYE'DE SATIŞTA OLANLAR ({trVarVehicles.length})</span>
-                <span className="h-2 w-2 rounded-full bg-teal-600 animate-pulse"></span>
+                <span className="h-2.5 w-2.5 rounded-full bg-teal-600 animate-pulse"></span>
               </h2>
               {trVarVehicles.length === 0 ? (
                 <p className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-100 rounded-lg">Filtrelerinize uygun araç bulunamadı.</p>
               ) : (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {trVarVehicles.map((v) => (
                     <VehicleCardItem 
                       key={v.id} 
@@ -445,17 +481,17 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
             </div>
           )}
 
-          {/* TR'DE YOK LIST */}
+          {/* COLUMN 2: TR'DE YOK */}
           {(selectedTrStatus === "" || selectedTrStatus === "tr_yok") && (
             <div className="flex flex-col gap-4">
-              <h2 className="text-lg font-black text-neutral-600 border-b border-neutral-100 pb-2 uppercase tracking-wide flex items-center justify-between">
-                <span>YURT DIŞINDA / TÜRKİYE'DE OLMAYANLAR ({trYokVehicles.length})</span>
-                <span className="h-2 w-2 rounded-full bg-neutral-400"></span>
+              <h2 className="text-base font-black text-neutral-600 border-b border-neutral-150 pb-2.5 uppercase tracking-wide flex items-center justify-between">
+                <span>YURT DIŞINDA / TR'DE OLMAYANLAR ({trYokVehicles.length})</span>
+                <span className="h-2.5 w-2.5 rounded-full bg-neutral-400"></span>
               </h2>
               {trYokVehicles.length === 0 ? (
                 <p className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-100 rounded-lg">Filtrelerinize uygun araç bulunamadı.</p>
               ) : (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {trYokVehicles.map((v) => (
                     <VehicleCardItem 
                       key={v.id} 
@@ -1003,16 +1039,21 @@ function VehicleCardItem({ vehicle, displayImage, onGalleryClick }: VehicleCardI
   const brandConfig = (BRANDS as any)[slugKey] || null;
   const hasBrandLogo = brandConfig && brandConfig.logo;
 
+  // Use local state to handle image load errors gracefully (no broken image icons ever!)
+  const [imgSrc, setImgSrc] = useState(displayImage);
+
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white transition hover:shadow-md">
-      <div className="relative aspect-[16/10] w-full bg-neutral-50 overflow-hidden">
+      {/* Aspect changed to 4/3 to make the images 1.2x larger and more prominent */}
+      <div className="relative aspect-[4/3] w-full bg-neutral-50 overflow-hidden">
         <Image
-          src={displayImage}
+          src={imgSrc}
           alt={`${vehicle.brand} ${vehicle.model}`}
           fill
-          sizes="(max-width:640px) 50vw, 240px"
+          sizes="(max-width:640px) 50vw, 280px"
           className="object-cover transition duration-300 group-hover:scale-105 cursor-pointer"
           onClick={onGalleryClick}
+          onError={() => setImgSrc("/arac-placeholder.svg")}
         />
         <span className="absolute left-1.5 top-1.5 rounded bg-neutral-950/80 px-1.5 py-0.5 text-[9px] font-black text-white uppercase">
           {vehicle.segment}
@@ -1034,7 +1075,7 @@ function VehicleCardItem({ vehicle, displayImage, onGalleryClick }: VehicleCardI
               <img
                 src={brandConfig.logo}
                 alt={vehicle.brand}
-                className="h-3 w-auto max-w-[14px] object-contain shrink-0"
+                className="h-3.5 w-auto max-w-[15px] object-contain shrink-0"
                 onError={(e) => {
                   (e.target as HTMLElement).style.display = 'none';
                 }}
