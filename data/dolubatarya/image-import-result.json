@@ -1,0 +1,10 @@
+{
+  "planned": 1663,
+  "inserted": 1629,
+  "skippedExisting": 14,
+  "failed": 20,
+  "primaryInserted": 280,
+  "galleryInserted": 1349,
+  "vehiclesWithoutPrimary": 81,
+  "crossModelLinks": 0
+}

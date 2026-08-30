@@ -163,6 +163,11 @@ export default async function VehicleDetail({ params }: Props) {
         <div className="flex min-w-0 flex-1 flex-col gap-3 p-5">
           <div className="flex flex-wrap items-center gap-2">
             <BrandBadge brand={vehicle.brand} size="md" />
+            <span className={`rounded px-2 py-1 text-[11px] font-black text-white ${
+              vehicle.marketStatus === "TR_YOK" ? "bg-neutral-500" : "bg-teal-600"
+            }`}>
+              {vehicle.marketStatus === "TR_YOK" ? "TR'de Yok" : "TR'de Var"}
+            </span>
             {/* Editör puanı yalnızca gerçek bir inceleme yapıldıysa vardır. */}
             {vehicle.rating != null && (
               <span className="rounded bg-volt px-2 py-1 text-[11px] font-black text-white">

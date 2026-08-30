@@ -1,0 +1,1345 @@
+{
+  "generatedAt": "2026-08-30T08:54:30.063Z",
+  "totals": {
+    "vehicleImages": 5640,
+    "vehicles": 168,
+    "duplicateGroups": 0,
+    "crossModelGroups": 11,
+    "vehiclesOver10": 62,
+    "vehiclesOver15": 33,
+    "vehiclesOver20": 25,
+    "vehiclesWithoutPrimary": 1
+  },
+  "over10": [
+    {
+      "vehicleId": "6a908f1d11818023b4e13305",
+      "brand": "Togg",
+      "model": "T10X V2 Uzun Menzil",
+      "slug": "togg-t10x-v2-uzun-menzil-2026",
+      "total": 42,
+      "active": 42,
+      "primary": 3,
+      "gallery": 39,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a908f1d11818023b4e13306",
+      "brand": "Tesla",
+      "model": "Model Y Long Range",
+      "slug": "tesla-model-y-long-range-2026",
+      "total": 15,
+      "active": 15,
+      "primary": 3,
+      "gallery": 12,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a908f1d11818023b4e13308",
+      "brand": "BYD",
+      "model": "Seal Excellence AWD",
+      "slug": "byd-seal-excellence-2026",
+      "total": 42,
+      "active": 42,
+      "primary": 2,
+      "gallery": 40,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a908f1e11818023b4e1330a",
+      "brand": "Togg",
+      "model": "T10F Fastback",
+      "slug": "togg-t10f-fastback-2026",
+      "total": 23,
+      "active": 23,
+      "primary": 1,
+      "gallery": 22,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+      "brand": "Kia",
+      "model": "EV2",
+      "slug": "kia-ev2",
+      "total": 889,
+      "active": 889,
+      "primary": 1,
+      "gallery": 888,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+      "brand": "Kia",
+      "model": "EV3",
+      "slug": "kia-ev3",
+      "total": 1319,
+      "active": 1319,
+      "primary": 1,
+      "gallery": 1318,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+      "brand": "Kia",
+      "model": "Niro EV",
+      "slug": "kia-niro-ev",
+      "total": 452,
+      "active": 451,
+      "primary": 1,
+      "gallery": 450,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+      "brand": "Kia",
+      "model": "EV6",
+      "slug": "kia-ev6",
+      "total": 821,
+      "active": 821,
+      "primary": 6,
+      "gallery": 815,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a90b6d8cbf40abdb311c6da",
+      "brand": "Kia",
+      "model": "EV9",
+      "slug": "kia-ev9",
+      "total": 324,
+      "active": 324,
+      "primary": 3,
+      "gallery": 321,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a9174149b4815f362cc7eac",
+      "brand": "Hyundai",
+      "model": "INSTER",
+      "slug": "hyundai-inster",
+      "total": 29,
+      "active": 26,
+      "primary": 1,
+      "gallery": 25,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a9174149b4815f362cc7eae",
+      "brand": "Hyundai",
+      "model": "IONIQ 5",
+      "slug": "hyundai-ioniq-5",
+      "total": 28,
+      "active": 28,
+      "primary": 7,
+      "gallery": 21,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a9174149b4815f362cc7eaf",
+      "brand": "Hyundai",
+      "model": "IONIQ 5 N",
+      "slug": "hyundai-ioniq-5-n",
+      "total": 19,
+      "active": 19,
+      "primary": 0,
+      "gallery": 19,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a9174149b4815f362cc7eb0",
+      "brand": "Hyundai",
+      "model": "IONIQ 6",
+      "slug": "hyundai-ioniq-6",
+      "total": 11,
+      "active": 11,
+      "primary": 1,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a91b0548d5907061493fdcc",
+      "brand": "BYD",
+      "model": "SEALION 7",
+      "slug": "byd-sealion-7-2026",
+      "total": 24,
+      "active": 24,
+      "primary": 2,
+      "gallery": 22,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a91b08c8d5907061493fe02",
+      "brand": "BYD",
+      "model": "HAN",
+      "slug": "byd-han-2026",
+      "total": 27,
+      "active": 27,
+      "primary": 1,
+      "gallery": 26,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a91b0af8d5907061493fe21",
+      "brand": "BYD",
+      "model": "TANG",
+      "slug": "byd-tang-2026",
+      "total": 29,
+      "active": 29,
+      "primary": 3,
+      "gallery": 26,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a9354327d07e6117ad31544",
+      "brand": "Renault",
+      "model": "Megane E-Tech",
+      "slug": "renault-megane-e-tech-2026",
+      "total": 15,
+      "active": 15,
+      "primary": 2,
+      "gallery": 13,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb0f37b1943fb706d820",
+      "brand": "Audi",
+      "model": "Q6 e-tron",
+      "slug": "q6-e-tron-quattro",
+      "total": 53,
+      "active": 53,
+      "primary": 9,
+      "gallery": 44,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb1037b1943fb706d822",
+      "brand": "Audi",
+      "model": "Q4",
+      "slug": "q4-45-e-tron",
+      "total": 37,
+      "active": 37,
+      "primary": 7,
+      "gallery": 30,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb1037b1943fb706d824",
+      "brand": "Peugeot",
+      "model": "e-2008",
+      "slug": "peugeot-e-2008-gt",
+      "total": 11,
+      "active": 11,
+      "primary": 2,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb1337b1943fb706d82f",
+      "brand": "Zeekr",
+      "model": "7X",
+      "slug": "zeekr-7x-privilege-awd",
+      "total": 13,
+      "active": 13,
+      "primary": 5,
+      "gallery": 8,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb1437b1943fb706d834",
+      "brand": "Mercedes-Benz",
+      "model": "G",
+      "slug": "g-580-amg",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb1537b1943fb706d836",
+      "brand": "BMW",
+      "model": "iX2",
+      "slug": "bmw-ix2-edrive20",
+      "total": 23,
+      "active": 23,
+      "primary": 4,
+      "gallery": 19,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb1637b1943fb706d83a",
+      "brand": "BMW",
+      "model": "BMW",
+      "slug": "2025-bmw-ix-m70-xdrive",
+      "total": 12,
+      "active": 12,
+      "primary": 3,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb1837b1943fb706d846",
+      "brand": "Volvo",
+      "model": "EX90",
+      "slug": "volvo-ex90-single-motor",
+      "total": 12,
+      "active": 12,
+      "primary": 3,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb1b37b1943fb706d854",
+      "brand": "Polestar",
+      "model": "3",
+      "slug": "polestar-3-long-range-single-motor",
+      "total": 11,
+      "active": 11,
+      "primary": 2,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb1e37b1943fb706d864",
+      "brand": "Volkswagen",
+      "model": "ID.4",
+      "slug": "volkswagen-id-4",
+      "total": 13,
+      "active": 13,
+      "primary": 4,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb1f37b1943fb706d868",
+      "brand": "Citroën",
+      "model": "Citroen",
+      "slug": "citroen-e-c5-aircross",
+      "total": 22,
+      "active": 22,
+      "primary": 4,
+      "gallery": 18,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb2237b1943fb706d877",
+      "brand": "Volvo",
+      "model": "Volvo",
+      "slug": "2024-volvo-ex30-twin-motor-performance",
+      "total": 15,
+      "active": 15,
+      "primary": 6,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb2237b1943fb706d87b",
+      "brand": "Opel",
+      "model": "Opel",
+      "slug": "2024-opel-mokka-elektrik",
+      "total": 11,
+      "active": 11,
+      "primary": 2,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb2437b1943fb706d881",
+      "brand": "BYD",
+      "model": "BYD",
+      "slug": "2024-byd-atto-3",
+      "total": 25,
+      "active": 25,
+      "primary": 5,
+      "gallery": 20,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb2437b1943fb706d883",
+      "brand": "Kia",
+      "model": "Kia",
+      "slug": "2024-kia-ev3-long-range",
+      "total": 14,
+      "active": 14,
+      "primary": 4,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb2537b1943fb706d887",
+      "brand": "Hyundai",
+      "model": "Hyundai",
+      "slug": "2024-hyundai-ioniq-5-advance",
+      "total": 37,
+      "active": 37,
+      "primary": 5,
+      "gallery": 32,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb2637b1943fb706d88d",
+      "brand": "Tesla",
+      "model": "Tesla",
+      "slug": "2024-tesla-model-y-sr",
+      "total": 25,
+      "active": 25,
+      "primary": 5,
+      "gallery": 20,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb2737b1943fb706d891",
+      "brand": "IM",
+      "model": "Motors",
+      "slug": "im-motors-ls6-awd",
+      "total": 19,
+      "active": 19,
+      "primary": 2,
+      "gallery": 17,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb2a37b1943fb706d8a0",
+      "brand": "Zeekr",
+      "model": "001",
+      "slug": "zeekr-001-privilege-awd",
+      "total": 30,
+      "active": 30,
+      "primary": 6,
+      "gallery": 24,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb2c37b1943fb706d8ab",
+      "brand": "NIO",
+      "model": "NIO",
+      "slug": "2023-nio-el6",
+      "total": 28,
+      "active": 28,
+      "primary": 3,
+      "gallery": 25,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb2c37b1943fb706d8ad",
+      "brand": "Buick",
+      "model": "Electra",
+      "slug": "buick-electra-e4-gs",
+      "total": 18,
+      "active": 18,
+      "primary": 3,
+      "gallery": 15,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb2d37b1943fb706d8b0",
+      "brand": "Volvo",
+      "model": "EX30",
+      "slug": "volvo-ex30-twin-motor-performance",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb3337b1943fb706d8cc",
+      "brand": "MG",
+      "model": "MG",
+      "slug": "2023-mg-zs-ev",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb3437b1943fb706d8cf",
+      "brand": "Skywell",
+      "model": "Skywell",
+      "slug": "2023-skywell-et5",
+      "total": 11,
+      "active": 11,
+      "primary": 1,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb3b37b1943fb706d8f4",
+      "brand": "Audi",
+      "model": "SQ8",
+      "slug": "audi-sq8-sportback-e-tron-quattro",
+      "total": 31,
+      "active": 31,
+      "primary": 4,
+      "gallery": 27,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb3f37b1943fb706d906",
+      "brand": "Hozon",
+      "model": "NETA",
+      "slug": "hozon-neta-u-ii",
+      "total": 20,
+      "active": 20,
+      "primary": 3,
+      "gallery": 17,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb4137b1943fb706d913",
+      "brand": "Nissan",
+      "model": "Nissan",
+      "slug": "2023-nissan-ariya-fwd",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb4437b1943fb706d91f",
+      "brand": "NIO",
+      "model": "ES7",
+      "slug": "nio-es7-100-kwh",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb4d37b1943fb706d94c",
+      "brand": "Volkswagen",
+      "model": "ID.5",
+      "slug": "volkswagen-id-5-gtx-ozellikler",
+      "total": 16,
+      "active": 16,
+      "primary": 2,
+      "gallery": 14,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb5137b1943fb706d95f",
+      "brand": "Leapmotor",
+      "model": "C11",
+      "slug": "leapmotor-c11-performance-ozellikler",
+      "total": 13,
+      "active": 13,
+      "primary": 3,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb5337b1943fb706d968",
+      "brand": "BAIC",
+      "model": "BEIJING",
+      "slug": "beijing-ex5-ozellikler",
+      "total": 16,
+      "active": 16,
+      "primary": 2,
+      "gallery": 14,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb5737b1943fb706d979",
+      "brand": "Skyworth",
+      "model": "EV6",
+      "slug": "skyworth-ev6-520-ozellikler",
+      "total": 11,
+      "active": 11,
+      "primary": 2,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb5b37b1943fb706d98f",
+      "brand": "XEV",
+      "model": "iEVS4",
+      "slug": "xev-ievs4-ozellikler",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb5d37b1943fb706d998",
+      "brand": "Weltmeister",
+      "model": "EX6",
+      "slug": "weltmeister-ex6-plus-500-ozellikler",
+      "total": 13,
+      "active": 13,
+      "primary": 2,
+      "gallery": 11,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb5e37b1943fb706d99b",
+      "brand": "Roewe",
+      "model": "Marvel",
+      "slug": "roewe-marvel-x-awd-ozellikler",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb5f37b1943fb706d9a0",
+      "brand": "Aiways",
+      "model": "U6",
+      "slug": "aiways-u6-top-play-ozellikler",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb6137b1943fb706d9a9",
+      "brand": "Geometry",
+      "model": "C",
+      "slug": "geometry-c-550km-ozellikler",
+      "total": 13,
+      "active": 13,
+      "primary": 2,
+      "gallery": 11,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb6137b1943fb706d9ac",
+      "brand": "BYD",
+      "model": "Yuan",
+      "slug": "byd-yuan-ev-ev535-high-energy-ozellikler",
+      "total": 24,
+      "active": 24,
+      "primary": 4,
+      "gallery": 20,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    },
+    {
+      "vehicleId": "6a93eb6537b1943fb706d9bc",
+      "brand": "BYD",
+      "model": "Song",
+      "slug": "byd-song-pro-ev-ozellikler",
+      "total": 19,
+      "active": 19,
+      "primary": 2,
+      "gallery": 17,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb6737b1943fb706d9c6",
+      "brand": "NIO",
+      "model": "EC6",
+      "slug": "nio-ec6-performance-100-kwh-ozellikler",
+      "total": 16,
+      "active": 16,
+      "primary": 4,
+      "gallery": 12,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb6937b1943fb706d9cf",
+      "brand": "NIO",
+      "model": "ES8",
+      "slug": "nio-es8-580km-ozellikler",
+      "total": 12,
+      "active": 12,
+      "primary": 2,
+      "gallery": 10,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb6c37b1943fb706d9dd",
+      "brand": "Hongqi",
+      "model": "E-HS9",
+      "slug": "hongqi-e-hs9-exclusive-ozellikler",
+      "total": 11,
+      "active": 11,
+      "primary": 2,
+      "gallery": 9,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb7137b1943fb706d9f6",
+      "brand": "Nissan",
+      "model": "Ariya",
+      "slug": "nissan-ariya-e-4orce-87-kwh-ozellikler",
+      "total": 13,
+      "active": 13,
+      "primary": 2,
+      "gallery": 11,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb7237b1943fb706d9fb",
+      "brand": "MG",
+      "model": "Marvel",
+      "slug": "mg-marvel-r-performance-ozellikler",
+      "total": 14,
+      "active": 14,
+      "primary": 2,
+      "gallery": 12,
+      "over10": true,
+      "over15": false,
+      "over20": false
+    },
+    {
+      "vehicleId": "6a93eb7737b1943fb706da11",
+      "brand": "Ford",
+      "model": "Mustang",
+      "slug": "ford-mustang-mach-e-awd-extended-range-ozellikler",
+      "total": 25,
+      "active": 25,
+      "primary": 5,
+      "gallery": 20,
+      "over10": true,
+      "over15": true,
+      "over20": true
+    }
+  ],
+  "noPrimary": [
+    {
+      "vehicleId": "6a9174149b4815f362cc7eaf",
+      "brand": "Hyundai",
+      "model": "IONIQ 5 N",
+      "slug": "hyundai-ioniq-5-n",
+      "total": 19,
+      "active": 19,
+      "primary": 0,
+      "gallery": 19,
+      "over10": true,
+      "over15": true,
+      "over20": false
+    }
+  ],
+  "duplicateGroups": [],
+  "crossModel": [
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015611/evos/byd-img-5d2a807430b2039d58f3084bdf7434647de710e2.jpg",
+      "vehicles": [
+        {
+          "vehicleId": "6a908f1d11818023b4e13308",
+          "brand": "BYD",
+          "model": "Seal Excellence AWD",
+          "slug": "byd-seal-excellence-2026"
+        },
+        {
+          "vehicleId": "6a91b0548d5907061493fdcc",
+          "brand": "BYD",
+          "model": "SEALION 7",
+          "slug": "byd-sealion-7-2026"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f3fcb608b420035d2f22",
+          "vehicleId": "6a908f1d11818023b4e13308",
+          "source": "byd-official",
+          "isPrimary": true,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015611/evos/byd-img-5d2a807430b2039d58f3084bdf7434647de710e2.jpg"
+        },
+        {
+          "id": "6a92f406b608b420035d2f2b",
+          "vehicleId": "6a91b0548d5907061493fdcc",
+          "source": "byd-official",
+          "isPrimary": true,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015611/evos/byd-img-5d2a807430b2039d58f3084bdf7434647de710e2.jpg"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015612/evos/byd-img-928fff282f56447b70637b05723bb7ae6d92cd3b.jpg",
+      "vehicles": [
+        {
+          "vehicleId": "6a908f1d11818023b4e13308",
+          "brand": "BYD",
+          "model": "Seal Excellence AWD",
+          "slug": "byd-seal-excellence-2026"
+        },
+        {
+          "vehicleId": "6a91b0548d5907061493fdcc",
+          "brand": "BYD",
+          "model": "SEALION 7",
+          "slug": "byd-sealion-7-2026"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f3fdb608b420035d2f24",
+          "vehicleId": "6a908f1d11818023b4e13308",
+          "source": "byd-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015612/evos/byd-img-928fff282f56447b70637b05723bb7ae6d92cd3b.jpg"
+        },
+        {
+          "id": "6a92f406b608b420035d2f2c",
+          "vehicleId": "6a91b0548d5907061493fdcc",
+          "source": "byd-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015612/evos/byd-img-928fff282f56447b70637b05723bb7ae6d92cd3b.jpg"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015613/evos/byd-img-b4a9dd4d18eccf1f1c7fa44d3cf15a43c9c22073.jpg",
+      "vehicles": [
+        {
+          "vehicleId": "6a908f1d11818023b4e13308",
+          "brand": "BYD",
+          "model": "Seal Excellence AWD",
+          "slug": "byd-seal-excellence-2026"
+        },
+        {
+          "vehicleId": "6a91b0548d5907061493fdcc",
+          "brand": "BYD",
+          "model": "SEALION 7",
+          "slug": "byd-sealion-7-2026"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f3feb608b420035d2f25",
+          "vehicleId": "6a908f1d11818023b4e13308",
+          "source": "byd-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015613/evos/byd-img-b4a9dd4d18eccf1f1c7fa44d3cf15a43c9c22073.jpg"
+        },
+        {
+          "id": "6a92f406b608b420035d2f2e",
+          "vehicleId": "6a91b0548d5907061493fdcc",
+          "source": "byd-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015613/evos/byd-img-b4a9dd4d18eccf1f1c7fa44d3cf15a43c9c22073.jpg"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015620/evos/byd-img-02df24c72406cd86d399caf55a06fbb77b49c982.png",
+      "vehicles": [
+        {
+          "vehicleId": "6a908f1d11818023b4e13308",
+          "brand": "BYD",
+          "model": "Seal Excellence AWD",
+          "slug": "byd-seal-excellence-2026"
+        },
+        {
+          "vehicleId": "6a91b0548d5907061493fdcc",
+          "brand": "BYD",
+          "model": "SEALION 7",
+          "slug": "byd-sealion-7-2026"
+        },
+        {
+          "vehicleId": "6a91b08c8d5907061493fe02",
+          "brand": "BYD",
+          "model": "HAN",
+          "slug": "byd-han-2026"
+        },
+        {
+          "vehicleId": "6a91b0af8d5907061493fe21",
+          "brand": "BYD",
+          "model": "TANG",
+          "slug": "byd-tang-2026"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f405b608b420035d2f29",
+          "vehicleId": "6a908f1d11818023b4e13308",
+          "source": "byd-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015620/evos/byd-img-02df24c72406cd86d399caf55a06fbb77b49c982.png"
+        },
+        {
+          "id": "6a92f40cb608b420035d2f33",
+          "vehicleId": "6a91b0548d5907061493fdcc",
+          "source": "byd-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015620/evos/byd-img-02df24c72406cd86d399caf55a06fbb77b49c982.png"
+        },
+        {
+          "id": "6a92f413b608b420035d2f39",
+          "vehicleId": "6a91b08c8d5907061493fe02",
+          "source": "byd-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015620/evos/byd-img-02df24c72406cd86d399caf55a06fbb77b49c982.png"
+        },
+        {
+          "id": "6a92f417b608b420035d2f3d",
+          "vehicleId": "6a91b0af8d5907061493fe21",
+          "source": "byd-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015620/evos/byd-img-02df24c72406cd86d399caf55a06fbb77b49c982.png"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015282/evos/kia-img-af89b078a41deb77223be58168fee7ea325540af.png",
+      "vehicles": [
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "brand": "Kia",
+          "model": "EV2",
+          "slug": "kia-ev2"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "brand": "Kia",
+          "model": "EV3",
+          "slug": "kia-ev3"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "brand": "Kia",
+          "model": "Niro EV",
+          "slug": "kia-niro-ev"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "brand": "Kia",
+          "model": "EV6",
+          "slug": "kia-ev6"
+        },
+        {
+          "vehicleId": "6a90b6d8cbf40abdb311c6da",
+          "brand": "Kia",
+          "model": "EV9",
+          "slug": "kia-ev9"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f2b2b608b420035d2e6d",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015282/evos/kia-img-af89b078a41deb77223be58168fee7ea325540af.png"
+        },
+        {
+          "id": "6a92f917b608b420035d31ec",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015282/evos/kia-img-af89b078a41deb77223be58168fee7ea325540af.png"
+        },
+        {
+          "id": "6a9302fcb608b420035d3710",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "source": "kia-official",
+          "isPrimary": true,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015282/evos/kia-img-af89b078a41deb77223be58168fee7ea325540af.png"
+        },
+        {
+          "id": "6a930523b608b420035d38cb",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015282/evos/kia-img-af89b078a41deb77223be58168fee7ea325540af.png"
+        },
+        {
+          "id": "6a930826b608b420035d3be9",
+          "vehicleId": "6a90b6d8cbf40abdb311c6da",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015282/evos/kia-img-af89b078a41deb77223be58168fee7ea325540af.png"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015283/evos/kia-img-3c51feb5c37bcee500fa75e8ba9ad498a28cd76b.png",
+      "vehicles": [
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "brand": "Kia",
+          "model": "EV2",
+          "slug": "kia-ev2"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "brand": "Kia",
+          "model": "EV3",
+          "slug": "kia-ev3"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "brand": "Kia",
+          "model": "Niro EV",
+          "slug": "kia-niro-ev"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "brand": "Kia",
+          "model": "EV6",
+          "slug": "kia-ev6"
+        },
+        {
+          "vehicleId": "6a90b6d8cbf40abdb311c6da",
+          "brand": "Kia",
+          "model": "EV9",
+          "slug": "kia-ev9"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f2b3b608b420035d2e6e",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015283/evos/kia-img-3c51feb5c37bcee500fa75e8ba9ad498a28cd76b.png"
+        },
+        {
+          "id": "6a92f917b608b420035d31ed",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015283/evos/kia-img-3c51feb5c37bcee500fa75e8ba9ad498a28cd76b.png"
+        },
+        {
+          "id": "6a9302fcb608b420035d3711",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015283/evos/kia-img-3c51feb5c37bcee500fa75e8ba9ad498a28cd76b.png"
+        },
+        {
+          "id": "6a930524b608b420035d38cc",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015283/evos/kia-img-3c51feb5c37bcee500fa75e8ba9ad498a28cd76b.png"
+        },
+        {
+          "id": "6a930826b608b420035d3bea",
+          "vehicleId": "6a90b6d8cbf40abdb311c6da",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015283/evos/kia-img-3c51feb5c37bcee500fa75e8ba9ad498a28cd76b.png"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1787916329/evos/kia-img-6abd7bf808f042c9baaa187f0f32e17db111ac70.png",
+      "vehicles": [
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "brand": "Kia",
+          "model": "EV2",
+          "slug": "kia-ev2"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "brand": "Kia",
+          "model": "EV6",
+          "slug": "kia-ev6"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f2b4b608b420035d2e6f",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1787916329/evos/kia-img-6abd7bf808f042c9baaa187f0f32e17db111ac70.png"
+        },
+        {
+          "id": "6a9170299e154a1ad3263205",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1787916329/evos/kia-img-6abd7bf808f042c9baaa187f0f32e17db111ac70.png"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015286/evos/kia-img-385c6c642f7c5f60d5568db2f11ca70be4b0f407.png",
+      "vehicles": [
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "brand": "Kia",
+          "model": "EV2",
+          "slug": "kia-ev2"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "brand": "Kia",
+          "model": "EV6",
+          "slug": "kia-ev6"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f2b6b608b420035d2e71",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015286/evos/kia-img-385c6c642f7c5f60d5568db2f11ca70be4b0f407.png"
+        },
+        {
+          "id": "6a930525b608b420035d38cd",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015286/evos/kia-img-385c6c642f7c5f60d5568db2f11ca70be4b0f407.png"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015295/evos/kia-img-eedb32c071bb0adc7bd554525dfae33f188b5cd1.png",
+      "vehicles": [
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "brand": "Kia",
+          "model": "EV2",
+          "slug": "kia-ev2"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "brand": "Kia",
+          "model": "EV3",
+          "slug": "kia-ev3"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "brand": "Kia",
+          "model": "Niro EV",
+          "slug": "kia-niro-ev"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "brand": "Kia",
+          "model": "EV6",
+          "slug": "kia-ev6"
+        },
+        {
+          "vehicleId": "6a90b6d8cbf40abdb311c6da",
+          "brand": "Kia",
+          "model": "EV9",
+          "slug": "kia-ev9"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f2bfb608b420035d2e7a",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d6",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015295/evos/kia-img-eedb32c071bb0adc7bd554525dfae33f188b5cd1.png"
+        },
+        {
+          "id": "6a92f91fb608b420035d31f5",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015295/evos/kia-img-eedb32c071bb0adc7bd554525dfae33f188b5cd1.png"
+        },
+        {
+          "id": "6a930307b608b420035d371b",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015295/evos/kia-img-eedb32c071bb0adc7bd554525dfae33f188b5cd1.png"
+        },
+        {
+          "id": "6a930528b608b420035d38d1",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d9",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015295/evos/kia-img-eedb32c071bb0adc7bd554525dfae33f188b5cd1.png"
+        },
+        {
+          "id": "6a93082ab608b420035d3bef",
+          "vehicleId": "6a90b6d8cbf40abdb311c6da",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788015295/evos/kia-img-eedb32c071bb0adc7bd554525dfae33f188b5cd1.png"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788016920/evos/kia-img-ac4fcd717a1df9bf25ef5a0a518d6ddc662f5722.png",
+      "vehicles": [
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "brand": "Kia",
+          "model": "EV3",
+          "slug": "kia-ev3"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "brand": "Kia",
+          "model": "Niro EV",
+          "slug": "kia-niro-ev"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f918b608b420035d31ee",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788016920/evos/kia-img-ac4fcd717a1df9bf25ef5a0a518d6ddc662f5722.png"
+        },
+        {
+          "id": "6a9302fdb608b420035d3712",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788016920/evos/kia-img-ac4fcd717a1df9bf25ef5a0a518d6ddc662f5722.png"
+        }
+      ]
+    },
+    {
+      "normalizedUrl": "https://res.cloudinary.com/y8thxjao/image/upload/v1788016921/evos/kia-img-21aa9ca6b7485a61d57f3c3f6dd4a7f6709b1e88.png",
+      "vehicles": [
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "brand": "Kia",
+          "model": "EV3",
+          "slug": "kia-ev3"
+        },
+        {
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "brand": "Kia",
+          "model": "Niro EV",
+          "slug": "kia-niro-ev"
+        }
+      ],
+      "images": [
+        {
+          "id": "6a92f919b608b420035d31ef",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d7",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788016921/evos/kia-img-21aa9ca6b7485a61d57f3c3f6dd4a7f6709b1e88.png"
+        },
+        {
+          "id": "6a9302fdb608b420035d3713",
+          "vehicleId": "6a90b6d7cbf40abdb311c6d8",
+          "source": "kia-official",
+          "isPrimary": false,
+          "url": "https://res.cloudinary.com/y8thxjao/image/upload/v1788016921/evos/kia-img-21aa9ca6b7485a61d57f3c3f6dd4a7f6709b1e88.png"
+        }
+      ]
+    }
+  ]
+}

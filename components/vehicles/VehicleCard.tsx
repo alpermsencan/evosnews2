@@ -17,6 +17,7 @@ export type VehicleLite = {
   acceleration: number;
   segment: string;
   motorPowerHp: number;
+  marketStatus?: string;
   /** Operatör girmediyse boştur — kartta uydurma değer gösterilmez. */
   dcChargeKw: number | null;
   /** Editör puanı; gerçek bir inceleme yoksa boştur. */
@@ -84,12 +85,18 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
         <span className="absolute left-2 top-2 rounded bg-evos-ink/85 px-2 py-0.5 text-[10px] font-black text-white backdrop-blur">
           {vehicle.segment}
         </span>
+        <span className={`absolute left-2 bottom-2 rounded px-2 py-0.5 text-[10px] font-black text-white backdrop-blur ${
+          vehicle.marketStatus === "TR_YOK" ? "bg-neutral-600/85" : "bg-teal-600/85"
+        }`}>
+          {vehicle.marketStatus === "TR_YOK" ? "TR'de Yok" : "TR'de Var"}
+        </span>
         {vehicle.rating != null && (
           <span className="absolute right-2 top-2 flex items-center gap-1 rounded bg-volt px-2 py-0.5 text-[10px] font-black text-white">
             ★ {vehicle.rating.toFixed(1)}
           </span>
         )}
       </Link>
+
 
       <div className="flex flex-1 flex-col gap-2 p-3">
         <div className="flex items-center justify-between">

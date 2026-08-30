@@ -1,0 +1,11 @@
+{
+  "initialImagesCount": 4011,
+  "finalImagesCount": 5640,
+  "crossModelLinks": 0,
+  "crossModelDetails": [],
+  "failedList": [
+    "AEHRA SUV (Standard): No vehicle matched in DB",
+    "Sony VISION-S (02): No vehicle matched in DB",
+    "ORA Cherry (Cat): No vehicle matched in DB"
+  ]
+}

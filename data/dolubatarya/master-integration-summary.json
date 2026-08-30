@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-08-30T12:07:35Z",
+  "brands": {
+    "before": 14,
+    "after": 83,
+    "created": 69
+  },
+  "vehicles": {
+    "before": 202,
+    "after": 202,
+    "created": 0,
+    "updated": 362
+  },
+  "variants": {
+    "before": 392,
+    "after": 392,
+    "created": 0
+  },
+  "vehicleImages": {
+    "before": 5640,
+    "after": 4001,
+    "deleted": 1639,
+    "dolubatarya": 1629,
+    "remainingNonDolubatarya": 2652,
+    "withoutDolubatarya": 3
+  },
+  "primary": {
+    "primaryCount": 168,
+    "vehiclesWithoutPrimary": 0,
+    "primaryCorrected": 122
+  },
+  "crossModel": {
+    "newCrossModelUrls": 0,
+    "newCrossModelVehicles": 0
+  },
+  "trStatus": {
+    "trVar": 55,
+    "trYok": 307
+  }
+}
