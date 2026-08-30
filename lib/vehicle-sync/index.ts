@@ -4,6 +4,7 @@ import { fetchHyundaiPrices } from "./sources/hyundai";
 import { fetchToggPrices } from "./sources/togg";
 import { fetchBydPrices } from "./sources/byd";
 import { fetchTeslaPrices } from "./sources/tesla";
+import { fetchRenaultPrices } from "./sources/renault";
 import { hasPriceChanged } from "./change-detector";
 import { createPriceHistory } from "./price-history";
 import { normalizeText, slugify } from "./normalize";
@@ -74,6 +75,8 @@ export async function syncBrandVehicles(
       syncData = await fetchBydPrices();
     } else if (sourceName === "tesla-official") {
       syncData = await fetchTeslaPrices();
+    } else if (sourceName === "renault-official") {
+      syncData = await fetchRenaultPrices();
     } else {
       throw new Error(`Unsupported brand source: ${sourceName}`);
     }

@@ -191,6 +191,15 @@ export function validateVehicleImage(ctx: ImageValidationContext): ValidationRes
     }
   }
 
+  if (brand === "renault") {
+    if (model.includes("5") && (full.includes("megane") || full.includes("scenic") || full.includes("austral") || full.includes("clio") || full.includes("duster") || full.includes("captur") || full.includes("rafale"))) {
+      return { isValid: false, reason: "Renault 5 E-Tech cross-model contamination", type: "gallery" };
+    }
+    if (model.includes("megane") && (full.includes("scenic") || full.includes("austral") || full.includes("clio") || full.includes("duster") || full.includes("captur") || full.includes("rafale") || full.includes("renault5") || full.includes("r5") || full.includes("renault-5"))) {
+      return { isValid: false, reason: "Renault Megane E-Tech cross-model contamination", type: "gallery" };
+    }
+  }
+
   // 4. DETERMINE TYPE (Interior / Exterior)
   let type: "exterior" | "interior" | "gallery" = "exterior";
   if (

@@ -22,8 +22,8 @@ export async function GET(req: NextRequest) {
   const skip = (page - 1) * limit;
 
   try {
-    const brands = ["Kia", "Hyundai", "Togg", "BYD", "Tesla"];
-    const sources = ["kia-official", "hyundai-official", "togg-official", "byd-official", "tesla-official"];
+    const brands = ["Kia", "Hyundai", "Togg", "BYD", "Tesla", "Renault"];
+    const sources = ["kia-official", "hyundai-official", "togg-official", "byd-official", "tesla-official", "renault-official"];
 
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
@@ -238,11 +238,12 @@ export async function POST(req: NextRequest) {
       togg: "togg-official",
       byd: "byd-official",
       tesla: "tesla-official",
+      renault: "renault-official",
     };
 
     const sourceName = allowedSources[brand];
     if (!sourceName) {
-      return fail(`Desteklenmeyen marka: ${brand}. Geçerli markalar: kia, hyundai, togg, byd, tesla`, 400);
+      return fail(`Desteklenmeyen marka: ${brand}. Geçerli markalar: kia, hyundai, togg, byd, tesla, renault`, 400);
     }
 
     const result = await syncBrandVehicles(sourceName, "MANUAL");

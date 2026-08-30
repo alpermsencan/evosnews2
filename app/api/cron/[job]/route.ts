@@ -245,6 +245,18 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
       teslaVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
     }
 
+    let renaultVehicleSync = null;
+    try {
+      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
+      renaultVehicleSync = await syncBrandVehicles("renault-official", "CRON");
+      if (renaultVehicleSync.status === "ok" && (renaultVehicleSync.created > 0 || renaultVehicleSync.updated > 0)) {
+        tags.add(TAGS.vehicles);
+      }
+    } catch (e) {
+      console.error("[CRON][ERROR] Renault vehicle sync failed", e);
+      renaultVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
+    }
+
     for (const tag of tags) revalidateTag(tag, "max");
 
     // Cron'un çalışmış olması verinin taze olduğunu KANITLAMAZ: besleme sessizce
@@ -267,6 +279,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
         toggVehicleSync,
         bydVehicleSync,
         teslaVehicleSync,
+        renaultVehicleSync,
         health: health.map((h) => ({
           key: h.key,
           status: h.status,

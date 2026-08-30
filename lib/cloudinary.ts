@@ -168,7 +168,37 @@ export async function uploadImageFromUrl(
   const hash = createHash("sha1").update(imageUrl).digest("hex");
   const publicId = customPublicId || `img-${hash}`;
 
-  const result = await cloudinary.uploader.upload(imageUrl, {
+  let uploadTarget = imageUrl;
+  try {
+    const https = await import("node:https");
+    const buffer = await new Promise<Buffer>((resolve, reject) => {
+      const options = {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+        }
+      };
+      https.get(imageUrl, options, (res) => {
+        if (res.statusCode !== 200) {
+          reject(new Error(`Status code ${res.statusCode}`));
+          return;
+        }
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk) => chunks.push(chunk));
+        res.on("end", () => resolve(Buffer.concat(chunks)));
+        res.on("error", (err) => reject(err));
+      }).on("error", (err) => reject(err));
+    });
+
+    let ext = (imageUrl.split('.').pop() || 'jpg').toLowerCase();
+    if (ext === 'jpg') ext = 'jpeg';
+    uploadTarget = `data:image/${ext};base64,` + buffer.toString('base64');
+    console.log(`[CLOUDINARY] Pre-fetched image via native HTTPS, size: ${buffer.length} bytes for ${imageUrl}`);
+  } catch (err) {
+    console.warn(`[CLOUDINARY] Failed to pre-fetch image ${imageUrl} via native HTTPS, falling back to direct URL:`, err instanceof Error ? err.message : err);
+  }
+
+  const result = await cloudinary.uploader.upload(uploadTarget, {
     folder,
     public_id: publicId,
     resource_type: "image",
