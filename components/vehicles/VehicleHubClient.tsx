@@ -89,11 +89,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
 
   // --- STATE FOR TABS ---
   const [bestSellersTab, setBestSellersTab] = useState<"monthly" | "yearly">("monthly");
-  const [dailyReviewTab, setDailyReviewTab] = useState<"tr_var" | "tr_yok">("tr_var");
   const [dailyReviewSubTab, setDailyReviewSubTab] = useState<"live" | "theory">("live");
-  const [championsTab, setChampionsTab] = useState<"tr_var" | "tr_yok">("tr_var");
-  const [topRatedTab, setTopRatedTab] = useState<"tr_var" | "tr_yok">("tr_var");
-  const [reviewsTab, setReviewsTab] = useState<"tr_var" | "tr_yok">("tr_var");
 
   // --- STATE FOR COMPARISON ---
   const [compVeh1, setCompVeh1] = useState<string>("");
@@ -163,15 +159,18 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
     const matchesSearch = !searchQuery || 
       v.brand.toLowerCase().includes(searchQuery.toLowerCase()) || 
       v.model.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Ingest status filter
+    if (selectedTrStatus === "tr_var") {
+      return matchesBrand && matchesSegment && matchesBodyType && matchesSearch && 
+        (v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA");
+    } else if (selectedTrStatus === "tr_yok") {
+      return matchesBrand && matchesSegment && matchesBodyType && matchesSearch && 
+        v.marketStatus === "TR_YOK";
+    }
+    
     return matchesBrand && matchesSegment && matchesBodyType && matchesSearch;
   });
-
-  const trVarVehicles = filteredVehicles.filter(
-    (v) => v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA"
-  );
-  const trYokVehicles = filteredVehicles.filter(
-    (v) => v.marketStatus === "TR_YOK"
-  );
 
   // Distinct Lists
   const distinctBrands = Array.from(new Set(vehicles.map((v) => v.brand))).sort((a, b) => {
@@ -183,24 +182,14 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
   const distinctSegments = Array.from(new Set(vehicles.map((v) => v.segment))).sort();
   const distinctBodyTypes = Array.from(new Set(vehicles.map((v) => v.bodyType))).sort();
 
-  // Daily review selection (Deterministik)
+  // Daily review selection (Determinisik)
   const today = new Date();
   const dayIndex = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
-  const allTrVarVehicles = sortedVehicles.filter(
-    (v) => v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA"
-  );
-  const allTrYokVehicles = sortedVehicles.filter(
-    (v) => v.marketStatus === "TR_YOK"
-  );
-
-  const dailyVarVehicle = allTrVarVehicles.length > 0 
-    ? allTrVarVehicles[dayIndex % allTrVarVehicles.length] 
-    : null;
-  const dailyYokVehicle = allTrYokVehicles.length > 0 
-    ? allTrYokVehicles[(dayIndex + 1) % allTrYokVehicles.length] 
+  const dailyVehicle = sortedVehicles.length > 0 
+    ? sortedVehicles[dayIndex % sortedVehicles.length] 
     : null;
 
-  // Segment Champions
+  // Segment Champions (Computed globally from all vehicles)
   const getChampions = (list: Vehicle[]) => {
     if (list.length === 0) return { cheapest: null, longest: null, fastest: null };
     const cheapest = [...list].sort((a, b) => a.price - b.price)[0];
@@ -208,20 +197,18 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
     const fastest = [...list].sort((a, b) => a.acceleration - b.acceleration)[0];
     return { cheapest, longest, fastest };
   };
-  const varChampions = getChampions(allTrVarVehicles);
-  const yokChampions = getChampions(allTrYokVehicles);
+  const champions = getChampions(sortedVehicles);
 
-  // Top Rated Models
-  const getTopRated = (list: Vehicle[]) => {
-    return [...list]
-      .filter((v) => v.rating != null)
-      .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-      .slice(0, 8);
-  };
-  const varTopRated = getTopRated(allTrVarVehicles);
-  const yokTopRated = getTopRated(allTrYokVehicles);
+  // Top Rated Models (Rating exists, computed globally)
+  const topRated = [...sortedVehicles]
+    .filter((v) => v.rating != null)
+    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+    .slice(0, 8);
 
-  const fallbackBestSellers = allTrVarVehicles.slice(0, 5);
+  const fallbackBestSellers = sortedVehicles
+    .filter((v) => v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA")
+    .slice(0, 5);
+
   const veh1 = vehicles.find((v) => v.id === compVeh1);
   const veh2 = vehicles.find((v) => v.id === compVeh2);
 
@@ -289,35 +276,10 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                 <p className="text-[10px] text-neutral-400 font-bold">Bugünün Seçilen Modeli Canlı Verilerle Yayında</p>
               </div>
             </div>
-
-            <div className="mt-3 flex rounded bg-neutral-200/70 p-1 sm:mt-0">
-              <button
-                onClick={() => {
-                  setDailyReviewTab("tr_var");
-                  setDailyReviewSubTab("live");
-                }}
-                className={`rounded px-4 py-1 text-xs font-black transition ${
-                  dailyReviewTab === "tr_var" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-800"
-                }`}
-              >
-                TR'DE VAR
-              </button>
-              <button
-                onClick={() => {
-                  setDailyReviewTab("tr_yok");
-                  setDailyReviewSubTab("live");
-                }}
-                className={`rounded px-4 py-1 text-xs font-black transition ${
-                  dailyReviewTab === "tr_yok" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-800"
-                }`}
-              >
-                TR'DE YOK
-              </button>
-            </div>
           </div>
 
           {(() => {
-            const v = dailyReviewTab === "tr_var" ? dailyVarVehicle : dailyYokVehicle;
+            const v = dailyVehicle;
             if (!v) return <div className="p-8 text-center text-xs text-neutral-500">İçerik bulunmamaktadır.</div>;
             return (
               <div className="grid grid-cols-1 md:grid-cols-12 bg-neutral-900 text-white flex-1 min-h-[350px]">
@@ -479,7 +441,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
 
       </div>
 
-      {/* 3. ARAÇLARI KEŞFET (SIDEBAR FILTERS + RIGHT VEHICLE LISTS IN SIDE-BY-SIDE COLUMNS) */}
+      {/* 3. ARAÇLARI KEŞFET (SIDEBAR FILTERS + SINGLE UNIFIED GRID OF ALL VEHICLES SORTED BY POPULARITY) */}
       <section className="flex flex-col gap-6 lg:flex-row border-t border-neutral-150 pt-8">
         
         {/* Mobile Filter Toggle Button */}
@@ -575,169 +537,20 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
           </div>
         </aside>
 
-        {/* Right Side Category Columns (Side-by-side on Desktop) */}
-        <div className="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-6 min-w-0">
+        {/* Single Unified Grid of All Vehicles */}
+        <div className="flex-1 flex flex-col gap-4 min-w-0">
+          <h2 className="text-base font-black text-neutral-800 border-b border-neutral-150 pb-2.5 uppercase tracking-wide flex items-center justify-between">
+            <span>TÜM ELEKTRİKLİ MODELLER ({filteredVehicles.length})</span>
+            <span className="h-2.5 w-2.5 rounded-full bg-teal-600 animate-pulse"></span>
+          </h2>
           
-          {/* COLUMN 1: TR'DE VAR */}
-          {(selectedTrStatus === "" || selectedTrStatus === "tr_var") && (
-            <div className="flex flex-col gap-4 border-r border-neutral-100 pr-1">
-              <h2 className="text-base font-black text-neutral-800 border-b border-neutral-150 pb-2.5 uppercase tracking-wide flex items-center justify-between">
-                <span>TÜRKİYE'DE SATIŞTA OLANLAR ({trVarVehicles.length})</span>
-                <span className="h-2.5 w-2.5 rounded-full bg-teal-600 animate-pulse"></span>
-              </h2>
-              {trVarVehicles.length === 0 ? (
-                <p className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-100 rounded-lg">Filtrelerinize uygun araç bulunamadı.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {trVarVehicles.map((v) => (
-                    <VehicleCardItem 
-                      key={v.id} 
-                      vehicle={v} 
-                      displayImage={getVehicleDisplayImage(v)}
-                      onGalleryClick={() => {
-                        setLightboxVehicle(v);
-                        setLightboxIndex(0);
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* COLUMN 2: TR'DE YOK */}
-          {(selectedTrStatus === "" || selectedTrStatus === "tr_yok") && (
-            <div className="flex flex-col gap-4">
-              <h2 className="text-base font-black text-neutral-600 border-b border-neutral-150 pb-2.5 uppercase tracking-wide flex items-center justify-between">
-                <span>YURT DIŞINDA / TR'DE OLMAYANLAR ({trYokVehicles.length})</span>
-                <span className="h-2.5 w-2.5 rounded-full bg-neutral-400"></span>
-              </h2>
-              {trYokVehicles.length === 0 ? (
-                <p className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-100 rounded-lg">Filtrelerinize uygun araç bulunamadı.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {trYokVehicles.map((v) => (
-                    <VehicleCardItem 
-                      key={v.id} 
-                      vehicle={v} 
-                      displayImage={getVehicleDisplayImage(v)}
-                      onGalleryClick={() => {
-                        setLightboxVehicle(v);
-                        setLightboxIndex(0);
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 4. SEGMENT ŞAMPİYONLARI */}
-      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
-          <div>
-            <h2 className="text-lg font-black text-neutral-900">SEGMENT ŞAMPİYONLARI</h2>
-            <p className="text-xs font-bold text-neutral-400">Kriter Bazında Sınıfının En İyileri</p>
-          </div>
-          <div className="flex rounded bg-neutral-100 p-1">
-            <button
-              onClick={() => setChampionsTab("tr_var")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                championsTab === "tr_var" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE VAR
-            </button>
-            <button
-              onClick={() => setChampionsTab("tr_yok")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                championsTab === "tr_yok" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE YOK
-            </button>
-          </div>
-        </div>
-
-        {(() => {
-          const champs = championsTab === "tr_var" ? varChampions : yokChampions;
-          if (!champs.cheapest && !champs.longest && !champs.fastest) {
-            return <p className="p-8 text-center text-xs text-neutral-500 mt-4">Kategoriye ait araç bulunamadı.</p>;
-          }
-          return (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-5">
-              {champs.cheapest && (
-                <Link href={`/araclar/${champs.cheapest.slug}`} className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5 transition hover:shadow-md hover:border-teal-600">
-                  <span className="w-fit rounded bg-emerald-600 px-2 py-0.5 text-[9px] font-black text-white uppercase tracking-wider">
-                    EN UYGUN FİYATLI
-                  </span>
-                  <span className="text-base font-black text-neutral-900">{champs.cheapest.brand} {champs.cheapest.model}</span>
-                  <span className="text-xl font-black text-teal-800">{formatTL(champs.cheapest.price)}</span>
-                  <span className="text-[10px] text-neutral-500">{champs.cheapest.segment} · {champs.cheapest.batteryKwh} kWh</span>
-                </Link>
-              )}
-              {champs.longest && (
-                <Link href={`/araclar/${champs.longest.slug}`} className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5 transition hover:shadow-md hover:border-teal-600">
-                  <span className="w-fit rounded bg-sky-700 px-2 py-0.5 text-[9px] font-black text-white uppercase tracking-wider">
-                    EN UZUN MENZİL
-                  </span>
-                  <span className="text-base font-black text-neutral-900">{champs.longest.brand} {champs.longest.model}</span>
-                  <span className="text-xl font-black text-teal-800">{champs.longest.rangeKm} km</span>
-                  <span className="text-[10px] text-neutral-500">{champs.longest.segment} · {champs.longest.batteryKwh} kWh</span>
-                </Link>
-              )}
-              {champs.fastest && (
-                <Link href={`/araclar/${champs.fastest.slug}`} className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5 transition hover:shadow-md hover:border-teal-600">
-                  <span className="w-fit rounded bg-volt px-2 py-0.5 text-[9px] font-black text-black uppercase tracking-wider">
-                    EN HIZLI IVMELENEN
-                  </span>
-                  <span className="text-base font-black text-neutral-900">{champs.fastest.brand} {champs.fastest.model}</span>
-                  <span className="text-xl font-black text-teal-800">0-100: {champs.fastest.acceleration} sn</span>
-                  <span className="text-[10px] text-neutral-500">{champs.fastest.segment} · {champs.fastest.batteryKwh} kWh</span>
-                </Link>
-              )}
-            </div>
-          );
-        })()}
-      </section>
-
-      {/* 5. EN YÜKSEK PUANLI MODELLER */}
-      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
-          <div>
-            <h2 className="text-lg font-black text-neutral-900">EN YÜKSEK PUANLI MODELLER</h2>
-            <p className="text-xs font-bold text-neutral-400">Editör Derecelendirmeleri</p>
-          </div>
-          <div className="flex rounded bg-neutral-100 p-1">
-            <button
-              onClick={() => setTopRatedTab("tr_var")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                topRatedTab === "tr_var" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE VAR
-            </button>
-            <button
-              onClick={() => setTopRatedTab("tr_yok")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                topRatedTab === "tr_yok" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE YOK
-            </button>
-          </div>
-        </div>
-
-        {(() => {
-          const list = topRatedTab === "tr_var" ? varTopRated : yokTopRated;
-          if (list.length === 0) {
-            return <p className="p-8 text-center text-xs text-neutral-500 mt-4">Henüz derecelendirilmiş model bulunmamaktadır.</p>;
-          }
-          return (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mt-5">
-              {list.map((v) => (
+          {filteredVehicles.length === 0 ? (
+            <p className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-100 rounded-lg">
+              Filtrelerinize uygun araç bulunamadı.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {filteredVehicles.map((v) => (
                 <VehicleCardItem 
                   key={v.id} 
                   vehicle={v} 
@@ -749,8 +562,79 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                 />
               ))}
             </div>
-          );
-        })()}
+          )}
+        </div>
+      </section>
+
+      {/* 4. SEGMENT ŞAMPİYONLARI */}
+      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <div className="border-b border-neutral-100 pb-4">
+          <h2 className="text-lg font-black text-neutral-900">SEGMENT ŞAMPİYONLARI</h2>
+          <p className="text-xs font-bold text-neutral-400">Kriter Bazında Sınıfının En İyileri</p>
+        </div>
+
+        {(!champions.cheapest && !champions.longest && !champions.fastest) ? (
+          <p className="p-8 text-center text-xs text-neutral-500 mt-4">Kategoriye ait araç bulunamadı.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-5">
+            {champions.cheapest && (
+              <Link href={`/araclar/${champions.cheapest.slug}`} className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5 transition hover:shadow-md hover:border-teal-600">
+                <span className="w-fit rounded bg-emerald-600 px-2 py-0.5 text-[9px] font-black text-white uppercase tracking-wider">
+                  EN UYGUN FİYATLI
+                </span>
+                <span className="text-base font-black text-neutral-900">{champions.cheapest.brand} {champions.cheapest.model}</span>
+                <span className="text-xl font-black text-teal-800">{formatTL(champions.cheapest.price)}</span>
+                <span className="text-[10px] text-neutral-500">{champions.cheapest.segment} · {champions.cheapest.batteryKwh} kWh</span>
+              </Link>
+            )}
+            {champions.longest && (
+              <Link href={`/araclar/${champions.longest.slug}`} className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5 transition hover:shadow-md hover:border-teal-600">
+                <span className="w-fit rounded bg-sky-700 px-2 py-0.5 text-[9px] font-black text-white uppercase tracking-wider">
+                  EN UZUN MENZİL
+                </span>
+                <span className="text-base font-black text-neutral-900">{champions.longest.brand} {champions.longest.model}</span>
+                <span className="text-xl font-black text-teal-800">{champions.longest.rangeKm} km</span>
+                <span className="text-[10px] text-neutral-500">{champions.longest.segment} · {champions.longest.batteryKwh} kWh</span>
+              </Link>
+            )}
+            {champions.fastest && (
+              <Link href={`/araclar/${champions.fastest.slug}`} className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5 transition hover:shadow-md hover:border-teal-600">
+                <span className="w-fit rounded bg-volt px-2 py-0.5 text-[9px] font-black text-black uppercase tracking-wider">
+                  EN HIZLI IVMELENEN
+                </span>
+                <span className="text-base font-black text-neutral-900">{champions.fastest.brand} {champions.fastest.model}</span>
+                <span className="text-xl font-black text-teal-800">0-100: {champions.fastest.acceleration} sn</span>
+                <span className="text-[10px] text-neutral-500">{champions.fastest.segment} · {champions.fastest.batteryKwh} kWh</span>
+              </Link>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* 5. EN YÜKSEK PUANLI MODELLER */}
+      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <div className="border-b border-neutral-100 pb-4">
+          <h2 className="text-lg font-black text-neutral-900">EN YÜKSEK PUANLI MODELLER</h2>
+          <p className="text-xs font-bold text-neutral-400">Editör Derecelendirmeleri</p>
+        </div>
+
+        {topRated.length === 0 ? (
+          <p className="p-8 text-center text-xs text-neutral-500 mt-4">Henüz derecelendirilmiş model bulunmamaktadır.</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mt-5">
+            {topRated.map((v) => (
+              <VehicleCardItem 
+                key={v.id} 
+                vehicle={v} 
+                displayImage={getVehicleDisplayImage(v)}
+                onGalleryClick={() => {
+                  setLightboxVehicle(v);
+                  setLightboxIndex(0);
+                }}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 6. GÜNLÜK TEST SÜRÜŞÜ */}
@@ -891,31 +775,13 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
 
       {/* 8. İNCELEMELER & YAZILAR */}
       <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+        <div className="border-b border-neutral-100 pb-3">
           <h2 className="text-lg font-black text-neutral-900 uppercase tracking-wide">
             EDİTÖR İNCELEMELERİ &amp; YAZILARI
           </h2>
-          <div className="flex rounded bg-neutral-100 p-1">
-            <button
-              onClick={() => setReviewsTab("tr_var")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                reviewsTab === "tr_var" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE VAR
-            </button>
-            <button
-              onClick={() => setReviewsTab("tr_yok")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                reviewsTab === "tr_yok" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE YOK
-            </button>
-          </div>
         </div>
 
-        {reviewsTab === "tr_var" && articles.length > 0 ? (
+        {articles.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-4">
             {articles.slice(0, 3).map((a) => (
               <Link key={a.id} href={`/haber/${a.slug}`} className="flex flex-col gap-3 group">

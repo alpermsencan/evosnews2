@@ -121,22 +121,17 @@ export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverCli
     return [v.image, ...(v.images || [])].filter(Boolean);
   };
 
-  // Sort by popularity order (Togg, Tesla, BYD, etc.) first, then by rating, rangeKm
+  // Sort and Filter Logic
   const sortedVehicles = [...vehicles].sort((a, b) => {
     const scoreA = getPopularityScore(a.brand);
     const scoreB = getPopularityScore(b.brand);
     if (scoreA !== scoreB) return scoreA - scoreB;
-    
-    // Sort by rating desc
     const ratA = a.rating ?? 0;
     const ratB = b.rating ?? 0;
     if (ratB !== ratA) return ratB - ratA;
-
-    // Sort by range desc
     return b.rangeKm - a.rangeKm;
   });
 
-  // Filter vehicles
   const filteredVehicles = sortedVehicles.filter((v) => {
     const matchesBrand = !selectedBrand || v.brand.toLowerCase() === selectedBrand.toLowerCase();
     const matchesSegment = !selectedSegment || v.segment.toLowerCase() === selectedSegment.toLowerCase();
@@ -144,17 +139,20 @@ export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverCli
     const matchesSearch = !searchQuery || 
       v.brand.toLowerCase().includes(searchQuery.toLowerCase()) || 
       v.model.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Ingest status filter
+    if (selectedTrStatus === "tr_var") {
+      return matchesBrand && matchesSegment && matchesBodyType && matchesSearch && 
+        (v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA");
+    } else if (selectedTrStatus === "tr_yok") {
+      return matchesBrand && matchesSegment && matchesBodyType && matchesSearch && 
+        v.marketStatus === "TR_YOK";
+    }
+
     return matchesBrand && matchesSegment && matchesBodyType && matchesSearch;
   });
 
-  const trVarVehicles = filteredVehicles.filter(
-    (v) => v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA"
-  );
-  const trYokVehicles = filteredVehicles.filter(
-    (v) => v.marketStatus === "TR_YOK"
-  );
-
-  // Distict Option Lists (Sorted by popularity)
+  // Distinct Lists
   const distinctBrands = Array.from(new Set(vehicles.map((v) => v.brand))).sort((a, b) => {
     const scoreA = getPopularityScore(a);
     const scoreB = getPopularityScore(b);
@@ -215,7 +213,7 @@ export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverCli
         </div>
       </section>
 
-      {/* 2. MAIN LAYOUT (LEFT SIDEBAR FILTER PANEL + RIGHT COLUMN VEHICLE LISTS SIDE-BY-SIDE) */}
+      {/* 2. MAIN LAYOUT (LEFT SIDEBAR FILTER PANEL + RIGHT COLUMN VEHICLE LIST) */}
       <div className="flex flex-col gap-6 lg:flex-row">
         
         {/* Mobile Filter Toggle Button */}
@@ -226,7 +224,7 @@ export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverCli
           {isFilterOpenMobile ? "FİLTRELERİ GİZLE ▲" : "FİLTRELERİ GÖSTER ▼"}
         </button>
 
-        {/* Sidebar dikey filtre paneli */}
+        {/* Sidebar Filters Panel */}
         <aside className={`${isFilterOpenMobile ? "flex" : "hidden"} lg:flex w-full shrink-0 lg:w-[260px] flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm h-fit lg:sticky lg:top-4 z-10`}>
           <div className="border-b border-neutral-100 pb-3 flex items-center justify-between">
             <h3 className="text-sm font-black text-neutral-800 uppercase tracking-wide">FİLTRELER</h3>
@@ -311,60 +309,30 @@ export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverCli
           </div>
         </aside>
 
-        {/* Side-by-side columns on Desktop */}
-        <div className="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-6 min-w-0">
+        {/* Single Unified Grid of All Vehicles */}
+        <div className="flex-1 flex flex-col gap-4 min-w-0">
+          <h2 className="text-base font-black text-neutral-800 border-b border-neutral-150 pb-2.5 uppercase tracking-wide flex items-center justify-between">
+            <span>TÜM ELEKTRİKLİ MODELLER ({filteredVehicles.length})</span>
+            <span className="h-2.5 w-2.5 rounded-full bg-teal-600 animate-pulse"></span>
+          </h2>
           
-          {/* COLUMN 1: TR'DE VAR */}
-          {(selectedTrStatus === "" || selectedTrStatus === "tr_var") && (
-            <div className="flex flex-col gap-4 border-r border-neutral-100 pr-1">
-              <h2 className="text-base font-black text-neutral-800 border-b border-neutral-150 pb-2.5 uppercase tracking-wide flex items-center justify-between">
-                <span>TÜRKİYE'DE SATIŞTA OLANLAR ({trVarVehicles.length})</span>
-                <span className="h-2.5 w-2.5 rounded-full bg-teal-600 animate-pulse"></span>
-              </h2>
-              {trVarVehicles.length === 0 ? (
-                <p className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-100 rounded-lg">Filtrelerinize uygun araç bulunamadı.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {trVarVehicles.map((v) => (
-                    <VehicleCardItem 
-                      key={v.id} 
-                      vehicle={v} 
-                      displayImage={getVehicleDisplayImage(v)}
-                      onGalleryClick={() => {
-                        setLightboxVehicle(v);
-                        setLightboxIndex(0);
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* COLUMN 2: TR'DE YOK */}
-          {(selectedTrStatus === "" || selectedTrStatus === "tr_yok") && (
-            <div className="flex flex-col gap-4">
-              <h2 className="text-base font-black text-neutral-600 border-b border-neutral-150 pb-2.5 uppercase tracking-wide flex items-center justify-between">
-                <span>YURT DIŞINDA / TR'DE OLMAYANLAR ({trYokVehicles.length})</span>
-                <span className="h-2.5 w-2.5 rounded-full bg-neutral-400"></span>
-              </h2>
-              {trYokVehicles.length === 0 ? (
-                <p className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-100 rounded-lg">Filtrelerinize uygun araç bulunamadı.</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {trYokVehicles.map((v) => (
-                    <VehicleCardItem 
-                      key={v.id} 
-                      vehicle={v} 
-                      displayImage={getVehicleDisplayImage(v)}
-                      onGalleryClick={() => {
-                        setLightboxVehicle(v);
-                        setLightboxIndex(0);
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
+          {filteredVehicles.length === 0 ? (
+            <p className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-100 rounded-lg">
+              Filtrelerinize uygun araç bulunamadı.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {filteredVehicles.map((v) => (
+                <VehicleCardItem 
+                  key={v.id} 
+                  vehicle={v} 
+                  displayImage={getVehicleDisplayImage(v)}
+                  onGalleryClick={() => {
+                    setLightboxVehicle(v);
+                    setLightboxIndex(0);
+                  }}
+                />
+              ))}
             </div>
           )}
         </div>
