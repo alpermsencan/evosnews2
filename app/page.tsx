@@ -195,25 +195,60 @@ export default async function HomePage() {
             color="#0f172a"
             href="/kategori/haber-merkezi"
           />
-          <div className="flex flex-col gap-3.5 bg-white border border-neutral-200 rounded-lg p-4 shadow-sm min-h-[360px] justify-between">
-            {editorArticles.map((a) => (
-              <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-3 group border-b border-neutral-150 last:border-0 pb-3 last:pb-0">
-                <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded bg-neutral-100">
-                  <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-105 transition duration-300" />
-                </div>
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <h4 className="text-xs font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
-                    {a.title}
-                  </h4>
-                  <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
-                    <img src={a.author?.avatar || ""} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
-                    <span className="truncate">{a.author?.name}</span>
-                    <span>·</span>
-                    <span className="shrink-0">{timeAgo(a.publishedAt)}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+          <div className="flex flex-col gap-5 bg-white border border-neutral-200 rounded-lg p-5 shadow-sm">
+            {editorArticles.length > 0 && (
+              (() => {
+                const first = editorArticles[0];
+                const rest = editorArticles.slice(1);
+                return (
+                  <>
+                    {/* Featured Large Card */}
+                    <Link href={`/haber/${first.slug}`} className="group flex flex-col gap-3 pb-4 border-b border-neutral-100">
+                      <div className="relative aspect-[16/9] w-full overflow-hidden rounded bg-neutral-100">
+                        <img src={first.image} alt={first.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider">
+                          {first.category?.name || "Editör İncelemesi"}
+                        </span>
+                        <h3 className="text-base font-black text-neutral-900 leading-snug group-hover:text-sky-600 transition">
+                          {first.title}
+                        </h3>
+                        <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">{first.spot}</p>
+                        <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
+                          <img src={first.author?.avatar || ""} alt="" className="h-4 w-4 rounded-full object-cover" />
+                          <span className="truncate">{first.author?.name}</span>
+                          <span>·</span>
+                          <span className="shrink-0">{timeAgo(first.publishedAt)}</span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Smaller horizontal but larger-image list */}
+                    <div className="flex flex-col gap-4">
+                      {rest.map((a) => (
+                        <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-4 group border-b border-neutral-100 last:border-0 pb-4 last:pb-0">
+                          <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded bg-neutral-100">
+                            <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                          </div>
+                          <div className="flex flex-col gap-1 min-w-0">
+                            <h4 className="text-sm font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
+                              {a.title}
+                            </h4>
+                            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-neutral-400">
+                              <img src={a.author?.avatar || ""} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
+                              <span className="truncate">{a.author?.name}</span>
+                              <span>·</span>
+                              <span className="shrink-0">{timeAgo(a.publishedAt)}</span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()
+            )}
           </div>
         </div>
 
@@ -224,25 +259,60 @@ export default async function HomePage() {
             color="#0f172a"
             href="/kategori/teknoloji"
           />
-          <div className="flex flex-col gap-3.5 bg-white border border-neutral-200 rounded-lg p-4 shadow-sm min-h-[360px] justify-between">
-            {authorArticles.map((a) => (
-              <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-3 group border-b border-neutral-150 last:border-0 pb-3 last:pb-0">
-                <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded bg-neutral-100">
-                  <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-105 transition duration-300" />
-                </div>
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <h4 className="text-xs font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
-                    {a.title}
-                  </h4>
-                  <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
-                    <img src={a.author?.avatar || ""} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
-                    <span className="truncate">{a.author?.name}</span>
-                    <span>·</span>
-                    <span className="shrink-0">{timeAgo(a.publishedAt)}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+          <div className="flex flex-col gap-5 bg-white border border-neutral-200 rounded-lg p-5 shadow-sm">
+            {authorArticles.length > 0 && (
+              (() => {
+                const first = authorArticles[0];
+                const rest = authorArticles.slice(1);
+                return (
+                  <>
+                    {/* Featured Large Card */}
+                    <Link href={`/haber/${first.slug}`} className="group flex flex-col gap-3 pb-4 border-b border-neutral-100">
+                      <div className="relative aspect-[16/9] w-full overflow-hidden rounded bg-neutral-100">
+                        <img src={first.image} alt={first.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider">
+                          {first.category?.name || "Yazar İncelemesi"}
+                        </span>
+                        <h3 className="text-base font-black text-neutral-900 leading-snug group-hover:text-sky-600 transition">
+                          {first.title}
+                        </h3>
+                        <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">{first.spot}</p>
+                        <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
+                          <img src={first.author?.avatar || ""} alt="" className="h-4 w-4 rounded-full object-cover" />
+                          <span className="truncate">{first.author?.name}</span>
+                          <span>·</span>
+                          <span className="shrink-0">{timeAgo(first.publishedAt)}</span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Smaller horizontal but larger-image list */}
+                    <div className="flex flex-col gap-4">
+                      {rest.map((a) => (
+                        <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-4 group border-b border-neutral-100 last:border-0 pb-4 last:pb-0">
+                          <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded bg-neutral-100">
+                            <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                          </div>
+                          <div className="flex flex-col gap-1 min-w-0">
+                            <h4 className="text-sm font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
+                              {a.title}
+                            </h4>
+                            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-neutral-400">
+                              <img src={a.author?.avatar || ""} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
+                              <span className="truncate">{a.author?.name}</span>
+                              <span>·</span>
+                              <span className="shrink-0">{timeAgo(a.publishedAt)}</span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()
+            )}
           </div>
         </div>
       </section>
@@ -376,68 +446,7 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* ARAÇLARI KEŞFET */}
-          <section className="px-3 sm:px-0">
-            <SectionTitle
-              title="ARAÇLARI KEŞFET"
-              href="/araclar"
-              color="#0f766e"
-              subtitle="Türkiye'de satışta olan öne çıkan elektrikli modeller"
-            />
-            <CardRail itemClass="w-[62%] sm:w-[38%] lg:w-[27%]" autoPlay={true}>
-              {vehicles.map((v) => (
-                <VehicleCard key={v.id} vehicle={v} />
-              ))}
-            </CardRail>
-          </section>
 
-          {/* ŞARJ AĞI */}
-          <section className="px-3 sm:px-0">
-            <SectionTitle
-              title="ŞARJ AĞI"
-              href="/sarj-agi"
-              color="#15803d"
-              subtitle="Evos Charge Network ve operatör haberleri"
-            />
-            <div className="flex flex-col gap-4 lg:flex-row">
-              <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white">
-                {charge.map((a) => (
-                  <NewsCard key={a.id} article={a} variant="row" />
-                ))}
-              </div>
-              <aside className="w-full shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-white lg:w-[300px]">
-                <div className="bg-volt px-4 py-3 text-sm font-black text-white">
-                  EN GÜÇLÜ İSTASYONLAR
-                </div>
-                <ul className="flex flex-col">
-                  {stations.map((s) => (
-                    <li
-                      key={s.id}
-                      className="flex items-center justify-between gap-2 border-b border-neutral-100 px-4 py-3 last:border-0"
-                    >
-                      <div className="flex min-w-0 flex-col">
-                        <span className="truncate text-[13px] font-bold text-neutral-800">
-                          {s.name}
-                        </span>
-                        <span className="text-[11px] text-neutral-500">
-                          {s.city} · {s.operator}
-                        </span>
-                      </div>
-                      <span className="shrink-0 rounded bg-volt/10 px-2 py-1 text-[11px] font-black text-volt-dark">
-                        {s.maxPowerKw} kW
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/sarj-agi"
-                  className="flex items-center justify-center gap-1 bg-neutral-50 py-3 text-xs font-bold text-neutral-600 hover:text-evos"
-                >
-                  TÜM İSTASYONLAR <IconChevronRight className="h-3 w-3" />
-                </Link>
-              </aside>
-            </div>
-          </section>
 
           {/* TEKNOLOJİ */}
           <section className="px-3 sm:px-0">
