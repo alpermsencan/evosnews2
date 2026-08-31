@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import EntityForm from "@/components/admin/EntityForm";
 import { vehicleFields } from "@/components/admin/fieldSets";
+import VehicleImagesManager from "@/components/admin/VehicleImagesManager";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +57,7 @@ export default async function EditVehiclePage({
         method="PUT"
         redirectTo="/admin/araclar"
       />
+      <VehicleImagesManager vehicleId={v.id} />
     </div>
   );
 }
