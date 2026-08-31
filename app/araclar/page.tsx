@@ -1,17 +1,11 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
-import VehicleCard from "@/components/vehicles/VehicleCard";
-import FilterBar from "@/components/ui/FilterBar";
+import VehiclesDiscoverClient from "@/components/vehicles/VehiclesDiscoverClient";
 import SectionTitle from "@/components/news/SectionTitle";
 import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 
-// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
-// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
-// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
-// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
 export const revalidate = 60;
 export const metadata = {
   title: "Araçları Keşfet",
@@ -19,52 +13,23 @@ export const metadata = {
     "Türkiye'de satışta olan elektrikli araçların menzil, batarya, şarj gücü ve fiyat karşılaştırması.",
 };
 
-type SP = Promise<Record<string, string | undefined>>;
-
-export default async function VehiclesPage({
-  searchParams,
-}: {
-  searchParams: SP;
-}) {
-  const sp = await searchParams;
-
-  const where: Prisma.VehicleWhereInput = {};
-  if (sp.marka) where.brand = sp.marka;
-  if (sp.segment) where.segment = sp.segment;
-  if (sp.kasa) where.bodyType = sp.kasa;
-  if (sp.durum) where.marketStatus = sp.durum;
-  const minFiyat = Number(sp.minFiyat);
-  const maxFiyat = Number(sp.maxFiyat);
-  const minMenzil = Number(sp.minMenzil);
-  if (minFiyat > 0) where.price = { ...(where.price as object), gte: minFiyat };
-  if (maxFiyat > 0) where.price = { ...(where.price as object), lte: maxFiyat };
-  if (minMenzil > 0) where.rangeKm = { gte: minMenzil };
-
-  const orderBy: Prisma.VehicleOrderByWithRelationInput =
-    sp.sirala === "fiyat-azalan"
-      ? { price: "desc" }
-      : sp.sirala === "menzil"
-      ? { rangeKm: "desc" }
-      : sp.sirala === "hizlanma"
-      ? { acceleration: "asc" }
-      : sp.sirala === "puan"
-      ? // MongoDB'de null, azalan sıralamada sayıların ardına düşer:
-        // puanı olmayan (henüz incelenmemiş) araçlar listenin sonunda kalır.
-        { rating: "desc" }
-      : { price: "asc" };
-
-  const [vehicles, brands, segments, bodyTypes, stats, news] = await Promise.all([
-    prisma.vehicle.findMany({ where, orderBy, include: { syncImages: true } }),
-    prisma.vehicle.findMany({ select: { brand: true }, distinct: ["brand"], orderBy: { brand: "asc" } }),
-    prisma.vehicle.findMany({ select: { segment: true }, distinct: ["segment"], orderBy: { segment: "asc" } }),
-    prisma.vehicle.findMany({ select: { bodyType: true }, distinct: ["bodyType"], orderBy: { bodyType: "asc" } }),
-    prisma.vehicle.aggregate({ _avg: { price: true, rangeKm: true }, _min: { price: true }, _max: { rangeKm: true } }),
+export default async function VehiclesPage() {
+  // Fetch all vehicles to let client-side filtering and sorting run with zero latency
+  const [vehicles, stats, news] = await Promise.all([
+    prisma.vehicle.findMany({
+      include: { syncImages: true },
+    }),
+    prisma.vehicle.aggregate({
+      _avg: { price: true, rangeKm: true },
+      _min: { price: true },
+      _max: { rangeKm: true },
+    }),
     getByCategory("arac-merkezi", 4),
   ]);
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-teal-700 to-emerald-800 p-6 text-white">
+      <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-teal-700 to-emerald-800 p-6 text-white shadow-sm">
         <h1 className="text-2xl font-black sm:text-4xl">ARAÇLARI KEŞFET</h1>
         <p className="max-w-2xl text-sm text-white/85 sm:text-base">
           Türkiye pazarındaki elektrikli modelleri menzil, batarya kapasitesi,
@@ -78,81 +43,15 @@ export default async function VehiclesPage({
         </div>
       </header>
 
-      <Suspense fallback={<div className="h-16 rounded-lg bg-white" />}>
-        <FilterBar
-          fields={[
-            { key: "marka", label: "Marka", type: "select", options: brands.map((b) => ({ value: b.brand, label: b.brand })) },
-            { key: "segment", label: "Segment", type: "select", options: segments.map((s) => ({ value: s.segment, label: s.segment })) },
-            { key: "kasa", label: "Kasa tipi", type: "select", options: bodyTypes.map((b) => ({ value: b.bodyType, label: b.bodyType })) },
-            {
-              key: "durum",
-              label: "Pazar Durumu",
-              type: "select",
-              options: [
-                { value: "TR_YAYINDA", label: "Türkiye'de Satışta" },
-                { value: "TR_YAKINDA", label: "Yakında Türkiye'de" },
-                { value: "TR_YOK", label: "Yurt Dışında / TR'de Yok" },
-              ],
-            },
-            { key: "maxFiyat", label: "Maks. fiyat (₺)", type: "number", placeholder: "2000000" },
-            { key: "minMenzil", label: "Min. menzil (km)", type: "number", placeholder: "400" },
-            {
-              key: "sirala",
-              label: "Sırala",
-              type: "select",
-              options: [
-                { value: "fiyat-artan", label: "Fiyat (artan)" },
-                { value: "fiyat-azalan", label: "Fiyat (azalan)" },
-                { value: "menzil", label: "Menzil" },
-                { value: "hizlanma", label: "Hızlanma" },
-                { value: "puan", label: "Puan" },
-              ],
-            },
-          ]}
-        />
+      {/* Stateful interactive client catalog */}
+      <Suspense fallback={<div className="h-48 rounded-lg bg-white border border-neutral-200 animate-pulse" />}>
+        <VehiclesDiscoverClient vehicles={vehicles} />
       </Suspense>
 
-      <section className="flex flex-col gap-8">
-        <SectionTitle
-          title={`ELEKTRİKLİ MODELLER (${vehicles.length})`}
-          color="#0f766e"
-        />
-        {vehicles.length === 0 ? (
-          <p className="rounded-lg bg-white p-8 text-center text-sm text-neutral-500">
-            Filtrelerinize uygun araç bulunamadı.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-8">
-            {Object.keys(
-              vehicles.reduce((acc, v) => {
-                if (!acc[v.brand]) acc[v.brand] = [];
-                acc[v.brand].push(v);
-                return acc;
-              }, {} as Record<string, typeof vehicles>)
-            ).sort().map((brandName) => {
-              const brandVehicles = vehicles.filter((v) => v.brand === brandName);
-              return (
-                <div key={brandName} className="flex flex-col gap-3">
-                  <h3 className="text-base font-black text-neutral-800 border-b border-neutral-150 pb-2 uppercase tracking-widest flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-teal-600"></span>
-                    {brandName}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                    {brandVehicles.map((v) => (
-                      <VehicleCard key={v.id} vehicle={v} />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* KARŞILAŞTIRMA TABLOSU */}
-      <section>
-        <SectionTitle title="TEKNİK KARŞILAŞTIRMA TABLOSU" color="#0f766e" />
-        <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
+      {/* Teknik Karşılaştırma Tablosu */}
+      <section className="mt-4">
+        <SectionTitle title="TÜM MODELLER TEKNİK DEĞERLER LİSTESİ" color="#0f766e" />
+        <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white shadow-sm">
           <table className="w-full min-w-[960px] text-left text-sm">
             <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
               <tr>
@@ -168,7 +67,7 @@ export default async function VehiclesPage({
                 <th className="px-4 py-3 text-right">FİYAT</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100">
+            <tbody className="divide-y divide-neutral-100 text-xs">
               {vehicles.map((v) => (
                 <tr key={v.id} className="transition hover:bg-neutral-50">
                   <td className="px-4 py-3 font-bold text-neutral-900">
@@ -200,7 +99,7 @@ export default async function VehiclesPage({
         (kaynak: EV Database). Boş bırakılan alanlar için doğrulanmış veri yoktur.
       </p>
 
-      <section>
+      <section className="mt-4">
         <SectionTitle title="ARAÇ HABERLERİ" href="/arac-merkezi" color="#0f766e" />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {news.map((a) => (

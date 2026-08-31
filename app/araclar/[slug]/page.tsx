@@ -149,7 +149,7 @@ export default async function VehicleDetail({ params }: Props) {
       </nav>
 
       <div className="flex flex-col gap-5 overflow-hidden rounded-lg border border-neutral-200 bg-white lg:flex-row">
-        <div className="relative w-full shrink-0 bg-neutral-100 lg:w-[52%] flex flex-col justify-between">
+        <div className="relative w-full shrink-0 bg-neutral-100 lg:w-[58%] flex flex-col justify-between">
           <VehicleGallery
             defaultImage={defaultImg}
             images={galleryImages.slice(1)}

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatTL } from "@/lib/utils";
 import { BRANDS } from "@/lib/brands";
-import { IconGauge, IconBattery, IconBolt, IconCheck, IconClose, IconChevronLeft, IconChevronRight, IconCar } from "@/components/ui/Icons";
+import { IconGauge, IconBattery, IconBolt, IconCheck, IconClose, IconChevronLeft, IconChevronRight } from "@/components/ui/Icons";
 
 interface Vehicle {
   id: string;
@@ -59,7 +59,6 @@ interface VehicleHubClientProps {
   testDriveVehicle: Vehicle;
 }
 
-// Brand Popularity Ranking Map
 const BRAND_POPULARITY: Record<string, number> = {
   "togg": 1,
   "tesla": 2,
@@ -104,7 +103,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
   const [lightboxVehicle, setLightboxVehicle] = useState<Vehicle | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  // --- ESCAPE KEY LISTENER FOR LIGHTBOX ---
+  // ESCAPE KEY LISTENER FOR LIGHTBOX
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxVehicle(null);
@@ -121,7 +120,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxVehicle]);
 
-  // --- GET ACTIVE IMAGES FOR A VEHICLE ---
+  // Image Utilities
   const getVehicleDisplayImage = (v: Vehicle) => {
     const syncImages = (v.syncImages || []).filter(
       (img) => img.type !== "ignored" && img.type !== "deleted"
@@ -147,15 +146,13 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
     return [v.image, ...(v.images || [])].filter(Boolean);
   };
 
-  // --- FILTER & SORT LOGIC ---
+  // Sort and Filter Logic
   const sortedVehicles = [...vehicles].sort((a, b) => {
     const scoreA = getPopularityScore(a.brand);
     const scoreB = getPopularityScore(b.brand);
     if (scoreA !== scoreB) return scoreA - scoreB;
-    // Fallback to brand name alphabetical
     const brandComp = a.brand.localeCompare(b.brand);
     if (brandComp !== 0) return brandComp;
-    // Fallback to model name
     return a.model.localeCompare(b.model);
   });
 
@@ -176,7 +173,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
     (v) => v.marketStatus === "TR_YOK"
   );
 
-  // --- UNIQUE OPTIONS FOR FILTER PANEL (SORTED BY POPULARITY) ---
+  // Distinct Lists
   const distinctBrands = Array.from(new Set(vehicles.map((v) => v.brand))).sort((a, b) => {
     const scoreA = getPopularityScore(a);
     const scoreB = getPopularityScore(b);
@@ -186,10 +183,9 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
   const distinctSegments = Array.from(new Set(vehicles.map((v) => v.segment))).sort();
   const distinctBodyTypes = Array.from(new Set(vehicles.map((v) => v.bodyType))).sort();
 
-  // --- DETERMINISTIC DAILY SELECTION ---
+  // Daily review selection (Deterministik)
   const today = new Date();
   const dayIndex = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
-
   const allTrVarVehicles = sortedVehicles.filter(
     (v) => v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA"
   );
@@ -212,32 +208,27 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
     const fastest = [...list].sort((a, b) => a.acceleration - b.acceleration)[0];
     return { cheapest, longest, fastest };
   };
-
   const varChampions = getChampions(allTrVarVehicles);
   const yokChampions = getChampions(allTrYokVehicles);
 
-  // Top Rated Models (Rating exists)
+  // Top Rated Models
   const getTopRated = (list: Vehicle[]) => {
     return [...list]
       .filter((v) => v.rating != null)
       .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
       .slice(0, 8);
   };
-
   const varTopRated = getTopRated(allTrVarVehicles);
   const yokTopRated = getTopRated(allTrYokVehicles);
 
-  // Best Sellers (Fallback selection using popular brands)
-  const fallbackBestSellers = allTrVarVehicles.slice(0, 4);
-
-  // Comparison Vehicles Lookup
+  const fallbackBestSellers = allTrVarVehicles.slice(0, 5);
   const veh1 = vehicles.find((v) => v.id === compVeh1);
   const veh2 = vehicles.find((v) => v.id === compVeh2);
 
   return (
     <div className="flex flex-col gap-8 px-3 sm:px-0">
       
-      {/* A) ÜST MARKA LOGO BANDI */}
+      {/* 1. ÜST MARKA LOGO BANDI */}
       <section className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm">
         <h2 className="mb-3 text-xs font-black tracking-wider text-neutral-400 uppercase">
           TÜM MARKALAR ({distinctBrands.length})
@@ -285,74 +276,212 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
         </div>
       </section>
 
-      {/* B) BU AY EN ÇOK SATANLAR (TABULAR LIST) */}
-      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-4 mb-4">
-          <div>
-            <h2 className="text-lg font-black text-neutral-900">BU AY EN ÇOK SATANLAR</h2>
-            <p className="text-xs font-bold text-neutral-400">Türkiye Elektrikli Araç Tescil Performansı</p>
-          </div>
-          <div className="flex rounded bg-neutral-100 p-1">
-            <button
-              onClick={() => setBestSellersTab("monthly")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                bestSellersTab === "monthly" ? "bg-white text-teal-800 shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              AYLIK
-            </button>
-            <button
-              onClick={() => setBestSellersTab("yearly")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                bestSellersTab === "yearly" ? "bg-white text-teal-800 shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              YILLIK
-            </button>
-          </div>
-        </div>
+      {/* 2. GRID LAYOUT (LEFT COLUMN: GÜNLÜK EV İNCELEMESİ, RIGHT COLUMN: BU AY EN ÇOK SATANLAR) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        
+        {/* LEFT COLUMN: GÜNLÜK EV İNCELEMESİ (lg:col-span-8) */}
+        <section className="lg:col-span-8 flex flex-col rounded-xl border border-neutral-200 bg-white overflow-hidden shadow-sm">
+          <div className="flex flex-col border-b border-neutral-100 bg-neutral-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="flex h-7 w-7 items-center justify-center rounded bg-volt text-black font-black">★</span>
+              <div>
+                <h2 className="text-sm font-black tracking-widest text-neutral-800 uppercase">GÜNLÜK EV İNCELEMESİ</h2>
+                <p className="text-[10px] text-neutral-400 font-bold">Bugünün Seçilen Modeli Canlı Verilerle Yayında</p>
+              </div>
+            </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-neutral-200 text-xs font-black text-neutral-400 uppercase bg-neutral-50">
-                <th className="py-2.5 px-3 w-12 text-center">SIRA</th>
-                <th className="py-2.5 px-3 w-16">GÖRSEL</th>
-                <th className="py-2.5 px-3">MARKA / MODEL</th>
-                <th className="py-2.5 px-3 text-center">SATIŞ (ADET)</th>
-                <th className="py-2.5 px-3 text-center">DEĞİŞİM</th>
-              </tr>
-            </thead>
-            <tbody>
-              {fallbackBestSellers.map((v, index) => (
-                <tr key={v.id} className="border-b border-neutral-100 hover:bg-neutral-50 transition text-xs">
-                  <td className="py-3 px-3 text-center font-black text-neutral-800">#{index + 1}</td>
-                  <td className="py-3 px-3">
-                    <div className="relative h-9 w-14 rounded overflow-hidden border border-neutral-200 bg-neutral-50">
-                      <Image
-                        src={getVehicleDisplayImage(v)}
-                        alt={`${v.brand} ${v.model}`}
-                        fill
-                        className="object-cover"
-                      />
+            <div className="mt-3 flex rounded bg-neutral-200/70 p-1 sm:mt-0">
+              <button
+                onClick={() => {
+                  setDailyReviewTab("tr_var");
+                  setDailyReviewSubTab("live");
+                }}
+                className={`rounded px-4 py-1 text-xs font-black transition ${
+                  dailyReviewTab === "tr_var" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-800"
+                }`}
+              >
+                TR'DE VAR
+              </button>
+              <button
+                onClick={() => {
+                  setDailyReviewTab("tr_yok");
+                  setDailyReviewSubTab("live");
+                }}
+                className={`rounded px-4 py-1 text-xs font-black transition ${
+                  dailyReviewTab === "tr_yok" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-800"
+                }`}
+              >
+                TR'DE YOK
+              </button>
+            </div>
+          </div>
+
+          {(() => {
+            const v = dailyReviewTab === "tr_var" ? dailyVarVehicle : dailyYokVehicle;
+            if (!v) return <div className="p-8 text-center text-xs text-neutral-500">İçerik bulunmamaktadır.</div>;
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-12 bg-neutral-900 text-white flex-1 min-h-[350px]">
+                <div className="relative aspect-[16/9] md:aspect-auto md:col-span-7 bg-neutral-950 overflow-hidden">
+                  <Image
+                    src={getVehicleDisplayImage(v)}
+                    alt={`${v.brand} ${v.model}`}
+                    fill
+                    className="object-cover opacity-90 transition duration-300 hover:opacity-100 hover:scale-102"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-1">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-volt">
+                      {v.segment} Segment · {v.bodyType}
+                    </span>
+                    <h3 className="text-2xl font-black leading-tight">{v.brand} {v.model}</h3>
+                    <div className="mt-1 flex items-center justify-between">
+                      <span className="text-lg font-black text-volt">{formatTL(v.price)}</span>
+                      <Link
+                        href={`/araclar/${v.slug}`}
+                        className="rounded bg-white/10 hover:bg-white/20 px-3 py-1.5 text-[10px] font-black transition border border-white/10 text-volt"
+                      >
+                        DETAYLI RAPOR →
+                      </Link>
                     </div>
-                  </td>
-                  <td className="py-3 px-3 font-bold text-neutral-900">
-                    <Link href={`/araclar/${v.slug}`} className="hover:text-teal-700 transition">
+                  </div>
+                </div>
+
+                <div className="p-6 md:col-span-5 flex flex-col justify-between">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+                      <span className="text-[10px] font-black text-neutral-400 tracking-wider">TEKNİK TELEMETRİ</span>
+                      <div className="flex bg-neutral-950 p-0.5 rounded border border-neutral-800">
+                        <button
+                          onClick={() => setDailyReviewSubTab("live")}
+                          className={`rounded px-2 py-0.5 text-[9px] font-black transition ${
+                            dailyReviewSubTab === "live" ? "bg-volt text-black" : "text-neutral-400"
+                          }`}
+                        >
+                          CANLI
+                        </button>
+                        <button
+                          onClick={() => setDailyReviewSubTab("theory")}
+                          className={`rounded px-2 py-0.5 text-[9px] font-black transition ${
+                            dailyReviewSubTab === "theory" ? "bg-volt text-black" : "text-neutral-400"
+                          }`}
+                        >
+                          TEORİK
+                        </button>
+                      </div>
+                    </div>
+
+                    {dailyReviewSubTab === "live" ? (
+                      <div className="grid grid-cols-2 gap-3 text-left">
+                        <div className="rounded bg-neutral-950 p-2.5 border border-neutral-800 flex flex-col">
+                          <span className="text-[8px] font-black text-neutral-500 uppercase">SOH SAĞLIĞI</span>
+                          <span className="text-base font-black text-volt mt-0.5">%97.8</span>
+                        </div>
+                        <div className="rounded bg-neutral-950 p-2.5 border border-neutral-800 flex flex-col">
+                          <span className="text-[8px] font-black text-neutral-500 uppercase">TEST MENZİLİ</span>
+                          <span className="text-base font-black text-white mt-0.5">{Math.round(v.rangeKm * 0.88)} km</span>
+                        </div>
+                        <div className="rounded bg-neutral-950 p-2.5 border border-neutral-800 flex flex-col">
+                          <span className="text-[8px] font-black text-neutral-500 uppercase">GERÇEK DC ŞARJ</span>
+                          <span className="text-base font-black text-white mt-0.5">{v.dcChargeKw ? `${v.dcChargeKw} kW` : "150 kW"}</span>
+                        </div>
+                        <div className="rounded bg-neutral-950 p-2.5 border border-neutral-800 flex flex-col">
+                          <span className="text-[8px] font-black text-neutral-500 uppercase">VoltScore GÜVEN</span>
+                          <span className="text-base font-black text-white mt-0.5">{v.rating ? Math.round(v.rating * 20) : 85}/100</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <div className="grid grid-cols-3 gap-1.5 text-center">
+                          <div className="bg-neutral-950 p-1.5 rounded">
+                            <span className="text-[8px] text-neutral-500 uppercase block">WLTP</span>
+                            <span className="text-xs font-black text-volt">{v.rangeKm} km</span>
+                          </div>
+                          <div className="bg-neutral-950 p-1.5 rounded">
+                            <span className="text-[8px] text-neutral-500 uppercase block">Batarya</span>
+                            <span className="text-xs font-black text-white">{v.batteryKwh} kWh</span>
+                          </div>
+                          <div className="bg-neutral-950 p-1.5 rounded">
+                            <span className="text-[8px] text-neutral-500 uppercase block">0-100</span>
+                            <span className="text-xs font-black text-white">{v.acceleration}s</span>
+                          </div>
+                        </div>
+                        <div className="text-xs mt-1 space-y-1.5 text-[11px]">
+                          <span className="text-[9px] font-black text-volt uppercase tracking-wider block">✓ SEÇİLEN ARTILAR</span>
+                          <ul className="list-disc list-inside text-neutral-300 space-y-0.5">
+                            {v.pros.slice(0, 2).map((p, i) => <li key={i}>{p}</li>)}
+                            {v.pros.length === 0 && <li>Yüksek şarj kararlılığı</li>}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+
+        {/* RIGHT COLUMN: BU AY EN ÇOK SATANLAR (lg:col-span-4) */}
+        <section className="lg:col-span-4 flex flex-col rounded-xl border border-neutral-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-3 mb-3">
+            <div>
+              <h2 className="text-sm font-black text-neutral-900">EN ÇOK SATANLAR</h2>
+              <p className="text-[10px] font-bold text-neutral-400">Türkiye Elektrikli Araç Tescilleri</p>
+            </div>
+            <div className="flex rounded bg-neutral-100 p-0.5">
+              <button
+                onClick={() => setBestSellersTab("monthly")}
+                className={`rounded px-2.5 py-0.5 text-[10px] font-black uppercase transition ${
+                  bestSellersTab === "monthly" ? "bg-white text-teal-800 shadow-sm" : "text-neutral-500"
+                }`}
+              >
+                AYLIK
+              </button>
+              <button
+                onClick={() => setBestSellersTab("yearly")}
+                className={`rounded px-2.5 py-0.5 text-[10px] font-black uppercase transition ${
+                  bestSellersTab === "yearly" ? "bg-white text-teal-800 shadow-sm" : "text-neutral-500"
+                }`}
+              >
+                YILLIK
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col justify-between">
+            <div className="divide-y divide-neutral-100">
+              {fallbackBestSellers.map((v, index) => (
+                <div key={v.id} className="flex items-center gap-3 py-2 text-xs hover:bg-neutral-50 rounded px-1 transition">
+                  <span className="w-5 font-black text-neutral-400 text-center">#{index + 1}</span>
+                  <div className="relative h-8 w-12 rounded overflow-hidden border border-neutral-200 bg-neutral-50 shrink-0">
+                    <Image
+                      src={getVehicleDisplayImage(v)}
+                      alt={`${v.brand} ${v.model}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Link href={`/araclar/${v.slug}`} className="block font-black text-neutral-900 truncate hover:text-teal-700">
                       {v.brand} {v.model}
                     </Link>
-                  </td>
-                  <td className="py-3 px-3 text-center text-neutral-500 font-bold">Veri bekleniyor</td>
-                  <td className="py-3 px-3 text-center text-neutral-400">0</td>
-                </tr>
+                    <span className="text-[9px] text-neutral-400 uppercase font-bold">{v.segment} · {v.bodyType}</span>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="font-bold text-neutral-500 block text-[10px]">Tescil Bekliyor</span>
+                    <span className="text-[9px] text-neutral-400">0 adet</span>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </div>
+          </div>
+        </section>
 
-      {/* C) ARAÇLARI KEŞFET (SIDEBAR FILTERS + RIGHT VEHICLE LISTS IN SIDE-BY-SIDE COLUMNS) */}
-      <section className="flex flex-col gap-6 lg:flex-row">
+      </div>
+
+      {/* 3. ARAÇLARI KEŞFET (SIDEBAR FILTERS + RIGHT VEHICLE LISTS IN SIDE-BY-SIDE COLUMNS) */}
+      <section className="flex flex-col gap-6 lg:flex-row border-t border-neutral-150 pt-8">
+        
         {/* Mobile Filter Toggle Button */}
         <button 
           onClick={() => setIsFilterOpenMobile(!isFilterOpenMobile)} 
@@ -379,7 +508,6 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
             </button>
           </div>
 
-          {/* Search Box */}
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-neutral-400 uppercase">Araç Ara</span>
             <input
@@ -391,7 +519,6 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
             />
           </div>
 
-          {/* Brand Filter */}
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-neutral-400 uppercase">Marka</span>
             <select
@@ -406,7 +533,6 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
             </select>
           </div>
 
-          {/* Segment Filter */}
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-neutral-400 uppercase">Segment</span>
             <select
@@ -421,7 +547,6 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
             </select>
           </div>
 
-          {/* Body Type Filter */}
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-neutral-400 uppercase">Kasa Tipi</span>
             <select
@@ -436,7 +561,6 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
             </select>
           </div>
 
-          {/* TR Status Filter */}
           <div className="flex flex-col gap-1">
             <span className="text-[10px] font-bold text-neutral-400 uppercase">Bulunurluk</span>
             <select
@@ -510,163 +634,12 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
         </div>
       </section>
 
-      {/* D) GÜNLÜK EV ARAÇ İNCELEMESİ */}
-      <section className="rounded-xl border border-neutral-200 bg-white overflow-hidden shadow-sm">
-        <div className="flex flex-col border-b border-neutral-100 bg-neutral-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span className="flex h-7 w-7 items-center justify-center rounded bg-volt text-black font-black">★</span>
-            <div>
-              <h2 className="text-sm font-black tracking-widest text-neutral-800 uppercase">GÜNLÜK EV İNCELEMESİ</h2>
-              <p className="text-[10px] text-neutral-400 font-bold">Her Gün Deterministik Yeni Model İncelemesi</p>
-            </div>
-          </div>
-
-          <div className="mt-3 flex rounded bg-neutral-200/70 p-1 sm:mt-0">
-            <button
-              onClick={() => {
-                setDailyReviewTab("tr_var");
-                setDailyReviewSubTab("live");
-              }}
-              className={`rounded px-4 py-1 text-xs font-black transition ${
-                dailyReviewTab === "tr_var" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE VAR
-            </button>
-            <button
-              onClick={() => {
-                setDailyReviewTab("tr_yok");
-                setDailyReviewSubTab("live");
-              }}
-              className={`rounded px-4 py-1 text-xs font-black transition ${
-                dailyReviewTab === "tr_yok" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-600 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE YOK
-            </button>
-          </div>
-        </div>
-
-        {(() => {
-          const v = dailyReviewTab === "tr_var" ? dailyVarVehicle : dailyYokVehicle;
-          if (!v) return <p className="p-8 text-center text-xs text-neutral-500">İçerik bulunmamaktadır.</p>;
-          return (
-            <div className="grid grid-cols-1 lg:grid-cols-12 bg-neutral-900 text-white">
-              <div className="relative aspect-[16/10] bg-neutral-950 lg:col-span-5 lg:aspect-auto">
-                <Image
-                  src={getVehicleDisplayImage(v)}
-                  alt={`${v.brand} ${v.model}`}
-                  fill
-                  className="object-cover opacity-95 transition hover:opacity-100"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-1">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-volt">
-                    {v.segment} Segment · {v.bodyType}
-                  </span>
-                  <h3 className="text-lg font-black leading-tight">{v.brand} {v.model}</h3>
-                  <div className="mt-1 flex items-center justify-between">
-                    <span className="text-base font-black text-volt">{formatTL(v.price)}</span>
-                    <Link
-                      href={`/araclar/${v.slug}`}
-                      className="rounded bg-white/10 hover:bg-white/20 px-3 py-1 text-[10px] font-black transition border border-white/10 text-white"
-                    >
-                      DETAYLI RAPOR →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 lg:col-span-7 flex flex-col justify-between min-h-[320px]">
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between border-b border-neutral-850 pb-2">
-                    <span className="text-xs font-black text-neutral-400 tracking-wider">TELEMETRİ & TEKNİK DEĞERLER</span>
-                    <div className="flex bg-neutral-950/80 p-0.5 rounded border border-neutral-850">
-                      <button
-                        onClick={() => setDailyReviewSubTab("live")}
-                        className={`rounded px-2.5 py-0.5 text-[10px] font-black transition ${
-                          dailyReviewSubTab === "live" ? "bg-volt text-black" : "text-neutral-400 hover:text-white"
-                        }`}
-                      >
-                        ⚡ CANLI ÖLÇÜMLER
-                      </button>
-                      <button
-                        onClick={() => setDailyReviewSubTab("theory")}
-                        className={`rounded px-2.5 py-0.5 text-[10px] font-black transition ${
-                          dailyReviewSubTab === "theory" ? "bg-volt text-black" : "text-neutral-400 hover:text-white"
-                        }`}
-                      >
-                        📖 TEORİK VERİLER
-                      </button>
-                    </div>
-                  </div>
-
-                  {dailyReviewSubTab === "live" ? (
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded bg-neutral-950 p-3 border border-neutral-850 flex flex-col">
-                        <span className="text-[9px] font-black text-neutral-500 uppercase">BATARYA SAĞLIĞI</span>
-                        <span className="text-lg font-black text-white mt-1">SOH %97.8</span>
-                      </div>
-                      <div className="rounded bg-neutral-950 p-3 border border-neutral-850 flex flex-col">
-                        <span className="text-[9px] font-black text-neutral-500 uppercase">GERÇEK TEST MENZİLİ</span>
-                        <span className="text-lg font-black text-white mt-1">{Math.round(v.rangeKm * 0.88)} km</span>
-                      </div>
-                      <div className="rounded bg-neutral-950 p-3 border border-neutral-850 flex flex-col">
-                        <span className="text-[9px] font-black text-neutral-500 uppercase">ŞARJ GÜCÜ (DC)</span>
-                        <span className="text-lg font-black text-white mt-1">{v.dcChargeKw ? `${v.dcChargeKw} kW` : "150 kW"}</span>
-                      </div>
-                      <div className="rounded bg-neutral-950 p-3 border border-neutral-850 flex flex-col">
-                        <span className="text-[9px] font-black text-neutral-500 uppercase">VoltScore GÜVEN SKORU</span>
-                        <span className="text-lg font-black text-white mt-1">{v.rating ? Math.round(v.rating * 20) : 85}/100</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-3">
-                      <div className="grid grid-cols-3 gap-2 text-center">
-                        <div className="bg-neutral-950 p-2 rounded">
-                          <span className="text-[8px] text-neutral-500 uppercase block">Menzil (WLTP)</span>
-                          <span className="text-xs font-black text-volt">{v.rangeKm} km</span>
-                        </div>
-                        <div className="bg-neutral-950 p-2 rounded">
-                          <span className="text-[8px] text-neutral-500 uppercase block">Kapasite</span>
-                          <span className="text-xs font-black text-white">{v.batteryKwh} kWh</span>
-                        </div>
-                        <div className="bg-neutral-950 p-2 rounded">
-                          <span className="text-[8px] text-neutral-500 uppercase block">0-100 km/s</span>
-                          <span className="text-xs font-black text-white">{v.acceleration} sn</span>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 text-xs mt-1">
-                        <div>
-                          <span className="text-[9px] font-black text-volt uppercase tracking-wider block mb-1">✓ ARTILARI</span>
-                          <ul className="list-disc list-inside text-[11px] text-neutral-300 flex flex-col gap-0.5">
-                            {v.pros.slice(0, 2).map((p, i) => <li key={i}>{p}</li>)}
-                            {v.pros.length === 0 && <li>Yüksek şarj kararlılığı</li>}
-                          </ul>
-                        </div>
-                        <div>
-                          <span className="text-[9px] font-black text-rose-500 uppercase tracking-wider block mb-1">✗ EKSİLERİ</span>
-                          <ul className="list-disc list-inside text-[11px] text-neutral-300 flex flex-col gap-0.5">
-                            {v.cons.slice(0, 2).map((c, i) => <li key={i}>{c}</li>)}
-                            {v.cons.length === 0 && <li>Yüksek hız rüzgar sesi</li>}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })()}
-      </section>
-
-      {/* E) SEGMENT ŞAMPİYONLARI */}
+      {/* 4. SEGMENT ŞAMPİYONLARI */}
       <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
           <div>
             <h2 className="text-lg font-black text-neutral-900">SEGMENT ŞAMPİYONLARI</h2>
-            <p className="text-xs font-bold text-neutral-400">Teknik Kriterlerde Zirvedekiler</p>
+            <p className="text-xs font-bold text-neutral-400">Kriter Bazında Sınıfının En İyileri</p>
           </div>
           <div className="flex rounded bg-neutral-100 p-1">
             <button
@@ -702,7 +675,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                   </span>
                   <span className="text-base font-black text-neutral-900">{champs.cheapest.brand} {champs.cheapest.model}</span>
                   <span className="text-xl font-black text-teal-800">{formatTL(champs.cheapest.price)}</span>
-                  <span className="text-[10px] text-neutral-500">{champs.cheapest.segment} · {champs.cheapest.batteryKwh} kWh · {champs.cheapest.motorPowerHp} HP</span>
+                  <span className="text-[10px] text-neutral-500">{champs.cheapest.segment} · {champs.cheapest.batteryKwh} kWh</span>
                 </Link>
               )}
               {champs.longest && (
@@ -712,7 +685,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                   </span>
                   <span className="text-base font-black text-neutral-900">{champs.longest.brand} {champs.longest.model}</span>
                   <span className="text-xl font-black text-teal-800">{champs.longest.rangeKm} km</span>
-                  <span className="text-[10px] text-neutral-500">{champs.longest.segment} · {champs.longest.batteryKwh} kWh · {champs.longest.motorPowerHp} HP</span>
+                  <span className="text-[10px] text-neutral-500">{champs.longest.segment} · {champs.longest.batteryKwh} kWh</span>
                 </Link>
               )}
               {champs.fastest && (
@@ -722,7 +695,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                   </span>
                   <span className="text-base font-black text-neutral-900">{champs.fastest.brand} {champs.fastest.model}</span>
                   <span className="text-xl font-black text-teal-800">0-100: {champs.fastest.acceleration} sn</span>
-                  <span className="text-[10px] text-neutral-500">{champs.fastest.segment} · {champs.fastest.batteryKwh} kWh · {champs.fastest.motorPowerHp} HP</span>
+                  <span className="text-[10px] text-neutral-500">{champs.fastest.segment} · {champs.fastest.batteryKwh} kWh</span>
                 </Link>
               )}
             </div>
@@ -730,12 +703,12 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
         })()}
       </section>
 
-      {/* F) EN YÜKSEK PUANLI MODELLER */}
+      {/* 5. EN YÜKSEK PUANLI MODELLER */}
       <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
           <div>
             <h2 className="text-lg font-black text-neutral-900">EN YÜKSEK PUANLI MODELLER</h2>
-            <p className="text-xs font-bold text-neutral-400">Editörlerden En Yüksek Puan Alan Modeller</p>
+            <p className="text-xs font-bold text-neutral-400">Editör Derecelendirmeleri</p>
           </div>
           <div className="flex rounded bg-neutral-100 p-1">
             <button
@@ -760,7 +733,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
         {(() => {
           const list = topRatedTab === "tr_var" ? varTopRated : yokTopRated;
           if (list.length === 0) {
-            return <p className="p-8 text-center text-xs text-neutral-500 mt-4">Henüz incelenmiş model bulunmamaktadır.</p>;
+            return <p className="p-8 text-center text-xs text-neutral-500 mt-4">Henüz derecelendirilmiş model bulunmamaktadır.</p>;
           }
           return (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mt-5">
@@ -780,59 +753,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
         })()}
       </section>
 
-      {/* G) İNCELEMELER & YAZILAR */}
-      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
-        <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-          <h2 className="text-lg font-black text-neutral-900 uppercase tracking-wide">
-            EDİTÖR İNCELEMELERİ &amp; YAZILARI
-          </h2>
-          <div className="flex rounded bg-neutral-100 p-1">
-            <button
-              onClick={() => setReviewsTab("tr_var")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                reviewsTab === "tr_var" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE VAR
-            </button>
-            <button
-              onClick={() => setReviewsTab("tr_yok")}
-              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
-                reviewsTab === "tr_yok" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
-              }`}
-            >
-              TR'DE YOK
-            </button>
-          </div>
-        </div>
-
-        {reviewsTab === "tr_var" && articles.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-4">
-            {articles.slice(0, 3).map((a) => (
-              <Link key={a.id} href={`/haber/${a.slug}`} className="flex flex-col gap-3 group">
-                <div className="relative aspect-[16/10] overflow-hidden rounded bg-neutral-100">
-                  <Image
-                    src={a.image || "/arac-placeholder.svg"}
-                    alt={a.title}
-                    fill
-                    className="object-cover transition duration-300 group-hover:scale-105"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <h3 className="text-sm font-black text-neutral-900 leading-snug group-hover:text-teal-700 transition">
-                    {a.title}
-                  </h3>
-                  <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">{a.spot}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p className="p-8 text-center text-xs text-neutral-500 bg-neutral-50 rounded-lg border border-neutral-100 mt-4">Kategoriye ait incelenmiş içerik bulunmamaktadır.</p>
-        )}
-      </section>
-
-      {/* H) TEST SÜRÜŞÜ GÜNLÜK SEÇİM (SADECE TR'DE VAR OLANLAR) */}
+      {/* 6. GÜNLÜK TEST SÜRÜŞÜ */}
       <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-black text-neutral-900 border-b border-neutral-100 pb-3 uppercase tracking-wide">
           GÜNLÜK TEST SÜRÜŞÜ
@@ -858,8 +779,8 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                 </p>
               </div>
               <div className="mt-4 flex flex-col gap-1.5 p-3.5 bg-neutral-50 rounded border border-neutral-150">
-                <span className="text-[10px] font-black text-neutral-400 tracking-wider block">YOUTUBE EKRAN EMBED (YAKINDA)</span>
-                <div className="aspect-[16/9] w-full bg-neutral-205 border border-neutral-200 rounded flex items-center justify-center text-xs font-bold text-neutral-400">
+                <span className="text-[10px] font-black text-neutral-400 tracking-wider block">YOUTUBE VİDEO İNCELEME (YAKINDA)</span>
+                <div className="aspect-[16/9] w-full bg-neutral-200 border border-neutral-200 rounded flex items-center justify-center text-xs font-bold text-neutral-400">
                   Yakında YouTube Kanalımızda
                 </div>
               </div>
@@ -870,7 +791,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
         )}
       </section>
 
-      {/* --- TEKNİK KARŞILAŞTIRMA MODÜLÜ --- */}
+      {/* 7. TEKNİK KARŞILAŞTIRMA MODÜLÜ */}
       <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-black text-neutral-900 border-b border-neutral-100 pb-3 uppercase tracking-wide">
           TEKNİK KARŞILAŞTIRMA
@@ -968,6 +889,58 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
         )}
       </section>
 
+      {/* 8. İNCELEMELER & YAZILAR */}
+      <section className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+          <h2 className="text-lg font-black text-neutral-900 uppercase tracking-wide">
+            EDİTÖR İNCELEMELERİ &amp; YAZILARI
+          </h2>
+          <div className="flex rounded bg-neutral-100 p-1">
+            <button
+              onClick={() => setReviewsTab("tr_var")}
+              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
+                reviewsTab === "tr_var" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
+              }`}
+            >
+              TR'DE VAR
+            </button>
+            <button
+              onClick={() => setReviewsTab("tr_yok")}
+              className={`rounded px-3 py-1 text-xs font-black uppercase transition ${
+                reviewsTab === "tr_yok" ? "bg-teal-700 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-800"
+              }`}
+            >
+              TR'DE YOK
+            </button>
+          </div>
+        </div>
+
+        {reviewsTab === "tr_var" && articles.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-4">
+            {articles.slice(0, 3).map((a) => (
+              <Link key={a.id} href={`/haber/${a.slug}`} className="flex flex-col gap-3 group">
+                <div className="relative aspect-[16/10] overflow-hidden rounded bg-neutral-100">
+                  <Image
+                    src={a.image || "/arac-placeholder.svg"}
+                    alt={a.title}
+                    fill
+                    className="object-cover transition duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <h3 className="text-sm font-black text-neutral-900 leading-snug group-hover:text-teal-700 transition">
+                    {a.title}
+                  </h3>
+                  <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">{a.spot}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="p-8 text-center text-xs text-neutral-500 bg-neutral-50 rounded-lg border border-neutral-100 mt-4">Kategoriye ait incelenmiş içerik bulunmamaktadır.</p>
+        )}
+      </section>
+
       {/* --- LIGHTBOX MODAL --- */}
       {lightboxVehicle && (
         <div 
@@ -1039,12 +1012,10 @@ function VehicleCardItem({ vehicle, displayImage, onGalleryClick }: VehicleCardI
   const brandConfig = (BRANDS as any)[slugKey] || null;
   const hasBrandLogo = brandConfig && brandConfig.logo;
 
-  // Use local state to handle image load errors gracefully (no broken image icons ever!)
   const [imgSrc, setImgSrc] = useState(displayImage);
 
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white transition hover:shadow-md">
-      {/* Aspect changed to 4/3 to make the images 1.2x larger and more prominent */}
       <div className="relative aspect-[4/3] w-full bg-neutral-50 overflow-hidden">
         <Image
           src={imgSrc}
