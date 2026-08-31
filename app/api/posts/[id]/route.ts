@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok } from "@/lib/api";
 import { getRequestUser } from "@/lib/auth";
+import { isAdminRequest } from "@/lib/admin-auth";
 import {
   POST_SELECT,
   canViewPost,
@@ -13,9 +14,6 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 type Ctx = { params: Promise<{ id: string }> };
-
-const ADMIN_COOKIE = "evos_admin";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
 
 /** GET /api/posts/[id] — tek gönderi (görünürlük kontrolüyle) */
 export async function GET(req: NextRequest, { params }: Ctx) {
@@ -40,7 +38,7 @@ export async function GET(req: NextRequest, { params }: Ctx) {
 export async function DELETE(req: NextRequest, { params }: Ctx) {
   const { id } = await params;
   const viewer = await getRequestUser(req);
-  const isAdmin = req.cookies.get(ADMIN_COOKIE)?.value === ADMIN_PASSWORD;
+  const isAdmin = await isAdminRequest(req);
 
   const post = await prisma.post.findUnique({
     where: { id },
@@ -67,7 +65,7 @@ export async function DELETE(req: NextRequest, { params }: Ctx) {
 export async function PATCH(req: NextRequest, { params }: Ctx) {
   const { id } = await params;
   const viewer = await getRequestUser(req);
-  const isAdmin = req.cookies.get(ADMIN_COOKIE)?.value === ADMIN_PASSWORD;
+  const isAdmin = await isAdminRequest(req);
 
   const post = await prisma.post.findUnique({
     where: { id },

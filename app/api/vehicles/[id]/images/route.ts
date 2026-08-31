@@ -2,21 +2,15 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok } from "@/lib/api";
 import { touchVehicles } from "@/lib/revalidate";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-const COOKIE = "evos_admin";
-const PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
-
-function isAdmin(req: NextRequest) {
-  return req.cookies.get(COOKIE)?.value === PASSWORD;
-}
-
 // GET: Fetch all images for a vehicle
 export async function GET(req: NextRequest, { params }: Ctx) {
-  if (!isAdmin(req)) return fail("Yetkisiz işlem", 401);
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const { id } = await params;
 
   try {
@@ -32,7 +26,7 @@ export async function GET(req: NextRequest, { params }: Ctx) {
 
 // POST: Add a new image manually
 export async function POST(req: NextRequest, { params }: Ctx) {
-  if (!isAdmin(req)) return fail("Yetkisiz işlem", 401);
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const { id } = await params;
 
   try {
@@ -77,7 +71,7 @@ export async function POST(req: NextRequest, { params }: Ctx) {
 
 // PUT: Update an image's metadata (primary, type, etc.)
 export async function PUT(req: NextRequest, { params }: Ctx) {
-  if (!isAdmin(req)) return fail("Yetkisiz işlem", 401);
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const { id } = await params;
 
   try {
@@ -121,7 +115,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
 
 // DELETE: Remove an image relation from database (without deleting file from Cloudinary)
 export async function DELETE(req: NextRequest, { params }: Ctx) {
-  if (!isAdmin(req)) return fail("Yetkisiz işlem", 401);
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const { id } = await params;
   const imageId = req.nextUrl.searchParams.get("imageId");
 
