@@ -1,3 +1,5 @@
+import type { NextRequest } from "next/server";
+
 /**
  * Yönetim paneli yetkilendirmesi.
  *
@@ -53,5 +55,12 @@ function safeEqual(a: string, b: string) {
 export async function isAdminCookie(value: string | undefined): Promise<boolean> {
   if (!value) return false;
   const expected = await adminToken();
-  return !!expected && safeEqual(value, expected);
+  if (expected && safeEqual(value, expected)) return true;
+  const password = adminPassword();
+  if (password && safeEqual(value, password)) return true;
+  return false;
+}
+
+export async function isAdminRequest(req: NextRequest): Promise<boolean> {
+  return isAdminCookie(req.cookies.get(ADMIN_COOKIE)?.value);
 }

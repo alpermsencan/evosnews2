@@ -151,10 +151,41 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
               <ListingRowCard key={l.id} listing={l as any} />
             ))}
           </div>
-        ) : (
-          <EmptyState hasFilters={Object.keys(sp).length > 0} total={total} />
-        )}
-      </section>
+        </aside>
+
+        {/* Sağ Sütun: İlan Vitrini & Liste */}
+        <div className="lg:col-span-3 flex flex-col gap-6">
+          {/* Vitrin / Öne Çıkan İlanlar */}
+          {listings.some((l) => l.isSponsored) && (
+            <section className="rounded-lg border border-sky-100 bg-sky-50/20 p-4">
+              <h3 className="text-sm font-black text-sky-950 mb-3 tracking-wide flex items-center gap-1.5">
+                <span>⭐</span> <span>ÖNE ÇIKAN VİTRİN İLANLARI</span>
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {listings.filter((l) => l.isSponsored).map((l) => (
+                  <ListingCard key={l.id} listing={l} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Normal İlanlar */}
+          <section>
+            <h3 className="text-sm font-black text-neutral-900 mb-3 tracking-wide">
+              TÜM İLANLAR ({listings.length})
+            </h3>
+            {listings.length > 0 ? (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {listings.filter((l) => !l.isSponsored).map((l) => (
+                  <ListingCard key={l.id} listing={l} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState hasFilters={Object.keys(sp).length > 0} total={total} />
+            )}
+          </section>
+        </div>
+      </div>
 
       {/* KARŞILAŞTIRMA BİLGİ ALANI */}
       <section className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-6 lg:flex-row lg:items-center shadow-sm">

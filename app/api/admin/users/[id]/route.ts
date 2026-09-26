@@ -1,23 +1,18 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok } from "@/lib/api";
+import { isAdminRequest } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-const ADMIN_COOKIE = "evos_admin";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
 const ROLES = ["uye", "editor", "admin"];
-
-function isAdmin(req: NextRequest) {
-  return req.cookies.get(ADMIN_COOKIE)?.value === ADMIN_PASSWORD;
-}
 
 /** PUT /api/admin/users/[id] — rol değiştir / askıya al */
 export async function PUT(req: NextRequest, { params }: Ctx) {
-  if (!isAdmin(req)) return fail("Yetkisiz işlem", 401);
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
 
   try {
     const { id } = await params;
@@ -45,7 +40,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
 
 /** DELETE /api/admin/users/[id] — üyeyi ve tüm sosyal kayıtlarını siler */
 export async function DELETE(req: NextRequest, { params }: Ctx) {
-  if (!isAdmin(req)) return fail("Yetkisiz işlem", 401);
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
 
   try {
     const { id } = await params;

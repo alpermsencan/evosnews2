@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import NewsCard from "@/components/news/NewsCard";
 import VehicleCard from "@/components/vehicles/VehicleCard";
@@ -10,10 +9,6 @@ import { getByCategory, getMostRead } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 import { IconCar } from "@/components/ui/Icons";
 
-// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
-// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
-// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
-// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
 export const revalidate = 60;
 export const metadata = {
   title: "Araç Merkezi",
@@ -39,17 +34,23 @@ export default async function VehicleHubPage() {
       prisma.vehicle.findFirst({ orderBy: { acceleration: "asc" }, include: { syncImages: true } }),
     ]);
 
-  const champions = [
-    { title: "EN UYGUN FİYATLI", v: cheapest, metric: cheapest ? formatTL(cheapest.price) : "", color: "bg-volt" },
-    { title: "EN UZUN MENZİL", v: longest, metric: longest ? `${longest.rangeKm} km` : "", color: "bg-teal-700" },
-    { title: "EN HIZLI", v: fastest, metric: fastest ? `0-100: ${fastest.acceleration} sn` : "", color: "bg-evos" },
-  ];
+  // Calculate deterministic daily vehicle for test drive offset from daily review
+  const today = new Date();
+  const dayIndex = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
+
+  const trVarVehicles = vehicles.filter(
+    (v) => v.marketStatus === "TR_YAYINDA" || v.marketStatus === "TR_YAKINDA"
+  );
+
+  const testDriveVehicle = trVarVehicles.length > 0
+    ? trVarVehicles[(dayIndex + 5) % trVarVehicles.length]
+    : vehicles[0];
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
       <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-teal-700 to-slate-900 p-6 text-white">
         <div className="flex items-center gap-2">
-          <IconCar className="h-7 w-7" />
+          <IconCar className="h-7 w-7 text-volt" />
           <h1 className="text-2xl font-black sm:text-4xl">ARAÇ MERKEZİ</h1>
         </div>
         <p className="max-w-3xl text-sm text-white/85 sm:text-base">

@@ -1,0 +1,775 @@
+{
+  "toplamArac": 365,
+  "araclarKaliteliGorseliOlan": 191,
+  "toplamKaynakGorsel": 3860,
+  "toplamUniqueGorsel": 3860,
+  "onerilenPrimarySayisi": 191,
+  "onerilenGallerySayisi": 1558,
+  "rejectedSayisi": 257,
+  "suspiciousSayisi": 1834,
+  "markaBazindaOzet": {
+    "Audi": {
+      "totalVehicles": 28,
+      "totalImages": 388,
+      "validImages": 48,
+      "rejectedImages": 13,
+      "suspiciousImages": 326
+    },
+    "Peugeot": {
+      "totalVehicles": 5,
+      "totalImages": 42,
+      "validImages": 15,
+      "rejectedImages": 2,
+      "suspiciousImages": 21
+    },
+    "Kia": {
+      "totalVehicles": 14,
+      "totalImages": 131,
+      "validImages": 30,
+      "rejectedImages": 3,
+      "suspiciousImages": 98
+    },
+    "Skoda": {
+      "totalVehicles": 9,
+      "totalImages": 83,
+      "validImages": 0,
+      "rejectedImages": 5,
+      "suspiciousImages": 78
+    },
+    "Zeekr": {
+      "totalVehicles": 11,
+      "totalImages": 96,
+      "validImages": 73,
+      "rejectedImages": 7,
+      "suspiciousImages": 0
+    },
+    "Mercedes-Benz": {
+      "totalVehicles": 17,
+      "totalImages": 191,
+      "validImages": 104,
+      "rejectedImages": 8,
+      "suspiciousImages": 59
+    },
+    "BMW": {
+      "totalVehicles": 10,
+      "totalImages": 109,
+      "validImages": 15,
+      "rejectedImages": 6,
+      "suspiciousImages": 82
+    },
+    "BYD": {
+      "totalVehicles": 20,
+      "totalImages": 193,
+      "validImages": 0,
+      "rejectedImages": 15,
+      "suspiciousImages": 178
+    },
+    "Fiat": {
+      "totalVehicles": 2,
+      "totalImages": 14,
+      "validImages": 13,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Hyundai": {
+      "totalVehicles": 13,
+      "totalImages": 124,
+      "validImages": 38,
+      "rejectedImages": 5,
+      "suspiciousImages": 70
+    },
+    "Jeep": {
+      "totalVehicles": 2,
+      "totalImages": 20,
+      "validImages": 17,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Volvo": {
+      "totalVehicles": 14,
+      "totalImages": 107,
+      "validImages": 19,
+      "rejectedImages": 6,
+      "suspiciousImages": 82
+    },
+    "Renault": {
+      "totalVehicles": 4,
+      "totalImages": 42,
+      "validImages": 32,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Porsche": {
+      "totalVehicles": 2,
+      "totalImages": 13,
+      "validImages": 13,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    },
+    "Chery": {
+      "totalVehicles": 3,
+      "totalImages": 33,
+      "validImages": 26,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Polestar": {
+      "totalVehicles": 4,
+      "totalImages": 39,
+      "validImages": 30,
+      "rejectedImages": 4,
+      "suspiciousImages": 0
+    },
+    "Citroën": {
+      "totalVehicles": 5,
+      "totalImages": 33,
+      "validImages": 28,
+      "rejectedImages": 0,
+      "suspiciousImages": 5
+    },
+    "MINI": {
+      "totalVehicles": 1,
+      "totalImages": 6,
+      "validImages": 6,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    },
+    "Xiaomi": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "validImages": 9,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    },
+    "Togg": {
+      "totalVehicles": 2,
+      "totalImages": 20,
+      "validImages": 17,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Geely": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "validImages": 9,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    },
+    "Volkswagen": {
+      "totalVehicles": 11,
+      "totalImages": 106,
+      "validImages": 10,
+      "rejectedImages": 10,
+      "suspiciousImages": 86
+    },
+    "Opel": {
+      "totalVehicles": 5,
+      "totalImages": 40,
+      "validImages": 15,
+      "rejectedImages": 1,
+      "suspiciousImages": 23
+    },
+    "Ford": {
+      "totalVehicles": 9,
+      "totalImages": 108,
+      "validImages": 0,
+      "rejectedImages": 4,
+      "suspiciousImages": 104
+    },
+    "Proton": {
+      "totalVehicles": 1,
+      "totalImages": 1,
+      "validImages": 1,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    },
+    "KGM": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "validImages": 7,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    },
+    "Tesla": {
+      "totalVehicles": 7,
+      "totalImages": 110,
+      "validImages": 0,
+      "rejectedImages": 4,
+      "suspiciousImages": 106
+    },
+    "IM": {
+      "totalVehicles": 2,
+      "totalImages": 24,
+      "validImages": 19,
+      "rejectedImages": 3,
+      "suspiciousImages": 0
+    },
+    "Denza": {
+      "totalVehicles": 1,
+      "totalImages": 12,
+      "validImages": 10,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Xpeng": {
+      "totalVehicles": 5,
+      "totalImages": 45,
+      "validImages": 40,
+      "rejectedImages": 5,
+      "suspiciousImages": 0
+    },
+    "Smart": {
+      "totalVehicles": 4,
+      "totalImages": 33,
+      "validImages": 29,
+      "rejectedImages": 4,
+      "suspiciousImages": 0
+    },
+    "Chevrolet": {
+      "totalVehicles": 2,
+      "totalImages": 19,
+      "validImages": 10,
+      "rejectedImages": 2,
+      "suspiciousImages": 7
+    },
+    "NIO": {
+      "totalVehicles": 17,
+      "totalImages": 216,
+      "validImages": 18,
+      "rejectedImages": 16,
+      "suspiciousImages": 181
+    },
+    "Buick": {
+      "totalVehicles": 4,
+      "totalImages": 42,
+      "validImages": 34,
+      "rejectedImages": 4,
+      "suspiciousImages": 0
+    },
+    "AEHRA": {
+      "totalVehicles": 2,
+      "totalImages": 16,
+      "validImages": 12,
+      "rejectedImages": 2,
+      "suspiciousImages": 2
+    },
+    "Changan": {
+      "totalVehicles": 1,
+      "totalImages": 8,
+      "validImages": 7,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Honda": {
+      "totalVehicles": 2,
+      "totalImages": 14,
+      "validImages": 12,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "HiPhi": {
+      "totalVehicles": 3,
+      "totalImages": 38,
+      "validImages": 15,
+      "rejectedImages": 3,
+      "suspiciousImages": 15
+    },
+    "MG": {
+      "totalVehicles": 5,
+      "totalImages": 75,
+      "validImages": 48,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Skywell": {
+      "totalVehicles": 3,
+      "totalImages": 29,
+      "validImages": 10,
+      "rejectedImages": 4,
+      "suspiciousImages": 15
+    },
+    "Baojun": {
+      "totalVehicles": 1,
+      "totalImages": 4,
+      "validImages": 3,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Genesis": {
+      "totalVehicles": 4,
+      "totalImages": 43,
+      "validImages": 39,
+      "rejectedImages": 4,
+      "suspiciousImages": 0
+    },
+    "Li Auto": {
+      "totalVehicles": 2,
+      "totalImages": 17,
+      "validImages": 15,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Cadillac": {
+      "totalVehicles": 2,
+      "totalImages": 21,
+      "validImages": 0,
+      "rejectedImages": 3,
+      "suspiciousImages": 18
+    },
+    "Lexus": {
+      "totalVehicles": 3,
+      "totalImages": 22,
+      "validImages": 3,
+      "rejectedImages": 2,
+      "suspiciousImages": 17
+    },
+    "Dacia": {
+      "totalVehicles": 2,
+      "totalImages": 24,
+      "validImages": 0,
+      "rejectedImages": 4,
+      "suspiciousImages": 20
+    },
+    "Jaguar": {
+      "totalVehicles": 2,
+      "totalImages": 25,
+      "validImages": 8,
+      "rejectedImages": 1,
+      "suspiciousImages": 16
+    },
+    "Vinfast": {
+      "totalVehicles": 5,
+      "totalImages": 50,
+      "validImages": 37,
+      "rejectedImages": 7,
+      "suspiciousImages": 6
+    },
+    "Geometry": {
+      "totalVehicles": 5,
+      "totalImages": 49,
+      "validImages": 39,
+      "rejectedImages": 5,
+      "suspiciousImages": 0
+    },
+    "Livan": {
+      "totalVehicles": 1,
+      "totalImages": 8,
+      "validImages": 7,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Hycan": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "validImages": 5,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Munro": {
+      "totalVehicles": 1,
+      "totalImages": 6,
+      "validImages": 5,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Aiways": {
+      "totalVehicles": 5,
+      "totalImages": 67,
+      "validImages": 10,
+      "rejectedImages": 5,
+      "suspiciousImages": 50
+    },
+    "Hozon": {
+      "totalVehicles": 5,
+      "totalImages": 41,
+      "validImages": 32,
+      "rejectedImages": 9,
+      "suspiciousImages": 0
+    },
+    "Indi": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "validImages": 5,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Nissan": {
+      "totalVehicles": 6,
+      "totalImages": 78,
+      "validImages": 0,
+      "rejectedImages": 2,
+      "suspiciousImages": 76
+    },
+    "Voyah": {
+      "totalVehicles": 3,
+      "totalImages": 28,
+      "validImages": 0,
+      "rejectedImages": 3,
+      "suspiciousImages": 25
+    },
+    "Aito": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "validImages": 8,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Subaru": {
+      "totalVehicles": 1,
+      "totalImages": 16,
+      "validImages": 10,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Rising Auto": {
+      "totalVehicles": 1,
+      "totalImages": 10,
+      "validImages": 9,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Avatr": {
+      "totalVehicles": 1,
+      "totalImages": 14,
+      "validImages": 10,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Weltmeister": {
+      "totalVehicles": 7,
+      "totalImages": 75,
+      "validImages": 0,
+      "rejectedImages": 7,
+      "suspiciousImages": 68
+    },
+    "Lotus": {
+      "totalVehicles": 1,
+      "totalImages": 17,
+      "validImages": 10,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    },
+    "Niutron": {
+      "totalVehicles": 1,
+      "totalImages": 10,
+      "validImages": 9,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Sony": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "validImages": 7,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    },
+    "Aion": {
+      "totalVehicles": 12,
+      "totalImages": 138,
+      "validImages": 118,
+      "rejectedImages": 6,
+      "suspiciousImages": 0
+    },
+    "Toyota": {
+      "totalVehicles": 3,
+      "totalImages": 26,
+      "validImages": 23,
+      "rejectedImages": 3,
+      "suspiciousImages": 0
+    },
+    "ORA": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "validImages": 6,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Leapmotor": {
+      "totalVehicles": 3,
+      "totalImages": 47,
+      "validImages": 30,
+      "rejectedImages": 3,
+      "suspiciousImages": 0
+    },
+    "BAIC": {
+      "totalVehicles": 4,
+      "totalImages": 35,
+      "validImages": 30,
+      "rejectedImages": 4,
+      "suspiciousImages": 0
+    },
+    "Byton": {
+      "totalVehicles": 2,
+      "totalImages": 18,
+      "validImages": 16,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Skyworth": {
+      "totalVehicles": 2,
+      "totalImages": 26,
+      "validImages": 20,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Fisker": {
+      "totalVehicles": 2,
+      "totalImages": 21,
+      "validImages": 18,
+      "rejectedImages": 3,
+      "suspiciousImages": 0
+    },
+    "Rivian": {
+      "totalVehicles": 1,
+      "totalImages": 5,
+      "validImages": 4,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Faraday Future": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "validImages": 8,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "Bollinger": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "validImages": 8,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "GMC": {
+      "totalVehicles": 1,
+      "totalImages": 12,
+      "validImages": 10,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "XEV": {
+      "totalVehicles": 6,
+      "totalImages": 89,
+      "validImages": 60,
+      "rejectedImages": 5,
+      "suspiciousImages": 0
+    },
+    "Roewe": {
+      "totalVehicles": 2,
+      "totalImages": 26,
+      "validImages": 20,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Arcfox": {
+      "totalVehicles": 3,
+      "totalImages": 33,
+      "validImages": 30,
+      "rejectedImages": 3,
+      "suspiciousImages": 0
+    },
+    "Hongqi": {
+      "totalVehicles": 3,
+      "totalImages": 41,
+      "validImages": 30,
+      "rejectedImages": 2,
+      "suspiciousImages": 0
+    },
+    "Mazda": {
+      "totalVehicles": 1,
+      "totalImages": 11,
+      "validImages": 10,
+      "rejectedImages": 1,
+      "suspiciousImages": 0
+    },
+    "SERES": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "validImages": 7,
+      "rejectedImages": 0,
+      "suspiciousImages": 0
+    }
+  },
+  "modelBazindaEnFazlaGorseliOlanlar": [
+    {
+      "brand": "XEV",
+      "model": "iEV7s",
+      "variant": "Standard",
+      "uniqueImages": 26,
+      "validImages": 10,
+      "rejectedImages": 0,
+      "suspicious": 0
+    },
+    {
+      "brand": "Tesla",
+      "model": "Tesla",
+      "variant": "Model X Long Range",
+      "uniqueImages": 23,
+      "validImages": 0,
+      "rejectedImages": 0,
+      "suspicious": 23
+    },
+    {
+      "brand": "Tesla",
+      "model": "Model",
+      "variant": "X Plaid",
+      "uniqueImages": 22,
+      "validImages": 0,
+      "rejectedImages": 0,
+      "suspicious": 22
+    },
+    {
+      "brand": "MG",
+      "model": "Marvel",
+      "variant": "R Performance",
+      "uniqueImages": 22,
+      "validImages": 10,
+      "rejectedImages": 0,
+      "suspicious": 0
+    },
+    {
+      "brand": "MG",
+      "model": "Marvel",
+      "variant": "R",
+      "uniqueImages": 22,
+      "validImages": 10,
+      "rejectedImages": 0,
+      "suspicious": 0
+    },
+    {
+      "brand": "Audi",
+      "model": "e-tron",
+      "variant": "S Sportback 55 quattro",
+      "uniqueImages": 22,
+      "validImages": 0,
+      "rejectedImages": 0,
+      "suspicious": 22
+    },
+    {
+      "brand": "Audi",
+      "model": "e-tron",
+      "variant": "55 quattro",
+      "uniqueImages": 22,
+      "validImages": 0,
+      "rejectedImages": 0,
+      "suspicious": 22
+    },
+    {
+      "brand": "Audi",
+      "model": "e-tron",
+      "variant": "50 quattro",
+      "uniqueImages": 22,
+      "validImages": 0,
+      "rejectedImages": 0,
+      "suspicious": 22
+    },
+    {
+      "brand": "Tesla",
+      "model": "Tesla",
+      "variant": "Model Y Long Range AWD",
+      "uniqueImages": 19,
+      "validImages": 0,
+      "rejectedImages": 2,
+      "suspicious": 17
+    },
+    {
+      "brand": "Audi",
+      "model": "Q4",
+      "variant": "Sportback e-tron 50 quattro",
+      "uniqueImages": 19,
+      "validImages": 0,
+      "rejectedImages": 1,
+      "suspicious": 18
+    },
+    {
+      "brand": "Audi",
+      "model": "Q4",
+      "variant": "Sportback 40 e-tron",
+      "uniqueImages": 19,
+      "validImages": 0,
+      "rejectedImages": 1,
+      "suspicious": 18
+    },
+    {
+      "brand": "Audi",
+      "model": "Q4",
+      "variant": "Sportback 35 e-tron",
+      "uniqueImages": 19,
+      "validImages": 0,
+      "rejectedImages": 1,
+      "suspicious": 18
+    },
+    {
+      "brand": "Dacia",
+      "model": "Spring",
+      "variant": "Standard",
+      "uniqueImages": 19,
+      "validImages": 0,
+      "rejectedImages": 3,
+      "suspicious": 16
+    },
+    {
+      "brand": "Zeekr",
+      "model": "001",
+      "variant": "Dual Motor YOU",
+      "uniqueImages": 18,
+      "validImages": 10,
+      "rejectedImages": 0,
+      "suspicious": 0
+    },
+    {
+      "brand": "Zeekr",
+      "model": "001",
+      "variant": "Dual Motor WE",
+      "uniqueImages": 18,
+      "validImages": 10,
+      "rejectedImages": 0,
+      "suspicious": 0
+    },
+    {
+      "brand": "Audi",
+      "model": "e-tron",
+      "variant": "Sportback 55 quattro",
+      "uniqueImages": 18,
+      "validImages": 0,
+      "rejectedImages": 0,
+      "suspicious": 18
+    },
+    {
+      "brand": "Audi",
+      "model": "e-tron",
+      "variant": "Sportback 50 quattro",
+      "uniqueImages": 18,
+      "validImages": 0,
+      "rejectedImages": 0,
+      "suspicious": 18
+    },
+    {
+      "brand": "BMW",
+      "model": "iX",
+      "variant": "xDrive 50",
+      "uniqueImages": 18,
+      "validImages": 0,
+      "rejectedImages": 1,
+      "suspicious": 17
+    },
+    {
+      "brand": "BMW",
+      "model": "iX",
+      "variant": "xDrive 40",
+      "uniqueImages": 18,
+      "validImages": 0,
+      "rejectedImages": 1,
+      "suspicious": 17
+    },
+    {
+      "brand": "Lotus",
+      "model": "Eletre",
+      "variant": "Standard",
+      "uniqueImages": 17,
+      "validImages": 10,
+      "rejectedImages": 0,
+      "suspicious": 0
+    }
+  ]
+}

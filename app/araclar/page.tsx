@@ -9,10 +9,6 @@ import RealRangeSimulator from "@/components/tools/RealRangeSimulator";
 import { getByCategory } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 
-// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
-// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
-// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
-// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
 export const revalidate = 60;
 export const metadata = {
   title: "Araçları Keşfet",
@@ -122,7 +118,7 @@ export default async function VehiclesPage({
                 <th className="px-4 py-3 text-right">FİYAT</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100">
+            <tbody className="divide-y divide-neutral-100 text-xs">
               {vehicles.map((v) => (
                 <tr key={v.id} className="transition hover:bg-neutral-50">
                   <td className="px-4 py-3 font-bold text-neutral-900">

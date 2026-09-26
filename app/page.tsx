@@ -279,53 +279,6 @@ export default async function HomePage() {
             </CardRail>
           </section>
 
-          {/* ŞARJ AĞI */}
-          <section className="px-3 sm:px-0">
-            <SectionTitle
-              title="ŞARJ AĞI"
-              href="/sarj-agi"
-              color="#15803d"
-              subtitle="Evos Charge Network ve operatör haberleri"
-            />
-            <div className="flex flex-col gap-4 lg:flex-row">
-              <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white">
-                {charge.map((a) => (
-                  <NewsCard key={a.id} article={a} variant="row" />
-                ))}
-              </div>
-              <aside className="w-full shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-white lg:w-[300px]">
-                <div className="bg-volt px-4 py-3 text-sm font-black text-white">
-                  EN GÜÇLÜ İSTASYONLAR
-                </div>
-                <ul className="flex flex-col">
-                  {stations.map((s) => (
-                    <li
-                      key={s.id}
-                      className="flex items-center justify-between gap-2 border-b border-neutral-100 px-4 py-3 last:border-0"
-                    >
-                      <div className="flex min-w-0 flex-col">
-                        <span className="truncate text-[13px] font-bold text-neutral-800">
-                          {s.name}
-                        </span>
-                        <span className="text-[11px] text-neutral-500">
-                          {s.city} · {s.operator}
-                        </span>
-                      </div>
-                      <span className="shrink-0 rounded bg-volt/10 px-2 py-1 text-[11px] font-black text-volt-dark">
-                        {s.maxPowerKw} kW
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/sarj-agi"
-                  className="flex items-center justify-center gap-1 bg-neutral-50 py-3 text-xs font-bold text-neutral-600 hover:text-evos"
-                >
-                  TÜM İSTASYONLAR <IconChevronRight className="h-3 w-3" />
-                </Link>
-              </aside>
-            </div>
-          </section>
 
           {/* TEKNOLOJİ */}
           <section className="px-3 sm:px-0">

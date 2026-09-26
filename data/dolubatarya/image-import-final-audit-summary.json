@@ -1,0 +1,555 @@
+{
+  "totalVariants": 365,
+  "primaryFound": 284,
+  "primaryMissing": 81,
+  "totalFinalImages": 1663,
+  "crossModelIssuesCount": 0,
+  "lowImageCount": 143,
+  "goodCount": 141,
+  "isImportSafe": "YES",
+  "familyStats": {
+    "TESLA_Model 3": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "TESLA_Model Y": {
+      "accept": 5,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 5,
+      "gallery": 18
+    },
+    "TESLA_Model X": {
+      "accept": 2,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 2,
+      "gallery": 11
+    },
+    "BYD_Seal": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "BYD_Seal U": {
+      "accept": 1,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 1,
+      "gallery": 7
+    },
+    "BYD_Sealion 7": {
+      "accept": 1,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 1,
+      "gallery": 0
+    },
+    "BYD_Atto 3": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "BYD_Tang": {
+      "accept": 3,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 3,
+      "gallery": 15
+    },
+    "AUDI_Q4 e-tron": {
+      "accept": 12,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 9,
+      "gallery": 37
+    },
+    "AUDI_Q4 Sportback": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "AUDI_Q6 e-tron": {
+      "accept": 3,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 3,
+      "gallery": 0
+    },
+    "AUDI_e-tron": {
+      "accept": 7,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 7,
+      "gallery": 48
+    },
+    "AUDI_e-tron Sportback": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "BMW_iX1": {
+      "accept": 1,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "BMW_iX2": {
+      "accept": 1,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 1,
+      "gallery": 0
+    },
+    "BMW_iX3": {
+      "accept": 2,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 2,
+      "gallery": 18
+    },
+    "BMW_iX": {
+      "accept": 5,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 5,
+      "gallery": 20
+    },
+    "BMW_i4": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "BMW_i5": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "BMW_i7": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "HYUNDAI_Inster": {
+      "accept": 1,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 1,
+      "gallery": 0
+    },
+    "HYUNDAI_Kona": {
+      "accept": 3,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 3,
+      "gallery": 23
+    },
+    "HYUNDAI_Ioniq 5": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "HYUNDAI_Ioniq 5 N": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "HYUNDAI_Ioniq 6": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "HYUNDAI_Ioniq 9": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    },
+    "KIA_EV3": {
+      "accept": 2,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 2,
+      "gallery": 0
+    },
+    "KIA_EV6": {
+      "accept": 6,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 5,
+      "gallery": 10
+    },
+    "KIA_EV9": {
+      "accept": 2,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 2,
+      "gallery": 9
+    },
+    "KIA_Niro EV": {
+      "accept": 0,
+      "crossModelReview": 0,
+      "review": 0,
+      "primary": 0,
+      "gallery": 0
+    }
+  },
+  "mostRepeatedUrls": [],
+  "problematicEntries": [
+    {
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "40",
+      "slug": "q4-e-tron-40",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq 60 e-Prestige",
+      "slug": "skoda-enyaq-60-e-prestige",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 85x e-Sportline",
+      "slug": "skoda-enyaq-coupe-85x-e-sportline",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 60 e-Sportline",
+      "slug": "skoda-enyaq-coupe-60-e-sportline",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "EQA",
+      "variant": "250+",
+      "slug": "2025-eqa-250",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "BMW",
+      "model": "İX1",
+      "variant": "xDrive20",
+      "slug": "bmw-ix1-xdrive20",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Citroën",
+      "model": "ë-C3",
+      "variant": "Aircross",
+      "slug": "citroen-e-c3-aircross",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Skoda",
+      "model": "Elroq",
+      "variant": "Standard",
+      "slug": "skoda-elroq",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "Mercedes",
+      "variant": "EQA 250",
+      "slug": "2024-mercedes-eqa-250",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Smart",
+      "model": "#3",
+      "variant": "Pro+",
+      "slug": "smart-3-pro",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "Mercedes",
+      "variant": "EQB 250+",
+      "slug": "2023-mercedes-eqb-250",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "Mercedes",
+      "variant": "EQA 250+",
+      "slug": "2023-mercedes-eqa-250",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Buick",
+      "model": "Electra",
+      "variant": "E5 RWD",
+      "slug": "buick-electra-e5-rwd",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Polestar",
+      "model": "4",
+      "variant": "Long Range Single Motor",
+      "slug": "polestar-4-long-range-single-motor",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Polestar",
+      "model": "4",
+      "variant": "Long Range Dual Motor",
+      "slug": "polestar-4-long-range-dual-motor",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Smart",
+      "model": "#1",
+      "variant": "BRABUS",
+      "slug": "smart-1-brabus",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Geometry",
+      "model": "M6",
+      "variant": "Standard",
+      "slug": "geometry-m6",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Audi",
+      "model": "Q8 e-tron",
+      "variant": "55 quattro",
+      "slug": "audi-q8-e-tron-55-quattro",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "Mercedes",
+      "variant": "EQE SUV 350+",
+      "slug": "mercedes-eqe-suv-350",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "Mercedes",
+      "variant": "EQE SUV 500",
+      "slug": "mercedes-eqe-suv-500",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "NIO",
+      "model": "EL7",
+      "variant": "Standard",
+      "slug": "nio-el7",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "BMW",
+      "model": "iX1",
+      "variant": "xDrive30",
+      "slug": "bmw-ix1-xdrive30",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "HiPhi",
+      "model": "HiPhi",
+      "variant": "X Long Range",
+      "slug": "2022-hiphi-x-long-range",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Geometry",
+      "model": "Geely",
+      "variant": "Geometry E",
+      "slug": "geometry-e",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Hozon",
+      "model": "NETA",
+      "variant": "U",
+      "slug": "hozon-neta-u",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Hozon",
+      "model": "NETA",
+      "variant": "V",
+      "slug": "hozon-neta-v",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "Mercedes",
+      "variant": "EQS SUV 450+",
+      "slug": "mercedes-eqs-suv-450",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "Mercedes",
+      "variant": "EQS SUV 450 4MATIC",
+      "slug": "mercedes-eqs-suv-450-4matic",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Mercedes-Benz",
+      "model": "Mercedes",
+      "variant": "EQS SUV 580 4MATIC",
+      "slug": "mercedes-eqs-suv-580-4matic",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    },
+    {
+      "brand": "Skoda",
+      "model": "Enyaq",
+      "variant": "Coupe RS iV",
+      "slug": "skoda-enyaq-coupe-rs-iv",
+      "primaryImage": "",
+      "galleryCount": 0,
+      "totalSelected": 0,
+      "qualityStatus": "NO_PRIMARY",
+      "crossModelIssues": []
+    }
+  ]
+}

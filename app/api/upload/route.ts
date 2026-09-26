@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { fail, ok } from "@/lib/api";
 import { getRequestUser } from "@/lib/auth";
+import { isAdminRequest } from "@/lib/admin-auth";
 import {
   destroyImage,
   isCloudinaryReady,
@@ -14,8 +15,6 @@ export const runtime = "nodejs";
 // Reel videoları büyük olabildiği için yükleme süresi uzatılır
 export const maxDuration = 60;
 
-const COOKIE = "evos_admin";
-const PASSWORD = process.env.ADMIN_PASSWORD || "evos2026";
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB (görsel)
 const MAX_VIDEO_BYTES = 80 * 1024 * 1024; // 80 MB (reel)
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
@@ -35,10 +34,6 @@ const MEMBER_FOLDERS: Record<string, string> = {
   listing: "evos/ilanlar",
 };
 
-function isAdmin(req: NextRequest) {
-  return req.cookies.get(COOKIE)?.value === PASSWORD;
-}
-
 /**
  * POST /api/upload — FormData("file" veya "files") ile Cloudinary'ye yükler.
  * Yönetici her klasöre görsel yükleyebilir; üyeler `purpose` alanına göre
@@ -47,7 +42,7 @@ function isAdmin(req: NextRequest) {
  * Video yüklemek için: FormData'ya type="video" eklenir.
  */
 export async function POST(req: NextRequest) {
-  const admin = isAdmin(req);
+  const admin = await isAdminRequest(req);
   const member = admin ? null : await getRequestUser(req);
   if (!admin && !member) return fail("Yetkisiz işlem", 401);
   if (!isCloudinaryReady)
@@ -106,7 +101,8 @@ export async function POST(req: NextRequest) {
 
 /** DELETE /api/upload?url=... — sadece Cloudinary'deki görselleri siler */
 export async function DELETE(req: NextRequest) {
-  if (!isAdmin(req)) return fail("Yetkisiz işlem", 401);
+  const admin = await isAdminRequest(req);
+  if (!admin) return fail("Yetkisiz işlem", 401);
   if (!isCloudinaryReady) return fail("Cloudinary yapılandırılmamış", 500);
 
   const url = req.nextUrl.searchParams.get("url");

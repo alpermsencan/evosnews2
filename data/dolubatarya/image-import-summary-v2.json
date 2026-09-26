@@ -1,0 +1,1094 @@
+{
+  "toplamArac": 365,
+  "toplamKaynakGorsel": 3860,
+  "toplamUniqueGorsel": 3860,
+  "totalAccept": 3142,
+  "totalReject": 287,
+  "totalReview": 431,
+  "formerSuspiciousCount": 1834,
+  "markaBazindaOzet": {
+    "Audi": {
+      "totalVehicles": 28,
+      "totalImages": 388,
+      "accept": 375,
+      "reject": 13,
+      "review": 0
+    },
+    "Peugeot": {
+      "totalVehicles": 5,
+      "totalImages": 42,
+      "accept": 40,
+      "reject": 2,
+      "review": 0
+    },
+    "Kia": {
+      "totalVehicles": 14,
+      "totalImages": 131,
+      "accept": 128,
+      "reject": 3,
+      "review": 0
+    },
+    "Skoda": {
+      "totalVehicles": 9,
+      "totalImages": 83,
+      "accept": 0,
+      "reject": 5,
+      "review": 78
+    },
+    "Zeekr": {
+      "totalVehicles": 11,
+      "totalImages": 96,
+      "accept": 89,
+      "reject": 7,
+      "review": 0
+    },
+    "Mercedes-Benz": {
+      "totalVehicles": 17,
+      "totalImages": 191,
+      "accept": 19,
+      "reject": 8,
+      "review": 164
+    },
+    "BMW": {
+      "totalVehicles": 10,
+      "totalImages": 109,
+      "accept": 89,
+      "reject": 6,
+      "review": 14
+    },
+    "BYD": {
+      "totalVehicles": 20,
+      "totalImages": 193,
+      "accept": 177,
+      "reject": 16,
+      "review": 0
+    },
+    "Fiat": {
+      "totalVehicles": 2,
+      "totalImages": 14,
+      "accept": 13,
+      "reject": 1,
+      "review": 0
+    },
+    "Hyundai": {
+      "totalVehicles": 13,
+      "totalImages": 124,
+      "accept": 119,
+      "reject": 5,
+      "review": 0
+    },
+    "Jeep": {
+      "totalVehicles": 2,
+      "totalImages": 20,
+      "accept": 19,
+      "reject": 1,
+      "review": 0
+    },
+    "Volvo": {
+      "totalVehicles": 14,
+      "totalImages": 107,
+      "accept": 101,
+      "reject": 6,
+      "review": 0
+    },
+    "Renault": {
+      "totalVehicles": 4,
+      "totalImages": 42,
+      "accept": 39,
+      "reject": 2,
+      "review": 1
+    },
+    "Porsche": {
+      "totalVehicles": 2,
+      "totalImages": 13,
+      "accept": 13,
+      "reject": 0,
+      "review": 0
+    },
+    "Chery": {
+      "totalVehicles": 3,
+      "totalImages": 33,
+      "accept": 32,
+      "reject": 1,
+      "review": 0
+    },
+    "Polestar": {
+      "totalVehicles": 4,
+      "totalImages": 39,
+      "accept": 17,
+      "reject": 4,
+      "review": 18
+    },
+    "Citroën": {
+      "totalVehicles": 5,
+      "totalImages": 33,
+      "accept": 28,
+      "reject": 0,
+      "review": 5
+    },
+    "MINI": {
+      "totalVehicles": 1,
+      "totalImages": 6,
+      "accept": 6,
+      "reject": 0,
+      "review": 0
+    },
+    "Xiaomi": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "accept": 9,
+      "reject": 0,
+      "review": 0
+    },
+    "Togg": {
+      "totalVehicles": 2,
+      "totalImages": 20,
+      "accept": 18,
+      "reject": 2,
+      "review": 0
+    },
+    "Geely": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "accept": 9,
+      "reject": 0,
+      "review": 0
+    },
+    "Volkswagen": {
+      "totalVehicles": 11,
+      "totalImages": 106,
+      "accept": 96,
+      "reject": 10,
+      "review": 0
+    },
+    "Opel": {
+      "totalVehicles": 5,
+      "totalImages": 40,
+      "accept": 39,
+      "reject": 1,
+      "review": 0
+    },
+    "Ford": {
+      "totalVehicles": 9,
+      "totalImages": 108,
+      "accept": 104,
+      "reject": 4,
+      "review": 0
+    },
+    "Proton": {
+      "totalVehicles": 1,
+      "totalImages": 1,
+      "accept": 1,
+      "reject": 0,
+      "review": 0
+    },
+    "KGM": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "accept": 7,
+      "reject": 0,
+      "review": 0
+    },
+    "Tesla": {
+      "totalVehicles": 7,
+      "totalImages": 110,
+      "accept": 106,
+      "reject": 4,
+      "review": 0
+    },
+    "IM": {
+      "totalVehicles": 2,
+      "totalImages": 24,
+      "accept": 21,
+      "reject": 3,
+      "review": 0
+    },
+    "Denza": {
+      "totalVehicles": 1,
+      "totalImages": 12,
+      "accept": 11,
+      "reject": 1,
+      "review": 0
+    },
+    "Xpeng": {
+      "totalVehicles": 5,
+      "totalImages": 45,
+      "accept": 40,
+      "reject": 5,
+      "review": 0
+    },
+    "Smart": {
+      "totalVehicles": 4,
+      "totalImages": 33,
+      "accept": 16,
+      "reject": 9,
+      "review": 8
+    },
+    "Chevrolet": {
+      "totalVehicles": 2,
+      "totalImages": 19,
+      "accept": 17,
+      "reject": 2,
+      "review": 0
+    },
+    "NIO": {
+      "totalVehicles": 17,
+      "totalImages": 216,
+      "accept": 186,
+      "reject": 30,
+      "review": 0
+    },
+    "Buick": {
+      "totalVehicles": 4,
+      "totalImages": 42,
+      "accept": 38,
+      "reject": 4,
+      "review": 0
+    },
+    "AEHRA": {
+      "totalVehicles": 2,
+      "totalImages": 16,
+      "accept": 12,
+      "reject": 4,
+      "review": 0
+    },
+    "Changan": {
+      "totalVehicles": 1,
+      "totalImages": 8,
+      "accept": 7,
+      "reject": 1,
+      "review": 0
+    },
+    "Honda": {
+      "totalVehicles": 2,
+      "totalImages": 14,
+      "accept": 12,
+      "reject": 2,
+      "review": 0
+    },
+    "HiPhi": {
+      "totalVehicles": 3,
+      "totalImages": 38,
+      "accept": 5,
+      "reject": 3,
+      "review": 30
+    },
+    "MG": {
+      "totalVehicles": 5,
+      "totalImages": 75,
+      "accept": 73,
+      "reject": 2,
+      "review": 0
+    },
+    "Skywell": {
+      "totalVehicles": 3,
+      "totalImages": 29,
+      "accept": 25,
+      "reject": 4,
+      "review": 0
+    },
+    "Baojun": {
+      "totalVehicles": 1,
+      "totalImages": 4,
+      "accept": 3,
+      "reject": 1,
+      "review": 0
+    },
+    "Genesis": {
+      "totalVehicles": 4,
+      "totalImages": 43,
+      "accept": 39,
+      "reject": 4,
+      "review": 0
+    },
+    "Li Auto": {
+      "totalVehicles": 2,
+      "totalImages": 17,
+      "accept": 15,
+      "reject": 2,
+      "review": 0
+    },
+    "Cadillac": {
+      "totalVehicles": 2,
+      "totalImages": 21,
+      "accept": 18,
+      "reject": 3,
+      "review": 0
+    },
+    "Lexus": {
+      "totalVehicles": 3,
+      "totalImages": 22,
+      "accept": 20,
+      "reject": 2,
+      "review": 0
+    },
+    "Dacia": {
+      "totalVehicles": 2,
+      "totalImages": 24,
+      "accept": 20,
+      "reject": 4,
+      "review": 0
+    },
+    "Jaguar": {
+      "totalVehicles": 2,
+      "totalImages": 25,
+      "accept": 24,
+      "reject": 1,
+      "review": 0
+    },
+    "Vinfast": {
+      "totalVehicles": 5,
+      "totalImages": 50,
+      "accept": 43,
+      "reject": 7,
+      "review": 0
+    },
+    "Geometry": {
+      "totalVehicles": 5,
+      "totalImages": 49,
+      "accept": 25,
+      "reject": 13,
+      "review": 11
+    },
+    "Livan": {
+      "totalVehicles": 1,
+      "totalImages": 8,
+      "accept": 7,
+      "reject": 1,
+      "review": 0
+    },
+    "Hycan": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "accept": 5,
+      "reject": 2,
+      "review": 0
+    },
+    "Munro": {
+      "totalVehicles": 1,
+      "totalImages": 6,
+      "accept": 5,
+      "reject": 1,
+      "review": 0
+    },
+    "Aiways": {
+      "totalVehicles": 5,
+      "totalImages": 67,
+      "accept": 62,
+      "reject": 5,
+      "review": 0
+    },
+    "Hozon": {
+      "totalVehicles": 5,
+      "totalImages": 41,
+      "accept": 32,
+      "reject": 9,
+      "review": 0
+    },
+    "Indi": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "accept": 5,
+      "reject": 2,
+      "review": 0
+    },
+    "Nissan": {
+      "totalVehicles": 6,
+      "totalImages": 78,
+      "accept": 76,
+      "reject": 2,
+      "review": 0
+    },
+    "Voyah": {
+      "totalVehicles": 3,
+      "totalImages": 28,
+      "accept": 25,
+      "reject": 3,
+      "review": 0
+    },
+    "Aito": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "accept": 8,
+      "reject": 1,
+      "review": 0
+    },
+    "Subaru": {
+      "totalVehicles": 1,
+      "totalImages": 16,
+      "accept": 14,
+      "reject": 2,
+      "review": 0
+    },
+    "Rising Auto": {
+      "totalVehicles": 1,
+      "totalImages": 10,
+      "accept": 9,
+      "reject": 1,
+      "review": 0
+    },
+    "Avatr": {
+      "totalVehicles": 1,
+      "totalImages": 14,
+      "accept": 13,
+      "reject": 1,
+      "review": 0
+    },
+    "Weltmeister": {
+      "totalVehicles": 7,
+      "totalImages": 75,
+      "accept": 68,
+      "reject": 7,
+      "review": 0
+    },
+    "Lotus": {
+      "totalVehicles": 1,
+      "totalImages": 17,
+      "accept": 17,
+      "reject": 0,
+      "review": 0
+    },
+    "Niutron": {
+      "totalVehicles": 1,
+      "totalImages": 10,
+      "accept": 9,
+      "reject": 1,
+      "review": 0
+    },
+    "Sony": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "accept": 7,
+      "reject": 0,
+      "review": 0
+    },
+    "Aion": {
+      "totalVehicles": 12,
+      "totalImages": 138,
+      "accept": 30,
+      "reject": 6,
+      "review": 102
+    },
+    "Toyota": {
+      "totalVehicles": 3,
+      "totalImages": 26,
+      "accept": 23,
+      "reject": 3,
+      "review": 0
+    },
+    "ORA": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "accept": 6,
+      "reject": 1,
+      "review": 0
+    },
+    "Leapmotor": {
+      "totalVehicles": 3,
+      "totalImages": 47,
+      "accept": 44,
+      "reject": 3,
+      "review": 0
+    },
+    "BAIC": {
+      "totalVehicles": 4,
+      "totalImages": 35,
+      "accept": 31,
+      "reject": 4,
+      "review": 0
+    },
+    "Byton": {
+      "totalVehicles": 2,
+      "totalImages": 18,
+      "accept": 16,
+      "reject": 2,
+      "review": 0
+    },
+    "Skyworth": {
+      "totalVehicles": 2,
+      "totalImages": 26,
+      "accept": 24,
+      "reject": 2,
+      "review": 0
+    },
+    "Fisker": {
+      "totalVehicles": 2,
+      "totalImages": 21,
+      "accept": 18,
+      "reject": 3,
+      "review": 0
+    },
+    "Rivian": {
+      "totalVehicles": 1,
+      "totalImages": 5,
+      "accept": 4,
+      "reject": 1,
+      "review": 0
+    },
+    "Faraday Future": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "accept": 8,
+      "reject": 1,
+      "review": 0
+    },
+    "Bollinger": {
+      "totalVehicles": 1,
+      "totalImages": 9,
+      "accept": 8,
+      "reject": 1,
+      "review": 0
+    },
+    "GMC": {
+      "totalVehicles": 1,
+      "totalImages": 12,
+      "accept": 11,
+      "reject": 1,
+      "review": 0
+    },
+    "XEV": {
+      "totalVehicles": 6,
+      "totalImages": 89,
+      "accept": 84,
+      "reject": 5,
+      "review": 0
+    },
+    "Roewe": {
+      "totalVehicles": 2,
+      "totalImages": 26,
+      "accept": 24,
+      "reject": 2,
+      "review": 0
+    },
+    "Arcfox": {
+      "totalVehicles": 3,
+      "totalImages": 33,
+      "accept": 30,
+      "reject": 3,
+      "review": 0
+    },
+    "Hongqi": {
+      "totalVehicles": 3,
+      "totalImages": 41,
+      "accept": 39,
+      "reject": 2,
+      "review": 0
+    },
+    "Mazda": {
+      "totalVehicles": 1,
+      "totalImages": 11,
+      "accept": 10,
+      "reject": 1,
+      "review": 0
+    },
+    "SERES": {
+      "totalVehicles": 1,
+      "totalImages": 7,
+      "accept": 7,
+      "reject": 0,
+      "review": 0
+    }
+  },
+  "first50SuspiciousAnalysis": [
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/peugeot-e-2008-gt.jpg",
+      "brand": "Peugeot",
+      "model": "e-2008",
+      "variant": "GT",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for e-2008",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/peugeot-e-2008-gt-549446.jpg",
+      "brand": "Peugeot",
+      "model": "e-2008",
+      "variant": "GT",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for e-2008",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/peugeot-e-2008-gt-146682.jpg",
+      "brand": "Peugeot",
+      "model": "e-2008",
+      "variant": "GT",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for e-2008",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-1997.jpg",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311.jpg",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920_1.jpg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920_2.jpg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920_3.jpg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920_4.jpg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920.jpeg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920_1.jpeg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920_2.jpeg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920_3.jpeg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/audi-q4-e-tron-55-e-tron-quattro-305311-1920_4.jpeg.webp",
+      "brand": "Audi",
+      "model": "Q4 e-tron",
+      "variant": "55 quattro",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for Q4 e-tron",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-8915.png",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-841537-1920.png.webp",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-841537-1920_1.png.webp",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-841537-1920_2.png.webp",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-841537-1920_3.png.webp",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-841537-1920_4.png.webp",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-841537-1920_5.png.webp",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-841537-1920_6.png.webp",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/kia-ev9-prestige-841537-1920_7.png.webp",
+      "brand": "Kia",
+      "model": "EV9",
+      "variant": "Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for EV9",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-60-e-prestige-4495.png",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq 60 e-Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-60-e-prestige-73528-1920.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq 60 e-Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-60-e-prestige-73528-1920_1.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq 60 e-Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-60-e-prestige-73528-1920_2.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq 60 e-Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-60-e-prestige-73528-1920_3.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq 60 e-Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-60-e-prestige-73528-1920_4.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq 60 e-Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-60-e-prestige-73528-1920_5.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq 60 e-Prestige",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-85x-e-sportline-2608.png",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 85x e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-85x-e-sportline-935586-1920.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 85x e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-85x-e-sportline-935586-1920_1.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 85x e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-85x-e-sportline-935586-1920_2.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 85x e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-85x-e-sportline-935586-1920_3.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 85x e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-85x-e-sportline-935586-1920_4.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 85x e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-85x-e-sportline-935586-1920_5.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 85x e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-7812.png",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 60 e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-744531-1920.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 60 e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-744531-1920_1.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 60 e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-744531-1920_2.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 60 e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-744531-1920_3.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 60 e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-744531-1920_4.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 60 e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/08/skoda-enyaq-coupe-744531-1920_5.png.webp",
+      "brand": "Skoda",
+      "model": "Škoda",
+      "variant": "Enyaq Coupé 60 e-Sportline",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (Škoda) and sibling model (Enyaq)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/07/bmw-ix2-edrive20.jpg",
+      "brand": "BMW",
+      "model": "iX2",
+      "variant": "eDrive20",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for iX2",
+      "confidence": 1
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/07/bmw-ix1-xdrive20.jpg",
+      "brand": "BMW",
+      "model": "İX1",
+      "variant": "xDrive20",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (İX1) and sibling model (iX)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/07/bmw-ix1-xdrive20-348807.jpg",
+      "brand": "BMW",
+      "model": "İX1",
+      "variant": "xDrive20",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (İX1) and sibling model (iX)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/07/bmw-ix1-xdrive20-348807-1920_1.webp",
+      "brand": "BMW",
+      "model": "İX1",
+      "variant": "xDrive20",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (İX1) and sibling model (iX)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/07/bmw-ix1-xdrive20-348807-1920_2.webp",
+      "brand": "BMW",
+      "model": "İX1",
+      "variant": "xDrive20",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "REVIEW",
+      "reason": "URL contains both current model (İX1) and sibling model (iX)",
+      "confidence": 0.8
+    },
+    {
+      "url": "https://dolubatarya.com/uploads/2025/07/byd-sealion-7-9962.jpg",
+      "brand": "BYD",
+      "model": "SEALION",
+      "variant": "7",
+      "formerStatus": "SUSPICIOUS",
+      "newDecision": "ACCEPT",
+      "reason": "Validated vehicle photo for SEALION",
+      "confidence": 1
+    }
+  ]
+}
