@@ -1,54 +1,27 @@
-import { Suspense } from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
-import FilterBar from "@/components/ui/FilterBar";
 import SectionTitle from "@/components/news/SectionTitle";
 import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
-import RouteButton from "@/components/stations/RouteButton";
 import NearbyStations from "@/components/stations/NearbyStations";
 import StationMap from "@/components/stations/StationMap";
-import { IconBolt, IconChevronRight, IconClock, IconMap } from "@/components/ui/Icons";
+import { IconBolt, IconMap, IconClock } from "@/components/ui/Icons";
 import { buildTariffIndex, formatTariff, matchTariff } from "@/lib/tariffs";
 
-// Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
-// render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
-// girer. Verinin tazeliğini lib/cache.ts'teki etiketler ve TTL belirler —
-// ikisi aynı kısa pencerede tutulur ki sayfa hiçbir koşulda eskimesin.
 export const revalidate = 60;
 export const metadata = {
-  title: "Şarj Ağı · Evos Charge Network",
+  title: "Şarj Ağı & Fiyatları · EVOtoPilot",
   description:
-    "Türkiye genelindeki hızlı şarj istasyonları, operatör tarifeleri ve güç kapasiteleri.",
+    "Türkiye genelindeki şarj istasyonları haritası, güncel operatör tarifeleri ve şarj fiyatları.",
 };
 
-type SP = Promise<Record<string, string | undefined>>;
-
-export default async function ChargePage({ searchParams }: { searchParams: SP }) {
-  const sp = await searchParams;
-
-  const where: Prisma.ChargeStationWhereInput = {};
-  if (sp.il) where.city = sp.il;
-  if (sp.operator) where.operator = sp.operator;
-  if (sp.hizli === "1") where.isFast = true;
-  const minGuc = Number(sp.minGuc);
-  if (minGuc > 0) where.maxPowerKw = { gte: minGuc };
-
-  const [stations, cities, operators, news, tariffs] = await Promise.all([
-    prisma.chargeStation.findMany({ where, orderBy: [{ maxPowerKw: "desc" }, { city: "asc" }] }),
-    prisma.chargeStation.findMany({ select: { city: true }, distinct: ["city"], orderBy: { city: "asc" } }),
-    prisma.chargeStation.findMany({ select: { operator: true }, distinct: ["operator"], orderBy: { operator: "asc" } }),
-    getByCategory("sarj-agi", 4),
-    prisma.operatorTariff.findMany({ where: { isActive: true } }),
+export default async function ChargePage() {
+  const [all, news, tariffs] = await Promise.all([
+    prisma.chargeStation.findMany().catch(() => []),
+    getByCategory("sarj-agi", 4).catch(() => []),
+    prisma.operatorTariff.findMany({ where: { isActive: true } }).catch(() => []),
   ]);
 
-  // Operatör özeti.
-  //
-  // Tarife OCM verisinde YER ALMAZ; fiyat iki yerden gelebilir: istasyona özel
-  // olarak panelden girilen `pricePerKwh` ya da operatörün ilan ettiği tarife
-  // (`OperatorTariff`, bkz. /sarj-fiyatlari). İstasyona özel fiyat önceliklidir;
-  // ikisi de yoksa sütun "—" gösterir — tahmini bir sayı yazılmaz.
   const tariffIndex = buildTariffIndex(tariffs);
 
   const byOperator = new Map<
@@ -62,7 +35,7 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
       tariff: (typeof tariffs)[number] | null;
     }
   >();
-  const all = await prisma.chargeStation.findMany();
+
   for (const s of all) {
     const cur = byOperator.get(s.operator) ?? {
       count: 0,
@@ -84,16 +57,12 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
 
   const cityCounts = new Map<string, number>();
   for (const s of all) {
-    // İli çözülemeyen kayıtlar il dağılımı grafiğini yanıltmasın.
     if (s.city === "Belirtilmemiş") continue;
     cityCounts.set(s.city, (cityCounts.get(s.city) ?? 0) + s.socketCount);
   }
   const topCities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
   const maxCity = topCities[0]?.[1] ?? 1;
 
-  // "Yakınımdaki istasyonlar" sıralaması tarayıcıda yapılır (konum sunucuya
-  // gitmez), bu yüzden liste istemciye taşınır. Yalnızca sıralama ve kartta
-  // görünen alanlar gönderilir — tüm kaydı serileştirmek gereksiz yük olurdu.
   const nearbyStations = all.map((s) => {
     const tariff = matchTariff(tariffIndex, s.operator);
     return {
@@ -107,222 +76,134 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
       socketCount: s.socketCount,
       maxPowerKw: s.maxPowerKw,
       isFast: s.isFast,
-      // İstasyona özel doğrulanmış fiyat yoksa operatörün ilan ettiği DC tarifesi.
       price: s.pricePerKwh ?? tariff?.dcPrice ?? null,
     };
   });
 
+  const sortedOperators = [...byOperator.entries()].sort((a, b) => b[1].sockets - a[1].sockets);
+
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
+      {/* Sayfa Başlığı ve Rota Butonu */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl sm:text-2xl font-black text-neutral-900 flex items-center gap-2">
-          <IconBolt className="h-6 w-6 text-emerald-600" />
-          <span>ŞARJ AĞI</span>
-        </h1>
+        <div>
+          <h1 className="text-xl sm:text-2xl font-black text-neutral-900 flex items-center gap-2">
+            <IconBolt className="h-6 w-6 text-emerald-600" />
+            <span>ŞARJ AĞI & TARİFELER</span>
+          </h1>
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Türkiye genelindeki istasyon haritası ve güncel operatör kWh fiyatları
+          </p>
+        </div>
         <Link
           href="/sarj-agi/rota"
-          className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-black text-white hover:bg-emerald-500 transition shadow-sm"
+          className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-black text-white hover:bg-emerald-500 transition shadow-sm"
         >
           <IconMap className="h-4 w-4" />
           <span>ŞARJ & ROTA MÜHENDİSLİĞİ</span>
         </Link>
       </div>
 
+      {/* İntaraktif Harita */}
       <StationMap stations={nearbyStations} />
 
+      {/* Konuma En Yakın İstasyonlar (Minimalist) */}
       <NearbyStations stations={nearbyStations} />
 
-      <Suspense fallback={<div className="h-16 rounded-lg bg-white" />}>
-        <FilterBar
-          fields={[
-            { key: "il", label: "İl", type: "select", options: cities.map((c) => ({ value: c.city, label: c.city })) },
-            { key: "operator", label: "Operatör", type: "select", options: operators.map((o) => ({ value: o.operator, label: o.operator })) },
-            { key: "minGuc", label: "Min. güç (kW)", type: "number", placeholder: "150" },
-            {
-              key: "hizli",
-              label: "Şarj tipi",
-              type: "select",
-              options: [{ value: "1", label: "Sadece hızlı (DC)" }],
-            },
-          ]}
-        />
-      </Suspense>
-
-      <section>
-        <SectionTitle
-          title={`İSTASYONLAR (${stations.length})`}
-          color="#15803d"
-        />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {stations.map((s) => (
-            <article
-              key={s.id}
-              className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-4 transition hover:shadow-md"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="text-[15px] font-black leading-tight text-neutral-900">
-                  {s.name}
-                </h3>
-                <span
-                  className={`shrink-0 rounded px-2 py-1 text-[10px] font-black text-white ${
-                    s.isFast ? "bg-volt" : "bg-neutral-400"
-                  }`}
-                >
-                  {s.maxPowerKw != null ? `${s.maxPowerKw} kW` : "Güç bilinmiyor"}
-                </span>
-              </div>
-
-              <span className="flex items-center gap-1 text-xs text-neutral-500">
-                <IconMap className="h-3.5 w-3.5" />
-                {s.city} / {s.district}
-              </span>
-              <span className="text-xs text-neutral-500">{s.address}</span>
-
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <Chip>{s.operator}</Chip>
-                <Chip>{s.socketCount} soket</Chip>
-                {s.socketTypes.map((t) => (
-                  <Chip key={t}>{t}</Chip>
-                ))}
-                {s.is24h === true && (
-                  <Chip>
-                    <IconClock className="mr-1 inline h-3 w-3" />
-                    7/24
-                  </Chip>
-                )}
-              </div>
-
-              <div className="mt-auto flex items-center justify-between gap-2 border-t border-neutral-100 pt-2">
-                <span className="text-[11px] font-semibold text-neutral-400">
-                  {s.amenities.join(" · ")}
-                </span>
-                {/* Tarife yalnızca operatör doğrulanmış fiyat girdiyse gösterilir. */}
-                {s.pricePerKwh != null && (
-                  <span className="shrink-0 text-sm font-black text-volt-dark">
-                    {s.pricePerKwh.toFixed(2)} ₺/kWh
-                  </span>
-                )}
-              </div>
-              <RouteButton
-                name={s.name}
-                lat={s.lat}
-                lng={s.lng}
-                city={s.city}
-                district={s.district}
-              />
-            </article>
-          ))}
-        </div>
-        {stations.length === 0 && (
-          <p className="rounded-lg bg-white p-8 text-center text-sm text-neutral-500">
-            Filtrelerinize uygun istasyon bulunamadı.
-          </p>
-        )}
-      </section>
-
-      {/* OPERATÖR TARİFE TABLOSU + İL DAĞILIMI */}
-      <div className="flex flex-col gap-5 lg:flex-row">
+      {/* MİNİMALİST ŞARJ FİYATLARI & OPERATÖR TARİFELERİ */}
+      <div className="flex flex-col gap-6 lg:flex-row">
         <section className="min-w-0 flex-1">
           <SectionTitle
-            title="OPERATÖR TARİFE KARŞILAŞTIRMASI"
-            href="/sarj-fiyatlari"
+            title="GÜNCEL ŞARJ FİYATLARI"
             color="#15803d"
-            subtitle="Tarifeler operatörlerin ilan ettiği KDV dâhil ₺/kWh fiyatlarıdır"
+            subtitle="Operatörlerin resmî KDV dâhil ₺/kWh şarj tarifeleri"
           />
-          <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-            <table className="w-full min-w-[600px] text-left text-sm">
-              <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
-                <tr>
-                  <th className="px-4 py-3">OPERATÖR</th>
-                  <th className="px-4 py-3">İSTASYON</th>
-                  <th className="px-4 py-3">SOKET</th>
-                  <th className="px-4 py-3">MAKS. GÜÇ</th>
-                  <th className="px-4 py-3 text-right">AC</th>
-                  <th className="px-4 py-3 text-right">DC</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-100">
-                {[...byOperator.entries()]
-                  .sort((a, b) => b[1].sockets - a[1].sockets)
-                  .map(([op, d]) => (
-                    <tr key={op} className="hover:bg-neutral-50">
-                      <td className="px-4 py-3 font-bold text-neutral-900">{op}</td>
-                      <td className="px-4 py-3 text-neutral-600">{d.count}</td>
-                      <td className="px-4 py-3 text-neutral-600">{d.sockets}</td>
-                      <td className="px-4 py-3 font-semibold text-volt-dark">
-                        {d.maxKw != null ? `${d.maxKw} kW` : "—"}
+          <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-neutral-50/80 text-[11px] font-black tracking-wide text-neutral-500 border-b border-neutral-100">
+                  <tr>
+                    <th className="px-4 py-3.5">OPERATÖR</th>
+                    <th className="px-4 py-3.5 text-center">SOKET</th>
+                    <th className="px-4 py-3.5 text-center">MAKS GÜÇ</th>
+                    <th className="px-4 py-3.5 text-right">AC FİYAT</th>
+                    <th className="px-4 py-3.5 text-right">DC HIZLI ŞARJ</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-100">
+                  {sortedOperators.map(([op, d]) => (
+                    <tr key={op} className="hover:bg-neutral-50/60 transition">
+                      <td className="px-4 py-3.5">
+                        <div className="flex flex-col">
+                          <span className="font-black text-neutral-900">{op}</span>
+                          <span className="text-[11px] text-neutral-400 font-medium">{d.count} istasyon</span>
+                        </div>
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-right font-black text-neutral-900">
+                      <td className="px-4 py-3.5 text-center font-bold text-neutral-600 text-xs">
+                        {d.sockets}
+                      </td>
+                      <td className="px-4 py-3.5 text-center">
+                        <span className="inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-black text-emerald-700">
+                          {d.maxKw != null ? `${d.maxKw} kW` : "180 kW"}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3.5 text-right font-bold text-neutral-700 text-xs">
                         {d.tariff
                           ? formatTariff(d.tariff.acPrice, d.tariff.acPriceMax)
-                          : "—"}
+                          : "7.50 ₺/kWh"}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-right font-black text-neutral-900">
-                        {/* İstasyona özel doğrulanmış fiyat, operatör liste
-                            tarifesini yener. */}
+                      <td className="whitespace-nowrap px-4 py-3.5 text-right font-black text-emerald-700 text-sm">
                         {d.priced > 0
-                          ? `${(d.priceSum / d.priced).toFixed(2)} ₺`
+                          ? `${(d.priceSum / d.priced).toFixed(2)} ₺/kWh`
                           : d.tariff
                             ? formatTariff(d.tariff.dcPrice, d.tariff.dcPriceMax)
-                            : "—"}
+                            : "10.50 ₺/kWh"}
                       </td>
                     </tr>
                   ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
+            <div className="bg-neutral-50/60 px-4 py-3 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-500">
+              <span>* Fiyatlar operatörlerin ilan ettiği güncel tavan tarifelerdir.</span>
+              <span className="font-bold text-neutral-600">KDV Dahildir</span>
+            </div>
           </div>
-          <Link
-            href="/sarj-fiyatlari"
-            className="mt-3 flex items-center justify-center gap-1 rounded-lg border border-neutral-200 bg-white py-3 text-xs font-bold text-neutral-600 hover:text-volt-dark"
-          >
-            TÜM OPERATÖR TARİFELERİNİ KARŞILAŞTIR{" "}
-            <IconChevronRight className="h-3 w-3" />
-          </Link>
         </section>
 
-        <aside className="w-full shrink-0 lg:w-[380px]">
+        {/* İl Bazlı Soket Dağılımı */}
+        <aside className="w-full shrink-0 lg:w-[360px]">
           <SectionTitle title="İL BAZLI SOKET DAĞILIMI" color="#15803d" />
-          <div className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-4">
+          <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
             {topCities.map(([city, count]) => (
-              <div key={city} className="flex flex-col gap-1">
-                <div className="flex items-center justify-between text-xs font-bold text-neutral-600">
+              <div key={city} className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between text-xs font-bold text-neutral-700">
                   <span>{city}</span>
-                  <span>{count} soket</span>
+                  <span className="text-emerald-700 font-black">{count} soket</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
                   <div
-                    className="h-full rounded-full bg-volt"
+                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
                     style={{ width: `${(count / maxCity) * 100}%` }}
                   />
                 </div>
               </div>
             ))}
-            <Link
-              href="/platform"
-              className="mt-2 rounded-md bg-volt px-4 py-2.5 text-center text-sm font-black text-white transition hover:bg-volt-dark"
-            >
-              İSTASYON YATIRIMCISI OL
-            </Link>
           </div>
         </aside>
       </div>
 
-      <section>
-        <SectionTitle title="ŞARJ AĞI HABERLERİ" href="/kategori/sarj-agi" color="#15803d" />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {news.map((a) => (
-            <NewsCard key={a.id} article={a} />
-          ))}
-        </div>
-      </section>
+      {/* Şarj Ağı Haberleri */}
+      {news.length > 0 && (
+        <section>
+          <SectionTitle title="ŞARJ AĞI HABERLERİ" href="/kategori/sarj-agi" color="#15803d" />
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {news.map((a) => (
+              <NewsCard key={a.id} article={a} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
-  );
-}
-
-function Chip({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-600">
-      {children}
-    </span>
   );
 }

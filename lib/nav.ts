@@ -15,12 +15,10 @@ export const TOP_NAV: NavItem[] = [
   { label: "ANASAYFA", href: "/" },
   { label: "ARAÇLARI KEŞFET", href: "/araclar" },
   { label: "2.EL İLANLAR", href: "/ilanlar" },
-  { label: "ŞARJ AĞI", href: "/sarj-agi" },
-  { label: "ŞARJ FİYATLARI", href: "/sarj-fiyatlari" },
-  { label: "HABERLER", href: "/kategori/haber-merkezi" },
+  { label: "ŞARJ", href: "/sarj-agi" },
+  { label: "HABER MERKEZİ", href: "/kategori/haber-merkezi" },
   { label: "FİYAT ANALİZİ", href: "/fiyat-analizi" },
   { label: "TOPLULUK", href: "/topluluk" },
-  { label: "PLATFORM", href: "/platform" },
 ];
 
 /** Hamburger menüden açılan sidebar içeriği */
@@ -50,15 +48,14 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
     title: "ŞARJ & MOBİLİTE",
     items: [
       {
-        label: "Şarj Ağı Haritası",
+        label: "Şarj Ağı & Tarifeler",
         href: "/sarj-agi",
-        desc: "Türkiye geneli istasyonlar, soketler ve rota planlama",
+        desc: "Türkiye geneli istasyonlar, soketler ve operatör tarifeleri",
       },
       {
-        label: "Şarj Fiyatları & Tarifeler",
-        href: "/sarj-fiyatlari",
-        desc: "ZES, Trugo, Eşarj ve operatörlerin güncel ₺/kWh tarifeleri",
-        badge: "YENİ",
+        label: "Şarj & Rota Planlama",
+        href: "/sarj-agi/rota",
+        desc: "Elektrikli araç şarj noktalarıyla rota hesaplayıcı",
       },
     ],
   },
@@ -93,10 +90,9 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
 export const QUICK_LINKS: NavItem[] = [
   { label: "Araç Bul", href: "/araclar" },
   { label: "2.EL İLANLAR", href: "/ilanlar" },
-  { label: "Şarj Bul", href: "/sarj-agi" },
-  { label: "Şarj Fiyatı", href: "/sarj-fiyatlari" },
+  { label: "Şarj", href: "/sarj-agi" },
   { label: "Fiyat Analizi", href: "/fiyat-analizi" },
-  { label: "Haberler", href: "/kategori/haber-merkezi" },
+  { label: "Haber Merkezi", href: "/kategori/haber-merkezi" },
 ];
 
 export const FOOTER_GROUPS: NavGroup[] = [
@@ -122,8 +118,7 @@ export const FOOTER_GROUPS: NavGroup[] = [
   {
     title: "ŞARJ & MOBİLİTE",
     items: [
-      { label: "EVO Charge Network", href: "/sarj-agi" },
-      { label: "Şarj Tarifeleri", href: "/sarj-fiyatlari" },
+      { label: "EVO Şarj Ağı & Fiyatları", href: "/sarj-agi" },
       { label: "Şarj & Rota Planlama", href: "/sarj-agi/rota" },
     ],
   },
@@ -133,7 +128,6 @@ export const FOOTER_GROUPS: NavGroup[] = [
       { label: "Hakkımızda", href: "/hakkinda" },
       { label: "İletişim", href: "/iletisim" },
       { label: "EVO Pro", href: "/pro" },
-      { label: "Platform API", href: "/platform" },
       { label: "Yönetim Paneli", href: "/admin" },
     ],
   },

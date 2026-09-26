@@ -52,7 +52,7 @@ export default function Header() {
           <button
             onClick={() => setOpenMenu(true)}
             aria-label="Menüyü aç"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-white transition hover:bg-white/15"
+            className="hidden lg:flex h-10 w-10 shrink-0 items-center justify-center rounded-md text-white transition hover:bg-white/15 cursor-pointer"
           >
             <IconMenu className="h-7 w-7" />
           </button>
