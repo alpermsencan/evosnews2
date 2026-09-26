@@ -8,7 +8,6 @@ import { readBreakdown } from "@/lib/listings";
 import { RISK_LABEL, riskTone, EOL_SOH } from "@/lib/battery-report";
 import VoltScoreBadge from "@/components/listings/VoltScoreBadge";
 import FavoriteButton from "@/components/listings/FavoriteButton";
-import CompareButton from "@/components/compare/CompareButton";
 import SectionTitle from "@/components/news/SectionTitle";
 import { IconBattery, IconCheck, IconMap, IconShield } from "@/components/ui/Icons";
 import ListingGallery from "@/components/listings/ListingGallery";
@@ -128,7 +127,6 @@ export default async function ListingDetail({
 
             <div className="flex flex-wrap items-center gap-2 border-t border-neutral-100 pt-3">
               <FavoriteButton listingId={listing.id} slug={listing.slug} initial={favorited} />
-              <CompareButton kind="listing" slug={listing.slug} />
               {isOwner && (
                 <Link
                   href="/ilanlarim"

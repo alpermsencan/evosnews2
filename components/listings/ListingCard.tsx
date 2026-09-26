@@ -3,7 +3,6 @@ import Link from "next/link";
 import { formatTL } from "@/lib/utils";
 import { IconBattery, IconMap } from "@/components/ui/Icons";
 import VoltScoreBadge from "./VoltScoreBadge";
-import CompareButton from "@/components/compare/CompareButton";
 
 export type ListingLite = {
   id: string;
@@ -103,7 +102,6 @@ export default function ListingCard({ listing }: { listing: ListingLite }) {
           <span className="text-[15px] font-black text-neutral-900">
             {formatTL(listing.price)}
           </span>
-          <CompareButton kind="listing" slug={listing.slug} />
         </div>
       </div>
     </article>

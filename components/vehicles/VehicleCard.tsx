@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatTL } from "@/lib/utils";
 import { IconBattery, IconBolt, IconGauge } from "@/components/ui/Icons";
-import CompareButton from "@/components/compare/CompareButton";
 import BrandBadge from "@/components/ui/BrandBadge";
 
 export type VehicleLite = {
@@ -122,12 +121,6 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
           <span className="rounded bg-neutral-100 px-2 py-1 text-[11px] font-bold text-neutral-600">
             0-100: {vehicle.acceleration}s
           </span>
-        </div>
-
-        {/* Sıfır model, pazaryerindeki ikinci el ilanlarla aynı sepete girer;
-            "sıfır mı ikinci el mi" karşılaştırması bu sayede mümkün olur. */}
-        <div className="border-t border-neutral-100 pt-2">
-          <CompareButton kind="vehicle" slug={vehicle.slug} className="w-full" />
         </div>
       </div>
     </article>
