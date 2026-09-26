@@ -5,8 +5,6 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import SessionProvider from "@/components/user/SessionProvider";
-import CompareProvider from "@/components/compare/CompareProvider";
-import CompareBar from "@/components/compare/CompareBar";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { siteUrl } from "@/lib/site";
@@ -83,14 +81,9 @@ export default async function RootLayout({
           initialUnread={unread}
         >
           <Header />
-          {/* Karşılaştırma sepeti sayfalar arasında yaşar, bu yüzden sağlayıcı
-              kökte durur; çubuk yalnızca sepette öğe varken render edilir. */}
-          <CompareProvider>
-            <main className="mx-auto w-full max-w-[1280px] flex-1 px-0 pb-16 sm:px-4 lg:pb-8">
-              {children}
-            </main>
-            <CompareBar />
-          </CompareProvider>
+          <main className="mx-auto w-full max-w-[1280px] flex-1 px-0 pb-16 sm:px-4 lg:pb-8">
+            {children}
+          </main>
           <Footer />
           <MobileBottomNav />
         </SessionProvider>

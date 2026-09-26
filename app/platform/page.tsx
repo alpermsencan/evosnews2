@@ -24,10 +24,10 @@ export const metadata = {
  */
 const MODULES = [
   { t: "Haber Merkezi", d: "Kaynak beslemelerinden günlük derlenen, yeniden yazılan ve moderasyondan geçen yayın akışı.", href: "/kategori/haber-merkezi", live: true },
-  { t: "Araç Veri Tabanı", d: "Türkiye'de satıştaki elektrikli model varyantları; liste fiyatı, teknik veri ve ÖTV oranı.", href: "/araclar", live: true },
+  { t: "Araç Veri Tabanı", d: "Türkiye'de satıştaki elektrikli model varyantları; liste fiyatı, teknik veri ve detaylar.", href: "/araclar", live: true },
+  { t: "2.El İlanlar", d: "Elektrikli araç ikinci el pazarı; kategori bazlı filtreleme ve detaylı teknik kartlar.", href: "/ilanlar", live: true },
   { t: "Şarj Ağı", d: "Open Charge Map açık verisinden tazelenen istasyon envanteri, soket tipleri ve güç kapasiteleri.", href: "/sarj-agi", live: true },
-  { t: "AI Danışman", d: "Kullanım profiline göre katalogdan araç önerisi ve beş yıllık maliyet karşılaştırması.", href: "/ai-danisman", live: true },
-  { t: "Evos Protect", d: "Batarya güvencesi ve genişletilmiş garanti danışmanlığı. Talep toplama aşamasında.", href: "/evos-protect", live: false },
+  { t: "Şarj Fiyatları", d: "ZES, Trugo, Eşarj ve tüm operatörlerin güncel AC ve DC şarj tarifeleri.", href: "/sarj-fiyatlari", live: true },
 ];
 
 

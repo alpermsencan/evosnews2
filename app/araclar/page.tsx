@@ -5,7 +5,6 @@ import VehicleCard from "@/components/vehicles/VehicleCard";
 import VehiclesExplorer from "@/components/vehicles/VehiclesExplorer";
 import SectionTitle from "@/components/news/SectionTitle";
 import NewsCard from "@/components/news/NewsCard";
-import RealRangeSimulator from "@/components/tools/RealRangeSimulator";
 import { getByCategory } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 
@@ -149,11 +148,6 @@ export default async function VehiclesPage({
         ile tüketim değerleri üretici beyanı değil, gerçek kullanım ortalamalarıdır
         (kaynak: EV Database). Boş bırakılan alanlar için doğrulanmış veri yoktur.
       </p>
-
-      {/* GERÇEK MENZİL SİMÜLATÖRÜ */}
-      <section id="menzil-simulatoru" className="scroll-mt-20">
-        <RealRangeSimulator />
-      </section>
 
       <section>
         <SectionTitle title="ARAÇ HABERLERİ" href="/arac-merkezi" color="#0f766e" />

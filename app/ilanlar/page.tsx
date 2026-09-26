@@ -155,25 +155,6 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
           <EmptyState hasFilters={Object.keys(sp).length > 0} total={total} />
         )}
       </section>
-
-      {/* KARŞILAŞTIRMA BİLGİ ALANI */}
-      <section className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-6 lg:flex-row lg:items-center shadow-sm">
-        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <h2 className="text-lg font-black text-neutral-900">
-            Sıfır mı, ikinci el mi? Karşılaştırın!
-          </h2>
-          <p className="text-xs sm:text-sm leading-relaxed text-neutral-600">
-            Katalogdaki sıfır modellerle buradaki ikinci el ilanları aynı tabloda yan yana karşılaştırabilirsiniz.
-            Menzil, şarj gücü, batarya sağlığı ve fiyat avantajlarını tek ekranda inceleyin.
-          </p>
-        </div>
-        <Link
-          href="/karsilastir"
-          className="flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#0B1E3F] px-5 py-3 text-xs font-black text-white transition hover:bg-sky-900 shadow"
-        >
-          KARŞILAŞTIRMA EKRANI <IconChevronRight className="h-4 w-4" />
-        </Link>
-      </section>
     </div>
   );
 }

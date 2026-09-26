@@ -10,42 +10,23 @@ export type NavGroup = {
   items: NavItem[];
 };
 
-/** Üst yatay menü (Hürriyet'teki ANASAYFA / GÜNDEM / DÜNYA şeridi gibi) */
-export type NavItem = {
-  label: string;
-  href: string;
-  desc?: string;
-  badge?: string;
-};
-
-export type NavGroup = {
-  title: string;
-  items: NavItem[];
-};
-
 /** Üst yatay menü */
 export const TOP_NAV: NavItem[] = [
   { label: "ANASAYFA", href: "/" },
   { label: "ARAÇLARI KEŞFET", href: "/araclar" },
-  { label: "KARŞILAŞTIR", href: "/karsilastir" },
-  { label: "TASARRUF HESAPLA", href: "/tasarruf-hesapla", badge: "YENİ" },
-  { label: "MENZİL SİMÜLATÖRÜ", href: "/araclar#menzil-simulatoru", badge: "YENİ" },
+  { label: "2.EL İLANLAR", href: "/ilanlar" },
   { label: "ŞARJ AĞI", href: "/sarj-agi" },
   { label: "ŞARJ FİYATLARI", href: "/sarj-fiyatlari" },
-  { label: "ÖTV REHBERİ", href: "/otv-rehberi" },
-  { label: "2.EL İLANLAR", href: "/ilanlar" },
-  { label: "AI DANIŞMAN", href: "/ai-danisman" },
   { label: "HABERLER", href: "/kategori/haber-merkezi" },
   { label: "FİYAT ANALİZİ", href: "/fiyat-analizi" },
   { label: "TOPLULUK", href: "/topluluk" },
-  { label: "EVO PROTECT", href: "/evos-protect" },
   { label: "PLATFORM", href: "/platform" },
 ];
 
 /** Hamburger menüden açılan sidebar içeriği */
 export const SIDEBAR_GROUPS: NavGroup[] = [
   {
-    title: "ARAÇLAR & HESAPLAYICILAR",
+    title: "ARAÇLAR & PAZAR",
     items: [
       {
         label: "Araçları Keşfet",
@@ -53,32 +34,15 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
         desc: "2026 elektrikli modeller, teknik veri ve filtreleme",
       },
       {
-        label: "Tasarruf Hesaplayıcı",
-        href: "/tasarruf-hesapla",
-        desc: "Benzin vs. Elektrik: Yıllık net cepte kalan tasarruf",
+        label: "2.EL İLANLAR",
+        href: "/ilanlar",
+        desc: "Elektrikli araç pazarı, kategori bazlı vitrin",
         badge: "YENİ",
       },
       {
-        label: "Gerçek Menzil Simülatörü",
-        href: "/araclar#menzil-simulatoru",
-        desc: "Sıcaklık, hız ve klimaya göre anlık menzil tahmini",
-        badge: "YENİ",
-      },
-      {
-        label: "Karşılaştır",
-        href: "/karsilastir",
-        desc: "Modelleri ve ikinci el ilanları yan yana inceleyin",
-      },
-      {
-        label: "ÖTV Rehberi & Hesaplayıcı",
-        href: "/otv-rehberi",
-        desc: "2026 güncel matrah ve ÖTV oranları hesaplama",
-      },
-      {
-        label: "AI Araç Danışmanı",
-        href: "/ai-danisman",
-        desc: "Yapay zekâ ve sesli asistan destekli araç seçimi",
-        badge: "YENİ",
+        label: "Fiyat Analiz Endeksi",
+        href: "/fiyat-analizi",
+        desc: "Elektrikli araç piyasa değerleri ve trendler",
       },
     ],
   },
@@ -96,27 +60,11 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
         desc: "ZES, Trugo, Eşarj ve operatörlerin güncel ₺/kWh tarifeleri",
         badge: "YENİ",
       },
-      {
-        label: "Fiyat Analiz Endeksi",
-        href: "/fiyat-analizi",
-        desc: "Elektrikli araç piyasa değerleri ve trendler",
-      },
-      {
-        label: "EVO Protect",
-        href: "/evos-protect",
-        desc: "10 yıl garantili batarya ve koruma paketleri",
-      },
     ],
   },
   {
-    title: "PAZAR & TOPLULUK",
+    title: "TOPLULUK & ETKİLEŞİM",
     items: [
-      {
-        label: "İlanlar Pazarı",
-        href: "/ilanlar",
-        desc: "Sıfır ve ikinci el ilanlar, VoltScore batarya karnesiyle",
-        badge: "YENİ",
-      },
       {
         label: "Akışım",
         href: "/akis",
@@ -144,13 +92,11 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
 /** Öne çıkan hızlı erişim kutuları (sidebar üstü) */
 export const QUICK_LINKS: NavItem[] = [
   { label: "Araç Bul", href: "/araclar" },
-  { label: "Tasarruf Hesabı", href: "/tasarruf-hesapla" },
-  { label: "Menzil Simülatörü", href: "/araclar#menzil-simulatoru" },
+  { label: "2.EL İLANLAR", href: "/ilanlar" },
   { label: "Şarj Bul", href: "/sarj-agi" },
   { label: "Şarj Fiyatı", href: "/sarj-fiyatlari" },
-  { label: "ÖTV Hesapla", href: "/otv-rehberi" },
-  { label: "AI Danışman", href: "/ai-danisman" },
-  { label: "2.EL İLANLAR", href: "/ilanlar" },
+  { label: "Fiyat Analizi", href: "/fiyat-analizi" },
+  { label: "Haberler", href: "/kategori/haber-merkezi" },
 ];
 
 export const FOOTER_GROUPS: NavGroup[] = [
@@ -165,22 +111,20 @@ export const FOOTER_GROUPS: NavGroup[] = [
     ],
   },
   {
-    title: "AKILLI ARAÇLAR",
+    title: "ARAÇLAR & İLANLAR",
     items: [
-      { label: "Tasarruf Hesaplayıcı", href: "/tasarruf-hesapla" },
-      { label: "Gerçek Menzil Simülatörü", href: "/araclar#menzil-simulatoru" },
-      { label: "AI Araç Danışmanı", href: "/ai-danisman" },
-      { label: "ÖTV Hesaplama", href: "/otv-rehberi" },
-      { label: "Karşılaştırma Motoru", href: "/karsilastir" },
+      { label: "Araçları Keşfet", href: "/araclar" },
+      { label: "2.EL İLANLAR", href: "/ilanlar" },
+      { label: "Araç İncelemeleri", href: "/arac-merkezi" },
+      { label: "Topluluk", href: "/topluluk" },
     ],
   },
   {
-    title: "ŞARJ & EKOSİSTEM",
+    title: "ŞARJ & MOBİLİTE",
     items: [
       { label: "EVO Charge Network", href: "/sarj-agi" },
       { label: "Şarj Tarifeleri", href: "/sarj-fiyatlari" },
-      { label: "EVO Protect Batarya Güvencesi", href: "/evos-protect" },
-      { label: "2.EL İLANLAR", href: "/ilanlar" },
+      { label: "Şarj & Rota Planlama", href: "/sarj-agi/rota" },
     ],
   },
   {

@@ -35,16 +35,10 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
   const minGuc = Number(sp.minGuc);
   if (minGuc > 0) where.maxPowerKw = { gte: minGuc };
 
-  const [stations, cities, operators, agg, fastCount, news, tariffs] = await Promise.all([
+  const [stations, cities, operators, news, tariffs] = await Promise.all([
     prisma.chargeStation.findMany({ where, orderBy: [{ maxPowerKw: "desc" }, { city: "asc" }] }),
     prisma.chargeStation.findMany({ select: { city: true }, distinct: ["city"], orderBy: { city: "asc" } }),
     prisma.chargeStation.findMany({ select: { operator: true }, distinct: ["operator"], orderBy: { operator: "asc" } }),
-    prisma.chargeStation.aggregate({
-      _sum: { socketCount: true },
-      _avg: { pricePerKwh: true, maxPowerKw: true },
-      _count: true,
-    }),
-    prisma.chargeStation.count({ where: { isFast: true } }),
     getByCategory("sarj-agi", 4),
     prisma.operatorTariff.findMany({ where: { isActive: true } }),
   ]);
@@ -120,35 +114,19 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-green-700 to-emerald-900 p-6 text-white">
-        <div className="flex items-center gap-2">
-          <IconBolt className="h-7 w-7" />
-          <h1 className="text-2xl font-black sm:text-4xl">ŞARJ AĞINI GÖSTER</h1>
-        </div>
-        <p className="max-w-2xl text-sm text-white/85 sm:text-base">
-          Türkiye genelindeki halka açık şarj istasyonları, operatörleri, soket
-          tipleri ve güç kapasiteleri. Envanter Open Charge Map katkıcılarının
-          açık verisinden günlük olarak tazelenir.
-        </p>
-        <div className="flex flex-wrap gap-2 mt-1">
-          <Link
-            href="/sarj-agi/rota"
-            className="inline-flex items-center gap-2 rounded-md bg-white/15 px-4 py-2.5 text-xs font-black text-white hover:bg-white/25 transition border border-white/10"
-          >
-            <IconMap className="h-4 w-4 text-emerald-400" />
-            ŞARJ & ROTA MÜHENDİSLİĞİ (YENİ)
-          </Link>
-        </div>
-        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat label="İstasyon" value={`${agg._count}`} />
-          <Stat label="Toplam soket" value={`${agg._sum.socketCount ?? 0}`} />
-          <Stat label="Hızlı şarj noktası" value={`${fastCount}`} />
-          <Stat
-            label="Ortalama güç"
-            value={agg._avg.maxPowerKw ? `${Math.round(agg._avg.maxPowerKw)} kW` : "—"}
-          />
-        </div>
-      </header>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-xl sm:text-2xl font-black text-neutral-900 flex items-center gap-2">
+          <IconBolt className="h-6 w-6 text-emerald-600" />
+          <span>ŞARJ AĞI</span>
+        </h1>
+        <Link
+          href="/sarj-agi/rota"
+          className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-black text-white hover:bg-emerald-500 transition shadow-sm"
+        >
+          <IconMap className="h-4 w-4" />
+          <span>ŞARJ & ROTA MÜHENDİSLİĞİ</span>
+        </Link>
+      </div>
 
       <StationMap stations={nearbyStations} />
 
@@ -337,15 +315,6 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
           ))}
         </div>
       </section>
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col rounded-lg bg-white/10 px-3 py-2 backdrop-blur">
-      <span className="text-[11px] font-semibold text-white/70">{label}</span>
-      <span className="text-lg font-black">{value}</span>
     </div>
   );
 }
