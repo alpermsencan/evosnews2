@@ -21,9 +21,17 @@ export default function GlobalErrorPage({
       <h2 className="text-xl sm:text-2xl font-black text-neutral-900 mb-2">
         Sayfa Yüklenirken Bir Hata Oluştu
       </h2>
-      <p className="text-sm text-neutral-600 max-w-md mb-6">
-        Sunucu verilerine erişilirken geçici bir sorun meydana geldi. Lütfen tekrar deneyin.
+      <p className="text-sm text-neutral-600 max-w-md mb-4">
+        Sunucu veya veritabanı yanıt verirken geçici bir sorun meydana geldi.
       </p>
+
+      {error?.message && (
+        <div className="mb-6 max-w-xl w-full rounded-xl bg-neutral-50 p-3.5 text-left border border-neutral-200">
+          <p className="text-[11px] font-bold uppercase text-neutral-400 mb-1">Teknik Hata İletisi:</p>
+          <p className="font-mono text-xs text-red-700 break-words">{error.message}</p>
+        </div>
+      )}
+
       <button
         type="button"
         onClick={() => reset()}

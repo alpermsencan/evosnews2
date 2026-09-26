@@ -56,14 +56,18 @@ export default async function RootLayout({
     );
   }
 
-  // Şerit verileri yerine sadece kullanıcı oturumu okunur
-  const currentUser = await getCurrentUser();
-
-  const unread = currentUser
-    ? await prisma.notification.count({
+  let currentUser = null;
+  let unread = 0;
+  try {
+    currentUser = await getCurrentUser();
+    if (currentUser) {
+      unread = await prisma.notification.count({
         where: { userId: currentUser.id, isRead: false },
-      })
-    : 0;
+      });
+    }
+  } catch (e) {
+    console.error("Layout session read error:", e);
+  }
 
   return (
     <html lang="tr">

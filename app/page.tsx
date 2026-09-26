@@ -25,7 +25,12 @@ import { timeAgo } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const viewer = await getCurrentUser();
+  let viewer = null;
+  try {
+    viewer = await getCurrentUser();
+  } catch (err) {
+    console.error("HomePage user read error:", err);
+  }
 
   const [
     headlines,
@@ -37,51 +42,80 @@ export default async function HomePage() {
     editorArticles,
     authorArticles,
   ] = await Promise.all([
-    getHeadlines(6),
-    getLatest(16),
-    getFeaturedVehicles(8),
-    getCommunityPosts(5),
-    getActivePoll(),
-    getByCategory("teknoloji", 4),
-    prisma.article.findMany({
-      where: { status: "PUBLISHED", author: { title: { contains: "Editör" } } },
-      take: 4,
-      orderBy: { publishedAt: "desc" },
-      include: { author: true, category: true }
+    getHeadlines(6).catch((err) => {
+      console.error("getHeadlines error:", err);
+      return [];
+    }),
+    getLatest(16).catch((err) => {
+      console.error("getLatest error:", err);
+      return [];
+    }),
+    getFeaturedVehicles(8).catch((err) => {
+      console.error("getFeaturedVehicles error:", err);
+      return [];
+    }),
+    getCommunityPosts(5).catch((err) => {
+      console.error("getCommunityPosts error:", err);
+      return [];
+    }),
+    getActivePoll().catch((err) => {
+      console.error("getActivePoll error:", err);
+      return null;
+    }),
+    getByCategory("teknoloji", 4).catch((err) => {
+      console.error("getByCategory error:", err);
+      return [];
     }),
     prisma.article.findMany({
-      where: {
-        status: "PUBLISHED",
-        OR: [
-          { author: { title: { contains: "Yazar" } } },
-          { author: { title: { contains: "Analist" } } },
-        ]
-      },
+      where: { status: "PUBLISHED" },
       take: 4,
       orderBy: { publishedAt: "desc" },
       include: { author: true, category: true }
+    }).catch((err) => {
+      console.error("editorArticles error:", err);
+      return [];
+    }),
+    prisma.article.findMany({
+      where: { status: "PUBLISHED" },
+      skip: 4,
+      take: 4,
+      orderBy: { publishedAt: "desc" },
+      include: { author: true, category: true }
+    }).catch((err) => {
+      console.error("authorArticles error:", err);
+      return [];
     })
   ]);
 
-  const heroIds = new Set(headlines.map((h) => h.id));
-  const feed = latest.filter((a) => !heroIds.has(a.id));
+  const safeHeadlines = headlines || [];
+  const safeLatest = latest || [];
+  const safeVehicles = vehicles || [];
+  const safeCommunity = community || [];
+  const safeTech = tech || [];
+  const safeEditorArticles = editorArticles || [];
+  const safeAuthorArticles = authorArticles || [];
+
+  const heroIds = new Set(safeHeadlines.map((h) => h.id));
+  const feed = safeLatest.filter((a) => !heroIds.has(a.id));
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 sm:pt-4">
       {/* MANŞET CAROUSEL (Akıllı araç eşleştirici kaldırıldı, sade manşet) */}
-      <HeroCarousel
-        slides={headlines.map((h) => ({
-          id: h.id,
-          title: h.title,
-          slug: h.slug,
-          spot: h.spot,
-          image: h.image,
-          isVideo: h.isVideo,
-          isBreaking: h.isBreaking,
-          publishedAt: h.publishedAt,
-          category: h.category,
-        }))}
-      />
+      {safeHeadlines.length > 0 && (
+        <HeroCarousel
+          slides={safeHeadlines.map((h) => ({
+            id: h.id,
+            title: h.title,
+            slug: h.slug,
+            spot: h.spot || "",
+            image: h.image,
+            isVideo: Boolean(h.isVideo),
+            isBreaking: Boolean(h.isBreaking),
+            publishedAt: h.publishedAt || new Date(),
+            category: h.category || { name: "Haber", slug: "haber-merkezi", color: "#e30613" },
+          }))}
+        />
+      )}
 
       {/* GÜNLÜK YAZILAR: EDİTÖRÜN KALEMİNDEN & YAZARLARDAN (Eski versiyon geri getirildi) */}
       <section className="px-3 sm:px-0 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -93,16 +127,18 @@ export default async function HomePage() {
             href="/kategori/haber-merkezi"
           />
           <div className="flex flex-col gap-5 bg-white border border-neutral-200 rounded-lg p-5 shadow-sm">
-            {editorArticles.length > 0 ? (
+            {safeEditorArticles.length > 0 ? (
               (() => {
-                const first = editorArticles[0];
-                const rest = editorArticles.slice(1);
+                const first = safeEditorArticles[0];
+                const rest = safeEditorArticles.slice(1);
                 return (
                   <>
                     {/* Featured Large Card */}
                     <Link href={`/haber/${first.slug}`} className="group flex flex-col gap-3 pb-4 border-b border-neutral-100">
                       <div className="relative aspect-[16/9] w-full overflow-hidden rounded bg-neutral-100">
-                        <img src={first.image} alt={first.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                        {first.image && (
+                          <img src={first.image} alt={first.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                        )}
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider">
@@ -116,9 +152,9 @@ export default async function HomePage() {
                           {first.author?.avatar && (
                             <img src={first.author.avatar} alt="" className="h-4 w-4 rounded-full object-cover" />
                           )}
-                          <span className="truncate">{first.author?.name}</span>
+                          <span className="truncate">{first.author?.name || "Editör"}</span>
                           <span>·</span>
-                          <span className="shrink-0">{timeAgo(first.publishedAt)}</span>
+                          <span className="shrink-0">{timeAgo(first.publishedAt || new Date())}</span>
                         </div>
                       </div>
                     </Link>
@@ -128,7 +164,9 @@ export default async function HomePage() {
                       {rest.map((a) => (
                         <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-4 group border-b border-neutral-100 last:border-0 pb-4 last:pb-0">
                           <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded bg-neutral-100">
-                            <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                            {a.image && (
+                              <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                            )}
                           </div>
                           <div className="flex flex-col gap-1 min-w-0">
                             <h4 className="text-sm font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
@@ -138,9 +176,9 @@ export default async function HomePage() {
                               {a.author?.avatar && (
                                 <img src={a.author.avatar} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
                               )}
-                              <span className="truncate">{a.author?.name}</span>
+                              <span className="truncate">{a.author?.name || "Yazar"}</span>
                               <span>·</span>
-                              <span className="shrink-0">{timeAgo(a.publishedAt)}</span>
+                              <span className="shrink-0">{timeAgo(a.publishedAt || new Date())}</span>
                             </div>
                           </div>
                         </Link>
@@ -163,16 +201,18 @@ export default async function HomePage() {
             href="/kategori/teknoloji"
           />
           <div className="flex flex-col gap-5 bg-white border border-neutral-200 rounded-lg p-5 shadow-sm">
-            {authorArticles.length > 0 ? (
+            {safeAuthorArticles.length > 0 ? (
               (() => {
-                const first = authorArticles[0];
-                const rest = authorArticles.slice(1);
+                const first = safeAuthorArticles[0];
+                const rest = safeAuthorArticles.slice(1);
                 return (
                   <>
                     {/* Featured Large Card */}
                     <Link href={`/haber/${first.slug}`} className="group flex flex-col gap-3 pb-4 border-b border-neutral-100">
                       <div className="relative aspect-[16/9] w-full overflow-hidden rounded bg-neutral-100">
-                        <img src={first.image} alt={first.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                        {first.image && (
+                          <img src={first.image} alt={first.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                        )}
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider">
@@ -186,9 +226,9 @@ export default async function HomePage() {
                           {first.author?.avatar && (
                             <img src={first.author.avatar} alt="" className="h-4 w-4 rounded-full object-cover" />
                           )}
-                          <span className="truncate">{first.author?.name}</span>
+                          <span className="truncate">{first.author?.name || "Yazar"}</span>
                           <span>·</span>
-                          <span className="shrink-0">{timeAgo(first.publishedAt)}</span>
+                          <span className="shrink-0">{timeAgo(first.publishedAt || new Date())}</span>
                         </div>
                       </div>
                     </Link>
@@ -198,7 +238,9 @@ export default async function HomePage() {
                       {rest.map((a) => (
                         <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-4 group border-b border-neutral-100 last:border-0 pb-4 last:pb-0">
                           <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded bg-neutral-100">
-                            <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                            {a.image && (
+                              <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
+                            )}
                           </div>
                           <div className="flex flex-col gap-1 min-w-0">
                             <h4 className="text-sm font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
@@ -208,9 +250,9 @@ export default async function HomePage() {
                               {a.author?.avatar && (
                                 <img src={a.author.avatar} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
                               )}
-                              <span className="truncate">{a.author?.name}</span>
+                              <span className="truncate">{a.author?.name || "Yazar"}</span>
                               <span>·</span>
-                              <span className="shrink-0">{timeAgo(a.publishedAt)}</span>
+                              <span className="shrink-0">{timeAgo(a.publishedAt || new Date())}</span>
                             </div>
                           </div>
                         </Link>
@@ -230,56 +272,62 @@ export default async function HomePage() {
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex min-w-0 flex-1 flex-col gap-8">
           {/* GÜNDEM */}
-          <section className="px-3 sm:px-0">
-            <SectionTitle
-              title="GÜNDEM"
-              href="/kategori/haber-merkezi"
-              subtitle="Elektrikli mobilite dünyasından son gelişmeler"
-            />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {feed.slice(0, 2).map((a, i) => (
-                <NewsCard key={a.id} article={a} variant="wide" priority={i === 0} />
-              ))}
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {feed.slice(2, 10).map((a) => (
-                <NewsCard key={a.id} article={a} />
-              ))}
-            </div>
-          </section>
+          {feed.length > 0 && (
+            <section className="px-3 sm:px-0">
+              <SectionTitle
+                title="GÜNDEM"
+                href="/kategori/haber-merkezi"
+                subtitle="Elektrikli mobilite dünyasından son gelişmeler"
+              />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {feed.slice(0, 2).map((a, i) => (
+                  <NewsCard key={a.id} article={a} variant="wide" priority={i === 0} />
+                ))}
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                {feed.slice(2, 10).map((a) => (
+                  <NewsCard key={a.id} article={a} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* ARAÇLARI KEŞFET */}
-          <section className="px-3 sm:px-0">
-            <SectionTitle
-              title="ARAÇLARI KEŞFET"
-              href="/araclar"
-              color="#0f766e"
-              subtitle="Türkiye'de satışta olan öne çıkan elektrikli modeller"
-            />
-            <CardRail itemClass="w-[62%] sm:w-[38%] lg:w-[27%]" autoPlay={true}>
-              {vehicles.map((v) => (
-                <VehicleCard key={v.id} vehicle={v} />
-              ))}
-            </CardRail>
-          </section>
+          {safeVehicles.length > 0 && (
+            <section className="px-3 sm:px-0">
+              <SectionTitle
+                title="ARAÇLARI KEŞFET"
+                href="/araclar"
+                color="#0f766e"
+                subtitle="Türkiye'de satışta olan öne çıkan elektrikli modeller"
+              />
+              <CardRail itemClass="w-[62%] sm:w-[38%] lg:w-[27%]" autoPlay={true}>
+                {safeVehicles.map((v) => (
+                  <VehicleCard key={v.id} vehicle={v} />
+                ))}
+              </CardRail>
+            </section>
+          )}
 
           {/* TEKNOLOJİ */}
-          <section className="px-3 sm:px-0">
-            <SectionTitle
-              title="TEKNOLOJİ"
-              href="/kategori/teknoloji"
-              color="#9333ea"
-              subtitle="Batarya, yazılım ve otonom sürüş"
-            />
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              {tech.map((a) => (
-                <NewsCard key={a.id} article={a} />
-              ))}
-            </div>
-          </section>
+          {safeTech.length > 0 && (
+            <section className="px-3 sm:px-0">
+              <SectionTitle
+                title="TEKNOLOJİ"
+                href="/kategori/teknoloji"
+                color="#9333ea"
+                subtitle="Batarya, yazılım ve otonom sürüş"
+              />
+              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                {safeTech.map((a) => (
+                  <NewsCard key={a.id} article={a} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* TOPLULUK */}
-          {community.length > 0 && (
+          {safeCommunity.length > 0 && (
             <section className="px-3 sm:px-0">
               <SectionTitle
                 title="TOPLULUK"
@@ -288,7 +336,7 @@ export default async function HomePage() {
                 subtitle="Evos kullanıcılarının deneyimleri ve tartışmaları"
               />
               <div className="flex flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white">
-                {community.map((p) => (
+                {safeCommunity.map((p) => (
                   <Link
                     key={p.id}
                     href="/topluluk"

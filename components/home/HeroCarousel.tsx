@@ -102,9 +102,9 @@ export default function HeroCarousel({
                 )}
                 <span
                   className="rounded px-2 py-1 text-[10px] font-black tracking-wide text-white sm:text-xs"
-                  style={{ backgroundColor: s.category.color }}
+                  style={{ backgroundColor: s.category?.color || "#e30613" }}
                 >
-                  {s.category.name.toUpperCase()}
+                  {(s.category?.name || "HABER").toUpperCase()}
                 </span>
                 {s.isVideo && (
                   <span className="flex items-center gap-1 rounded bg-white/20 px-2 py-1 text-[10px] font-bold text-white backdrop-blur sm:text-xs">
