@@ -71,6 +71,27 @@ export default async function FinancePage() {
         </div>
       </section>
 
+      {/* Tasarruf Hesaplama Kartı */}
+      <section className="flex flex-col gap-4 rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 p-6 sm:flex-row sm:items-center sm:justify-between shadow-sm">
+        <div className="flex flex-col gap-1">
+          <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800">
+            Benzinli Aracınızla Karşılaştırın
+          </span>
+          <h2 className="text-lg font-black text-neutral-900">
+            Akaryakıt vs. Elektrik Tasarruf Hesaplayıcı
+          </h2>
+          <p className="text-xs text-neutral-600">
+            Mevcut benzinli veya dizel tüketiminizi girerek elektrikli araçla yılda kaç TL tasarruf edeceğinizi anında görün.
+          </p>
+        </div>
+        <Link
+          href="/tasarruf-hesapla"
+          className="shrink-0 rounded-xl bg-emerald-600 px-5 py-3 text-xs font-black text-white transition hover:bg-emerald-700 shadow-md text-center"
+        >
+          TASARRUFUNU HESAPLA →
+        </Link>
+      </section>
+
       <section className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-6 lg:flex-row lg:items-center">
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <h2 className="text-xl font-black text-neutral-900">Hesaba dâhil olmayanlar</h2>
@@ -78,8 +99,8 @@ export default async function FinancePage() {
             Sigorta/kasko, periyodik bakım, MTV ve lastik giderleri bu ekranda
             yer almaz — bunlar araca ve kullanıcıya göre çok değiştiği için
             varsayılan bir rakam vermek yanıltıcı olurdu. Batarya güvencesi için{" "}
-            <Link href="/evos-protect" className="font-bold text-evos hover:underline">
-              Evos Protect
+            <Link href="/evos-protect" className="font-bold text-sky-600 hover:underline">
+              EVO Protect
             </Link>{" "}
             paketlerine bakabilirsiniz.
           </p>

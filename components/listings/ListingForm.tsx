@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ListingImageUpload from "./ListingImageUpload";
@@ -173,6 +174,20 @@ export default function ListingForm({ vehicles }: { vehicles: VehicleOption[] })
       {error && (
         <p className="rounded-md bg-evos/10 px-4 py-3 text-sm font-bold text-evos">{error}</p>
       )}
+
+      <label className="flex items-start gap-2.5 cursor-pointer select-none px-1">
+        <input
+          required
+          type="checkbox"
+          className="mt-1 h-4 w-4 rounded border-neutral-300 text-evos focus:ring-evos"
+        />
+        <span className="text-[12px] leading-tight text-neutral-500">
+          <Link href="/yasal/ilan-verme-kurallari" target="_blank" className="font-bold text-neutral-600 hover:underline">
+            İlan Yayınlama Kuralları
+          </Link>
+          'nı ve e-Devlet kimlik doğrulama/mevzuat sorumluluklarımı okudum, kabul ediyorum.
+        </span>
+      </label>
 
       <div className="flex flex-wrap items-center gap-3">
         <button

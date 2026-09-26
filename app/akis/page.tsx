@@ -13,7 +13,6 @@ import { timeAgo } from "@/lib/utils";
 import Avatar from "@/components/user/Avatar";
 import PostComposer from "@/components/social/PostComposer";
 import PostFeed from "@/components/social/PostFeed";
-import ReelRail from "@/components/social/ReelRail";
 import SuggestionList from "@/components/social/SuggestionList";
 import type { SocialPost } from "@/components/social/types";
 
@@ -21,7 +20,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Akışım",
   description:
-    "Takip ettiğin ve arkadaş olduğun kullanıcıların paylaşımları, reels ve sana özel haber akışı.",
+    "Takip ettiğin ve arkadaş olduğun kullanıcıların paylaşımları ve sana özel haber akışı.",
 };
 
 const PAGE = 10;
@@ -33,10 +32,9 @@ export default async function FeedPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/giris?devam=/akis");
 
-  const [posts, reels, suggestions, friendCount, incoming, bookmarks, latest] =
+  const [posts, suggestions, friendCount, incoming, bookmarks, latest] =
     await Promise.all([
       getFeed({ viewerId: user.id, scope: "feed", limit: PAGE }),
-      getFeed({ viewerId: user.id, scope: "explore", kind: "reel", limit: 10 }),
       getPeopleSuggestions(user.id, 5),
       countFriends(user.id),
       prisma.friendship.count({
@@ -99,11 +97,6 @@ export default async function FeedPage() {
 
         <PostComposer />
 
-        {/* Mobilde reels şeridi akışın üstünde durur */}
-        <div className="lg:hidden">
-          <ReelRail reels={reels.map(toClient)} />
-        </div>
-
         <PostFeed
           query={{ scope: "feed" }}
           initialItems={items}
@@ -123,10 +116,10 @@ export default async function FeedPage() {
                   KİŞİ BUL
                 </Link>
                 <Link
-                  href="/reels"
+                  href="/ilanlar"
                   className="rounded-md border border-neutral-300 px-5 py-2 text-[12px] font-black text-neutral-600 transition hover:border-evos hover:text-evos"
                 >
-                  REELS&apos;E GÖZ AT
+                  İLANLARA GÖZ AT
                 </Link>
               </div>
             </div>
@@ -136,7 +129,6 @@ export default async function FeedPage() {
 
       {/* Yan sütun */}
       <aside className="hidden flex-col gap-4 lg:flex">
-        <ReelRail reels={reels.map(toClient)} />
         <SuggestionList people={suggestions} />
 
         <section className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-4">

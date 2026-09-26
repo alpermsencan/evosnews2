@@ -241,6 +241,7 @@ export const DEFAULT_SOURCES: SourceSeed[] = [
     keywords: EN_EV_FILTER,
     attribution: "Kaynak: Electrek",
     autoPublish: true,
+    isActive: false, // Ücretli çeviri API'si gerektirmemesi için devre dışı
   },
   {
     key: "news:chargedevs",
@@ -252,6 +253,7 @@ export const DEFAULT_SOURCES: SourceSeed[] = [
     keywords: EN_EV_FILTER,
     attribution: "Kaynak: Charged EVs",
     autoPublish: true,
+    isActive: false, // Ücretli çeviri API'si gerektirmemesi için devre dışı
   },
   {
     key: "news:insideevs",
@@ -263,9 +265,6 @@ export const DEFAULT_SOURCES: SourceSeed[] = [
     keywords: EN_EV_FILTER,
     attribution: "Kaynak: InsideEVs",
     autoPublish: true,
-    // KAPALI: insideevs.com bot isteklerini 403 ile reddediyor ve RSS özeti
-    // ~90 karakter. Elimizde yeniden yazıma yetecek olgu olmadığı için
-    // haberler kuyrukta takılıyordu. Site erişime izin verirse açılabilir.
     isActive: false,
   },
   {
@@ -278,5 +277,6 @@ export const DEFAULT_SOURCES: SourceSeed[] = [
     keywords: EN_EV_FILTER,
     attribution: "Kaynak: electrive",
     autoPublish: true,
+    isActive: false, // Ücretli çeviri API'si gerektirmemesi için devre dışı
   },
 ];

@@ -29,6 +29,7 @@ const NAV = [
   { href: "/admin/garaj", label: "Dijital Garaj", Icon: IconLayers },
   { href: "/admin/istasyonlar", label: "Şarj İstasyonları", Icon: IconBolt },
   { href: "/admin/tarifeler", label: "Şarj Tarifeleri", Icon: IconTag },
+  { href: "/admin/ocpi", label: "OCPI Roaming Entegrasyonu", Icon: IconBolt },
   { href: "/admin/topluluk", label: "Topluluk", Icon: IconUsers },
   { href: "/admin/gosterge", label: "Veri Şeridi", Icon: IconChart },
   { href: "/admin/aboneler", label: "Bülten Aboneleri", Icon: IconUsers },

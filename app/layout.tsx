@@ -3,15 +3,12 @@ import { headers } from "next/headers";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import TickerBar from "@/components/layout/TickerBar";
-import BreakingBar from "@/components/layout/BreakingBar";
 import MobileBottomNav from "@/components/layout/MobileBottomNav";
 import SessionProvider from "@/components/user/SessionProvider";
 import CompareProvider from "@/components/compare/CompareProvider";
 import CompareBar from "@/components/compare/CompareBar";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { getBreakingBar, getTickers } from "@/lib/queries";
 import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -22,18 +19,25 @@ export const metadata: Metadata = {
     types: { "application/rss+xml": `${siteUrl()}/feed.xml` },
   },
   title: {
-    default: "Evos Gazete · Elektrikli Araç Haber Merkezi",
-    template: "%s · Evos Gazete",
+    default: "EVOtoPilot · Elektrikli Araç & Akıllı Mobilite Platformu",
+    template: "%s · EVOtoPilot",
   },
   description:
-    "Elektrikli araç haberleri, şarj ağı, ÖTV rehberi, fiyat analizi, ikinci el pazarı ve yapay zekâ destekli araç danışmanlığı.",
+    "Türkiye'nin akıllı elektrikli araç platformu EVOtoPilot: 2026 güncel model kataloğu, gerçek menzil simülatörü, akaryakıt tasarruf hesabı, canlı şarj ağı haritası, ÖTV rehberi, VoltScore batarya analizi ve AI danışman.",
   keywords: [
     "elektrikli araç",
-    "EV haber",
-    "şarj istasyonu",
-    "ÖTV",
-    "Togg",
+    "EVOtoPilot",
+    "gerçek menzil simülatörü",
+    "yakıt tasarruf hesaplama",
+    "şarj istasyonu haritası",
+    "2026 ÖTV rehberi",
+    "Togg T10F",
+    "Togg T10X",
+    "Tesla Model Y Juniper",
+    "BYD Seal",
     "elektrikli araç fiyatları",
+    "VoltScore",
+    "ikinci el elektrikli araç batarya sağlığı",
   ],
 };
 
@@ -54,13 +58,8 @@ export default async function RootLayout({
     );
   }
 
-  // Şerit verileri her istekte okunduğu için önbellekli sorgulardan gelir;
-  // içerik değişince revalidateTag anında tazeler (bkz. lib/revalidate.ts).
-  const [tickers, breaking, currentUser] = await Promise.all([
-    getTickers(),
-    getBreakingBar(8),
-    getCurrentUser(),
-  ]);
+  // Şerit verileri yerine sadece kullanıcı oturumu okunur
+  const currentUser = await getCurrentUser();
 
   const unread = currentUser
     ? await prisma.notification.count({
@@ -84,8 +83,6 @@ export default async function RootLayout({
           initialUnread={unread}
         >
           <Header />
-          <BreakingBar items={breaking} />
-          <TickerBar items={tickers} />
           {/* Karşılaştırma sepeti sayfalar arasında yaşar, bu yüzden sağlayıcı
               kökte durur; çubuk yalnızca sepette öğe varken render edilir. */}
           <CompareProvider>

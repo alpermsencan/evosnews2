@@ -202,7 +202,7 @@ async function run({ source, limit, deadline }: IngestContext): Promise<IngestRe
 
   const url = new URL(source.endpoint || OCM_ENDPOINT);
   url.searchParams.set("countrycode", "TR");
-  url.searchParams.set("maxresults", String(Math.min(Math.max(limit, 50), 1000)));
+  url.searchParams.set("maxresults", String(Math.min(Math.max(limit, 50), 5000)));
   url.searchParams.set("compact", "true");
   url.searchParams.set("key", key);
 

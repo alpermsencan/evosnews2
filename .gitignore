@@ -40,5 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# audit reports and temporary logs
+*-audit.txt
+*-details.txt
+*-report.txt
+
 # .env.example depoya girsin — gerçek sırlar .env dosyasında kalır
 !.env.example

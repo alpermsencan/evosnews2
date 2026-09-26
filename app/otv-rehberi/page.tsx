@@ -35,10 +35,10 @@ export default async function OtvPage() {
       <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-violet-700 to-purple-900 p-6 text-white">
         <div className="flex items-center gap-2">
           <IconTag className="h-7 w-7" />
-          <h1 className="text-2xl font-black sm:text-4xl">ÖTV REHBERİ</h1>
+          <h1 className="text-2xl font-black sm:text-4xl">2026 ÖTV REHBERİ</h1>
         </div>
         <p className="max-w-3xl text-sm text-white/85 sm:text-base">
-          Elektrikli otomobillerde ÖTV; motor gücü ve matrah tutarına göre
+          2026 yılı güncel mevzuatına göre elektrikli otomobillerde ÖTV; motor gücü ve matrah tutarına göre
           belirleniyor. Aşağıdaki hesaplayıcı ile matrahtan etiket fiyatına
           giden yolu adım adım görebilirsiniz.
         </p>

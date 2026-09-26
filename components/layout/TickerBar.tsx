@@ -9,7 +9,7 @@ type TickerItem = {
 };
 
 export default function TickerBar({ items }: { items: TickerItem[] }) {
-  if (!items.length) return null;
+  if (!items || !items.length) return null;
 
   return (
     <div className="border-b border-neutral-200 bg-white">
@@ -20,28 +20,28 @@ export default function TickerBar({ items }: { items: TickerItem[] }) {
             return (
               <div
                 key={t.id}
-                className="flex min-w-[46%] shrink-0 flex-col gap-0.5 px-3 py-2.5 sm:min-w-[24%] md:min-w-0 md:flex-1"
+                className="flex min-w-[33%] shrink-0 flex-col gap-0.5 px-3 py-2 sm:min-w-[20%] md:min-w-0 md:flex-1"
               >
-                <span className="text-[11px] font-black tracking-wide text-neutral-500">
+                <span className="text-[10px] font-black tracking-wide text-neutral-500 uppercase">
                   {t.label}
                 </span>
-                <span className="text-[17px] font-black leading-tight text-neutral-900 sm:text-lg">
+                <span className="text-[15px] font-black leading-tight text-neutral-900">
                   {t.value}
                   {t.unit && (
-                    <span className="ml-1 text-[11px] font-bold text-neutral-400">
+                    <span className="ml-1 text-[10px] font-bold text-neutral-400">
                       {t.unit}
                     </span>
                   )}
                 </span>
                 <span
-                  className={`mt-0.5 flex w-fit items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-bold text-white ${
-                    up ? "bg-volt" : "bg-evos"
+                  className={`mt-0.5 flex w-fit items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold text-white ${
+                    up ? "bg-volt" : "bg-red-600"
                   }`}
                 >
                   {up ? (
-                    <IconArrowUp className="h-2.5 w-2.5" />
+                    <IconArrowUp className="h-2 w-2" />
                   ) : (
-                    <IconArrowDown className="h-2.5 w-2.5" />
+                    <IconArrowDown className="h-2 w-2" />
                   )}
                   {Math.abs(t.changePct).toLocaleString("tr-TR", {
                     minimumFractionDigits: 1,

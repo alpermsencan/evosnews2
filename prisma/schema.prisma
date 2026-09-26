@@ -334,6 +334,8 @@ model Vehicle {
   segment      String
   bodyType     String
   image        String
+  images       String[] @default([])
+  marketStatus String   @default("TR_YAYINDA") // "TR_YAYINDA" | "TR_YAKINDA" | "TR_YOK"
   price        Int
   otvRate      Int      @default(10)
   rangeKm      Int
@@ -372,6 +374,8 @@ model Vehicle {
   createdAt    DateTime @default(now())
   posts        Post[]
   listings     Listing[]
+  variants     VehicleVariant[]
+  syncImages   VehicleImage[]
 
   // --- Kaynak izlenebilirliği ---
   externalId     String?
@@ -381,6 +385,69 @@ model Vehicle {
   @@index([brand])
   @@index([price])
   @@index([externalId])
+}
+
+model VehicleImage {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleId          String   @db.ObjectId
+  vehicle            Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  url                String
+  cloudinaryPublicId String
+  type               String   @default("gallery") // "exterior" | "interior" | "gallery"
+  alt                String?
+  source             String
+  sourceUrl          String
+  externalId         String   @unique
+  isPrimary          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([vehicleId])
+}
+
+model VehicleVariant {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleId      String   @db.ObjectId
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  name           String
+  listPrice      Int
+  campaignPrice  Int?
+  campaignAmount Int?
+  batteryKwh     Float?
+  rangeKm        Int?
+  motorPowerKw   Int?
+  motorPowerHp   Int?
+  source         String
+  sourceUrl      String
+  externalId     String
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  priceHistories VehiclePriceHistory[]
+
+  @@unique([vehicleId, name])
+  @@index([vehicleId])
+  @@index([externalId])
+}
+
+model VehiclePriceHistory {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleId             String   @db.ObjectId
+  variantId             String   @db.ObjectId
+  variant               VehicleVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  listPrice             Int
+  campaignPrice         Int?
+  campaignAmount        Int?
+  previousPrice         Int?
+  previousCampaignPrice Int?
+  source                String
+  sourceUrl             String
+  recordedAt            DateTime @default(now())
+
+  @@index([vehicleId])
+  @@index([variantId])
+  @@index([recordedAt])
 }
 
 model ChargeStation {
@@ -764,4 +831,71 @@ model OperatorTariff {
   updatedAt DateTime @updatedAt
 
   @@index([isActive])
+}
+
+// ==========================================
+// OCPI v2.2.1 MODELLERİ (eMSP ve CPO Entegrasyonu)
+// ==========================================
+
+model OcpiLocation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  countryCode String   // Örn: "TR"
+  partyId     String   // Örn: "ZES"
+  locationId  String   // Operatörün kendi sistemindeki tekil ID
+  name        String
+  address     String
+  city        String?
+  postalCode  String?
+  country     String   @default("TUR")
+  latitude    Float
+  longitude   Float
+  publish     Boolean  @default(true)
+  evses       OcpiEvse[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([countryCode, partyId, locationId])
+  @@index([city])
+}
+
+model OcpiEvse {
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  uid         String          @unique // Örn: "TR*ZES*E1024"
+  evseId      String?         // Opsiyonel resmi EVSE ID
+  status      String          // AVAILABLE, CHARGING, RESERVED, OUTOFORDER, BLOCKED
+  locationId  String          @db.ObjectId
+  location    OcpiLocation    @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  connectors  OcpiConnector[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([locationId])
+}
+
+model OcpiConnector {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  connectorId String    // CPO içindeki connector numarası (örn: "1")
+  standard    String    // IEC_62196_T2, IEC_62196_T2_COMBO (CCS2), CHADEMO
+  format      String    // CABLE, SOCKET
+  powerType   String    // AC_1_PHASE, AC_3_PHASE, DC
+  voltage     Int
+  amperage    Int
+  maxPowerKw  Int
+  evseId      String    @db.ObjectId
+  evse        OcpiEvse  @relation(fields: [evseId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([evseId])
+}
+
+model OcpiToken {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  token       String   @unique
+  partyId     String
+  countryCode String
+  role        String   @default("CPO") // CPO, eMSP
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -130,7 +130,16 @@ export default async function ChargePage({ searchParams }: { searchParams: SP })
           tipleri ve güç kapasiteleri. Envanter Open Charge Map katkıcılarının
           açık verisinden günlük olarak tazelenir.
         </p>
-        <div className="mt-1 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="flex flex-wrap gap-2 mt-1">
+          <Link
+            href="/sarj-agi/rota"
+            className="inline-flex items-center gap-2 rounded-md bg-white/15 px-4 py-2.5 text-xs font-black text-white hover:bg-white/25 transition border border-white/10"
+          >
+            <IconMap className="h-4 w-4 text-emerald-400" />
+            ŞARJ & ROTA MÜHENDİSLİĞİ (YENİ)
+          </Link>
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="İstasyon" value={`${agg._count}`} />
           <Stat label="Toplam soket" value={`${agg._sum.socketCount ?? 0}`} />
           <Stat label="Hızlı şarj noktası" value={`${fastCount}`} />

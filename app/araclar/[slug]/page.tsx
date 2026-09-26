@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import VehicleCard from "@/components/vehicles/VehicleCard";
+import VehicleGallery from "@/components/vehicles/VehicleGallery";
+import BrandBadge from "@/components/ui/BrandBadge";
 import SectionTitle from "@/components/news/SectionTitle";
 import { calcOtv, formatDate, formatTL } from "@/lib/utils";
 import { IconCheck, IconClose } from "@/components/ui/Icons";
@@ -28,7 +30,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function VehicleDetail({ params }: Props) {
   const { slug } = await params;
-  const vehicle = await prisma.vehicle.findUnique({ where: { slug } });
+  const vehicle = await prisma.vehicle.findUnique({
+    where: { slug },
+    include: {
+      syncImages: {
+        orderBy: { createdAt: "asc" },
+      },
+    },
+  });
   if (!vehicle) notFound();
 
   const [similar, stations] = await Promise.all([
@@ -36,6 +45,7 @@ export default async function VehicleDetail({ params }: Props) {
       where: { segment: vehicle.segment, NOT: { id: vehicle.id } },
       take: 4,
       orderBy: { price: "asc" },
+      include: { syncImages: true },
     }),
     // Aracın DC şarj gücü bilinmiyorsa "uyumlu istasyon" eşiği kurulamaz;
     // bu durumda en güçlü istasyonlar gösterilir.
@@ -82,6 +92,15 @@ export default async function VehicleDetail({ params }: Props) {
     ["ÖTV oranı", `%${vehicle.otvRate}`],
   ];
 
+  // Prioritize verified official syncImages (Cloudinary)
+  const officialImages = vehicle.syncImages.map((img) => img.url);
+  const galleryImages =
+    officialImages.length > 0
+      ? officialImages
+      : [vehicle.image, ...(vehicle.images || [])].filter(Boolean);
+
+  const defaultImg = galleryImages[0] || vehicle.image;
+
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
       <nav className="flex items-center gap-2 text-[11px] font-bold text-neutral-400">
@@ -89,26 +108,24 @@ export default async function VehicleDetail({ params }: Props) {
         <span>›</span>
         <Link href="/araclar" className="hover:text-evos">ARAÇLARI KEŞFET</Link>
         <span>›</span>
-        <span className="text-neutral-600">{vehicle.brand.toUpperCase()}</span>
+        <span className="text-neutral-600 font-black">{vehicle.brand.toUpperCase()}</span>
       </nav>
 
       <div className="flex flex-col gap-5 overflow-hidden rounded-lg border border-neutral-200 bg-white lg:flex-row">
-        <div className="relative aspect-[16/10] w-full shrink-0 bg-neutral-100 lg:w-[52%]">
-          <Image
-            src={vehicle.image}
+        <div className="relative w-full shrink-0 bg-neutral-100 lg:w-[52%] flex flex-col justify-between">
+          <VehicleGallery
+            defaultImage={defaultImg}
+            images={galleryImages.slice(1)}
             alt={`${vehicle.brand} ${vehicle.model}`}
-            fill
-            priority
-            sizes="(max-width:1024px) 100vw, 660px"
-            className="object-cover"
           />
-          <span className="absolute left-3 top-3 rounded bg-evos-ink/85 px-2.5 py-1 text-[11px] font-black text-white backdrop-blur">
+          <span className="absolute left-3 top-3 rounded bg-evos-ink/85 px-2.5 py-1 text-[11px] font-black text-white backdrop-blur z-10">
             {vehicle.segment} · {vehicle.year}
           </span>
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-3 p-5">
           <div className="flex flex-wrap items-center gap-2">
+            <BrandBadge brand={vehicle.brand} size="md" />
             {/* Editör puanı yalnızca gerçek bir inceleme yapıldıysa vardır. */}
             {vehicle.rating != null && (
               <span className="rounded bg-volt px-2 py-1 text-[11px] font-black text-white">
@@ -121,7 +138,7 @@ export default async function VehicleDetail({ params }: Props) {
           </div>
 
           <h1 className="text-2xl font-black leading-tight text-neutral-900 sm:text-4xl">
-            {vehicle.brand}{" "}
+            <span className="text-neutral-900">{vehicle.brand}</span>{" "}
             <span className="font-bold text-neutral-600">{vehicle.model}</span>
           </h1>
 

@@ -53,7 +53,9 @@ export async function GET(req: NextRequest) {
   };
 
   const apiKey = process.env.OPENROUTESERVICE_API_KEY;
-  if (!apiKey) {
+  const isMock = !apiKey || apiKey === "none" || apiKey === "mock" || apiKey === "false" || apiKey.trim() === "";
+  
+  if (isMock) {
     return ok({ ...fallback, note: "Rota servisi yapılandırılmadı" });
   }
 

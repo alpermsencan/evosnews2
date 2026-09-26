@@ -5,6 +5,7 @@ import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
 import { formatTL } from "@/lib/utils";
 import { IconChart } from "@/components/ui/Icons";
+import AiPriceEstimator from "@/components/tools/AiPriceEstimator";
 
 // Kök layout oturumu sunucuda okuduğu için bu sayfa zaten istek başına
 // render edilir; buradaki değer yalnızca layout ileride statikleşirse devreye
@@ -96,6 +97,11 @@ export default async function PriceAnalysisPage() {
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
       <Header modelCount={vehicles.length} />
+
+      {/* AI DESTEKLİ FİYAT TAHMİNİ */}
+      <section className="my-2">
+        <AiPriceEstimator />
+      </section>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Ortalama liste fiyatı" value={formatTL(avgPrice, { compact: true })} sub={trendChange ? `%${trendChange} (kayıt başlangıcından beri)` : undefined} />

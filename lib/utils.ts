@@ -136,7 +136,7 @@ export function calcOtv(basePrice: number, motorKw: number) {
   if (motorKw <= 160) {
     rate = basePrice <= 1_450_000 ? 10 : 40;
   } else {
-    rate = basePrice <= 2_200_000 ? 50 : 60;
+    rate = basePrice <= 1_350_000 ? 50 : 60;
   }
   const otv = Math.round((basePrice * rate) / 100);
   const kdvBase = basePrice + otv;

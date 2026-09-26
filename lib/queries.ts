@@ -226,6 +226,7 @@ export const getFeaturedVehicles = (limit: number = 6) =>
       where: { isFeatured: true },
       orderBy: { rangeKm: "desc" },
       take: limit,
+      include: { syncImages: true },
     });
 
 

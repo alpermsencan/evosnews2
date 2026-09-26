@@ -19,11 +19,43 @@ const TAGS_BY_KIND: Record<SourceKind, CacheTag[]> = {
   prices: [TAGS.prices, TAGS.tickers],
 };
 
+const DEFAULT_CATEGORIES = [
+  { name: "Haber Merkezi", slug: "haber-merkezi", color: "#e30613", order: 1, isMainNav: true },
+  { name: "Teknoloji", slug: "teknoloji", color: "#3b82f6", order: 2, isMainNav: true },
+  { name: "Dünya", slug: "dunya", color: "#10b981", order: 3, isMainNav: true },
+  { name: "Şarj Ağı", slug: "sarj-agi", color: "#f59e0b", order: 4, isMainNav: false },
+  { name: "ÖTV Rehberi", slug: "otv-rehberi", color: "#8b5cf6", order: 5, isMainNav: false },
+  { name: "Test Sürüşü", slug: "test-surusu", color: "#ec4899", order: 6, isMainNav: false },
+  { name: "AI Danışman", slug: "ai-danisman", color: "#06b6d4", order: 7, isMainNav: false },
+  { name: "Fiyat Analizi", slug: "fiyat-analizi", color: "#14b8a6", order: 8, isMainNav: false },
+  { name: "Araç Merkezi", slug: "arac-merkezi", color: "#6366f1", order: 9, isMainNav: false },
+];
+
 /**
  * Yerleşik kaynakları veritabanına yazar (idempotent).
  * Boş bir veritabanında cron'un ilk çalışmasında da doğru şekilde kurulur.
  */
 export async function ensureSources({ reset = false } = {}) {
+  // Kategori tanımlarını oluştur (idempotent)
+  for (const c of DEFAULT_CATEGORIES) {
+    await prisma.category.upsert({
+      where: { slug: c.slug },
+      update: {
+        name: c.name,
+        color: c.color,
+        order: c.order,
+        isMainNav: c.isMainNav,
+      },
+      create: {
+        slug: c.slug,
+        name: c.name,
+        color: c.color,
+        order: c.order,
+        isMainNav: c.isMainNav,
+      },
+    });
+  }
+
   for (const s of DEFAULT_SOURCES) {
     await prisma.dataSource.upsert({
       where: { key: s.key },

@@ -25,7 +25,7 @@ const BUDGET_RESERVE_MS = 5_000;
 
 const JOBS: Record<string, { kind: SourceKind; limit: number }> = {
   news: { kind: "news", limit: 40 },
-  stations: { kind: "stations", limit: 500 },
+  stations: { kind: "stations", limit: 5000 },
   fx: { kind: "fx", limit: 10 },
   prices: { kind: "prices", limit: 20 },
 };
@@ -70,10 +70,23 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     // varsayılanlara döndürür (panelden yapılan ayarları ezer).
     const reset = req.nextUrl.searchParams.get("reset") === "1";
     await ensureSources({ reset });
+    
+    if (reset) {
+      // Çeviri gereksinimini kaldırdığımız için eski yabancı haberleri temizliyoruz.
+      await prisma.article.deleteMany({
+        where: {
+          sourceName: {
+            in: ["Electrek", "Charged EVs", "electrive", "InsideEVs"]
+          }
+        }
+      });
+      revalidateTag(TAGS.articles, "max");
+    }
+
     return ok({
       job,
       ok: true,
-      message: reset ? "Kaynak tanımları varsayılanlara sıfırlandı" : "Kaynak tanımları hazır",
+      message: reset ? "Kaynak tanımları ve yabancı haberler temizlendi, varsayılanlara sıfırlandı" : "Kaynak tanımları hazır",
     });
   }
 
@@ -103,6 +116,13 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     const result = await recategorizeArchive();
     if (result.moved > 0) revalidateTag(TAGS.articles, "max");
     return ok({ job, durationMs: Date.now() - startedAt, ...result });
+  }
+
+  if (job === "ocpi-sync") {
+    const { syncAllCpos } = await import("@/lib/ingest/sources/ocpi-sync");
+    const result = await syncAllCpos();
+    revalidateTag(TAGS.stations, "max");
+    return ok({ job, durationMs: Date.now() - startedAt, results: result });
   }
 
   // Salt okunur tazelik denetimi. Dış izleme (UptimeRobot vb.) buraya
@@ -164,6 +184,31 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     const pruned = await pruneArchive();
     if (pruned.archived + pruned.drafts + pruned.offTopic > 0) tags.add(TAGS.articles);
 
+    // Araç fiyat senkronizasyonu entegrasyonu (Faz 1 & 2 - Kia & Hyundai)
+    let kiaVehicleSync = null;
+    let hyundaiVehicleSync = null;
+    try {
+      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
+      kiaVehicleSync = await syncBrandVehicles("kia-official");
+      if (kiaVehicleSync.status === "ok" && (kiaVehicleSync.created > 0 || kiaVehicleSync.updated > 0)) {
+        tags.add(TAGS.vehicles);
+      }
+    } catch (e) {
+      console.error("[CRON][ERROR] Kia vehicle sync failed", e);
+      kiaVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
+    }
+
+    try {
+      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
+      hyundaiVehicleSync = await syncBrandVehicles("hyundai-official");
+      if (hyundaiVehicleSync.status === "ok" && (hyundaiVehicleSync.created > 0 || hyundaiVehicleSync.updated > 0)) {
+        tags.add(TAGS.vehicles);
+      }
+    } catch (e) {
+      console.error("[CRON][ERROR] Hyundai vehicle sync failed", e);
+      hyundaiVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
+    }
+
     for (const tag of tags) revalidateTag(tag, "max");
 
     // Cron'un çalışmış olması verinin taze olduğunu KANITLAMAZ: besleme sessizce
@@ -181,6 +226,8 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
         changed,
         recategorized,
         pruned,
+        kiaVehicleSync,
+        hyundaiVehicleSync,
         health: health.map((h) => ({
           key: h.key,
           status: h.status,

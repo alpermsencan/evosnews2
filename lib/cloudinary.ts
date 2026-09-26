@@ -140,3 +140,33 @@ export function publicIdFromUrl(url: string): string | null {
   if (!url.includes("res.cloudinary.com") || !match) return null;
   return match[1];
 }
+
+/** Görseli harici bir URL'den doğrudan Cloudinary'ye yükler */
+export async function uploadImageFromUrl(
+  imageUrl: string,
+  folder = CLOUDINARY_FOLDER
+): Promise<UploadedImage> {
+  const { createHash } = await import("node:crypto");
+  const hash = createHash("sha1").update(imageUrl).digest("hex");
+  const publicId = `kia-img-${hash}`;
+
+  const result = await cloudinary.uploader.upload(imageUrl, {
+    folder,
+    public_id: publicId,
+    resource_type: "image",
+    overwrite: false,
+    transformation: [
+      { width: 2000, height: 2000, crop: "limit" },
+      { quality: "auto", fetch_format: "auto" },
+    ],
+  });
+
+  return {
+    url: String(result.secure_url),
+    publicId: String(result.public_id),
+    width: Number(result.width) || 0,
+    height: Number(result.height) || 0,
+    format: String(result.format ?? ""),
+    bytes: Number(result.bytes) || 0,
+  };
+}

@@ -65,7 +65,7 @@ function estimateReadTime(text: string) {
   return Math.max(1, Math.round(text.split(/\s+/).length / 200));
 }
 
-/** RSS öğesindeki görsel (media:content / media:thumbnail / enclosure). */
+/** RSS öğesindeki görsel (media:content / media:thumbnail / enclosure / description <img>). */
 function feedImage(item: string): string | null {
   for (const [tag, attr] of [
     ["media:content", "url"],
@@ -75,6 +75,14 @@ function feedImage(item: string): string | null {
     const url = tagAttr(item, tag, attr);
     if (/^https?:\/\//i.test(url)) return url;
   }
+
+  // Fallback: description veya content:encoded içindeki ilk <img> etiketini tara
+  const description = tagText(item, "description") || tagText(item, "content:encoded") || "";
+  const match = description.match(/<img[^>]+src=["'](https?:\/\/[^"']+)["']/i);
+  if (match && match[1]) {
+    return match[1];
+  }
+
   return null;
 }
 
@@ -212,7 +220,37 @@ async function rewritePending(
   notes: string[],
 ) {
   if (!rewriteEnabled()) {
-    notes.push("OPENAI_API_KEY yok — taslaklar yeniden yazılmadan kuyrukta bekliyor");
+    notes.push("OPENAI_API_KEY yok — taslaklar doğrudan otomatik yayınlanıyor (Yapay zekasız mod)");
+    
+    const pending = await prisma.article.findMany({
+      where: {
+        sourceName: source.name,
+        status: "DRAFT",
+        OR: [{ rewrittenAt: null }, { rewrittenAt: { isSet: false } }],
+      },
+      take: REWRITE_BATCH,
+    });
+
+    for (const draft of pending) {
+      await prisma.article.update({
+        where: { id: draft.id },
+        data: {
+          status: source.autoPublish ? "PUBLISHED" : "DRAFT",
+          rewrittenAt: new Date(),
+          content: [
+            `<p>${draft.spot}</p>`,
+            `<p class="mt-4 font-bold text-xs text-neutral-400">`,
+            `  Bu haber otomatik olarak <strong>${source.name}</strong> kaynağından derlenmiştir. `,
+            `  Haberin detaylarını okumak için kaynağı ziyaret edebilirsiniz: `,
+            `  <a href="${draft.sourceUrl}" target="_blank" rel="noopener nofollow" class="text-evos hover:underline">`,
+            `    Orijinal Kaynağa Git ›`,
+            `  </a>`,
+            `</p>`
+          ].join("\n"),
+        }
+      });
+      stats.created++;
+    }
     return;
   }
 

@@ -8,7 +8,6 @@ const MEMBER_PATHS = [
   "/bildirimler",
   "/akis",
   "/arkadaslar",
-  "/reels/yeni",
   "/ilanlarim",
   "/ilanlar/yeni",
 ];

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import NewsCard from "@/components/news/NewsCard";
 import VehicleCard from "@/components/vehicles/VehicleCard";
+import DailyEvReview from "@/components/vehicles/DailyEvReview";
 import CardRail from "@/components/ui/CardRail";
 import SectionTitle from "@/components/news/SectionTitle";
 import MostRead from "@/components/news/MostRead";
@@ -30,11 +31,12 @@ export default async function VehicleHubPage() {
       prisma.vehicle.findMany({
         orderBy: [{ rating: "desc" }, { rangeKm: "desc" }],
         take: 8,
+        include: { syncImages: true },
       }),
       getMostRead(8),
-      prisma.vehicle.findFirst({ orderBy: { price: "asc" } }),
-      prisma.vehicle.findFirst({ orderBy: { rangeKm: "desc" } }),
-      prisma.vehicle.findFirst({ orderBy: { acceleration: "asc" } }),
+      prisma.vehicle.findFirst({ orderBy: { price: "asc" }, include: { syncImages: true } }),
+      prisma.vehicle.findFirst({ orderBy: { rangeKm: "desc" }, include: { syncImages: true } }),
+      prisma.vehicle.findFirst({ orderBy: { acceleration: "asc" }, include: { syncImages: true } }),
     ]);
 
   const champions = [
@@ -56,6 +58,11 @@ export default async function VehicleHubPage() {
           doğrulanmış kayıtlardan gelir.
         </p>
       </header>
+
+      {/* GÜNLÜK EV İNCELEMESİ */}
+      {vehicles[0] && (
+        <DailyEvReview vehicle={vehicles[0] as any} />
+      )}
 
       {/* ŞAMPİYONLAR */}
       <section>

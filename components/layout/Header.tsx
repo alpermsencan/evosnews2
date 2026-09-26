@@ -46,8 +46,8 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full">
-      {/* Üst kırmızı bar */}
-      <div className="bg-evos">
+      {/* Üst mavi bar */}
+      <div className="bg-[#0B1E3F] border-b border-white/5">
         <div className="mx-auto flex h-14 max-w-[1280px] items-center gap-2 px-3 sm:h-16 sm:gap-4 sm:px-4">
           <button
             onClick={() => setOpenMenu(true)}
@@ -56,17 +56,13 @@ export default function Header() {
           >
             <IconMenu className="h-7 w-7" />
           </button>
-
-          <Link href="/" className="flex shrink-0 items-end gap-1.5 text-white">
-            <IconBolt className="mb-1 h-6 w-6 sm:h-7 sm:w-7" />
-            <span className="text-[26px] font-black leading-none tracking-tight sm:text-[32px]">
-              Evos
+ 
+          <Link href="/" className="flex shrink-0 items-center gap-1.5 text-white">
+            <span className="text-[24px] font-black leading-none tracking-tight sm:text-[28px] text-sky-400">
+              EVOtoPilot
             </span>
-            <span className="hidden text-[26px] font-black leading-none tracking-tight text-white/75 sm:inline sm:text-[32px]">
-              Gazete
-            </span>
-            <span className="mb-0.5 hidden text-[10px] font-semibold text-white/70 sm:inline">
-              com.tr
+            <span className="hidden lg:inline text-neutral-300 text-[11px] font-extrabold border-l border-white/20 pl-3 ml-2 tracking-wide">
+              ELEKTRİKLİ ARAÇ DÜNYASINDA TAM KONTROL
             </span>
           </Link>
 
@@ -144,13 +140,13 @@ export default function Header() {
                     href={item.href}
                     className={`relative flex items-center px-3 py-3 text-[13px] font-extrabold tracking-tight transition sm:text-sm ${
                       active
-                        ? "text-evos"
+                        ? "text-sky-600"
                         : "text-neutral-500 hover:text-neutral-900"
                     }`}
                   >
                     {item.label}
                     {active && (
-                      <span className="absolute inset-x-2 bottom-0 h-[3px] rounded-t bg-evos" />
+                      <span className="absolute inset-x-2 bottom-0 h-[3px] rounded-t bg-sky-600" />
                     )}
                   </Link>
                 </li>
