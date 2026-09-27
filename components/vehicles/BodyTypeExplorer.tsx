@@ -70,9 +70,9 @@ const BODY_TYPES = [
   },
   {
     id: "ticari",
-    name: "Minivan / Ticari",
-    value: "Minivan",
-    match: ["Minivan", "Ticari", "Panelvan"],
+    name: "Ticari Araçlar",
+    value: "Ticari",
+    match: ["Ticari", "Minivan", "Panelvan", "VAN"],
     svg: (
       <svg className="w-12 h-7" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -138,8 +138,10 @@ const BODY_TYPES = [
 export default function BodyTypeExplorer() {
   const searchParams = useSearchParams();
   const currentKasa = searchParams.get("kasa");
+  const currentDurum = searchParams.get("durum");
+  const currentKampanya = searchParams.get("kampanya");
 
-  const buildUrl = (val: string | null) => {
+  const buildKasaUrl = (val: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (!val || currentKasa === val) {
       params.delete("kasa");
@@ -150,11 +152,24 @@ export default function BodyTypeExplorer() {
     return `/araclar${q ? `?${q}` : ""}`;
   };
 
+  const toggleParam = (key: string, val: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (params.get(key) === val) {
+      params.delete(key);
+    } else {
+      params.set(key, val);
+    }
+    const q = params.toString();
+    return `/araclar${q ? `?${q}` : ""}`;
+  };
+
+  const hasAnyFilter = Boolean(currentKasa || currentDurum || currentKampanya);
+
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+    <section className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 pb-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-50 text-sky-600 font-bold text-sm">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500 text-black font-bold text-sm">
             ⚡
           </span>
           <div>
@@ -162,37 +177,67 @@ export default function BodyTypeExplorer() {
               ARAÇ TİPİNE GÖRE KEŞFET
             </h2>
             <p className="text-[11px] text-neutral-500 font-medium">
-              İhtiyacınıza uygun kasa tipini seçerek elektrikli modelleri listeleyin
+              Kasa tipi, Türkiye satış durumu veya finansman kampanyasına göre modelleri listeleyin
             </p>
           </div>
         </div>
 
-        {currentKasa && (
+        {hasAnyFilter && (
           <Link
             href="/araclar"
             className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-600 transition hover:bg-neutral-200"
           >
-            Filtreyi Temizle ✕
+            Filtreleri Temizle ✕
           </Link>
         )}
       </div>
 
+      {/* Özel Filtre Butonları (Türkiye'de Satılanlar & Kampanyalı Araçlar) */}
+      <div className="flex flex-wrap items-center gap-2 pt-1">
+        <Link
+          href={toggleParam("durum", "TR_YAYINDA")}
+          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition-all ${
+            currentDurum === "TR_YAYINDA"
+              ? "bg-emerald-600 text-white shadow-xs ring-2 ring-emerald-500/30"
+              : "border border-neutral-200 bg-neutral-50/70 text-neutral-700 hover:border-emerald-500 hover:bg-emerald-50/50 hover:text-emerald-800"
+          }`}
+        >
+          <span>🇹🇷</span>
+          <span>Türkiye&apos;de Satılanlar</span>
+          {currentDurum === "TR_YAYINDA" && <span className="text-[10px]">✕</span>}
+        </Link>
+
+        <Link
+          href={toggleParam("kampanya", "1")}
+          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition-all ${
+            currentKampanya === "1"
+              ? "bg-rose-600 text-white shadow-xs ring-2 ring-rose-500/30"
+              : "border border-neutral-200 bg-neutral-50/70 text-neutral-700 hover:border-rose-500 hover:bg-rose-50/50 hover:text-rose-800"
+          }`}
+        >
+          <span>🔥</span>
+          <span>Kampanyalı Araçlar (%0 Faiz & Destekler)</span>
+          {currentKampanya === "1" && <span className="text-[10px]">✕</span>}
+        </Link>
+      </div>
+
+      {/* Kasa Tipleri Grid */}
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-6 pt-1">
         {BODY_TYPES.map((bt) => {
           const isActive = currentKasa === bt.value;
           return (
             <Link
               key={bt.id}
-              href={buildUrl(bt.value)}
+              href={buildKasaUrl(bt.value)}
               className={`group flex flex-col items-center justify-center gap-2 rounded-xl p-3.5 text-center transition-all ${
                 isActive
-                  ? "border-2 border-sky-600 bg-sky-50/80 text-sky-700 shadow-sm ring-2 ring-sky-500/20"
-                  : "border border-neutral-200 bg-neutral-50/50 text-neutral-700 hover:border-sky-400 hover:bg-sky-50/40 hover:text-sky-700"
+                  ? "border-2 border-emerald-600 bg-emerald-50/80 text-emerald-800 shadow-xs ring-2 ring-emerald-500/20"
+                  : "border border-neutral-200 bg-neutral-50/50 text-neutral-700 hover:border-emerald-500 hover:bg-emerald-50/40 hover:text-emerald-800"
               }`}
             >
               <div
                 className={`transition-transform duration-200 group-hover:scale-105 ${
-                  isActive ? "text-sky-600" : "text-neutral-500 group-hover:text-sky-600"
+                  isActive ? "text-emerald-600" : "text-neutral-500 group-hover:text-emerald-600"
                 }`}
               >
                 {bt.svg}

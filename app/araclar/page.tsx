@@ -7,16 +7,43 @@ import SectionTitle from "@/components/news/SectionTitle";
 import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
 import BodyTypeExplorer from "@/components/vehicles/BodyTypeExplorer";
+import FeaturedVehiclesShowcase from "@/components/vehicles/FeaturedVehiclesShowcase";
 import { formatTL } from "@/lib/utils";
 
 export const revalidate = 60;
 export const metadata = {
-  title: "Araçları Keşfet",
+  title: "Araçları Keşfet | EVOS Elektrikli Araç Rehberi",
   description:
-    "Türkiye'de satışta olan elektrikli araçların menzil, batarya, şarj gücü ve fiyat karşılaştırması.",
+    "Türkiye'de satışta olan elektrikli araçların menzil, batarya, şarj gücü, kredi kampanyaları ve fiyat karşılaştırması.",
 };
 
 type SP = Promise<Record<string, string | undefined>>;
+
+// Kasa tipi geniş eşleştirme
+const BODY_TYPE_MAPPING: Record<string, string[]> = {
+  SUV: ["SUV", "Crossover", "SUV Fastback", "Arazi"],
+  Sedan: ["Sedan", "Fastback Sedan", "Fastback"],
+  Hatchback: ["Hatchback", "Hot Hatch", "Kompakt"],
+  Ticari: ["Minivan", "Ticari", "Panelvan", "VAN"],
+  Minivan: ["Minivan", "Ticari", "Panelvan", "VAN"],
+  Coupe: ["Coupe", "Cabrio", "Roadster", "Spor"],
+  "Station Wagon": ["Station Wagon", "Touring"],
+};
+
+// Finansman ve sıfır faiz kampanyası olan modeller
+const CAMPAIGN_MODELS = [
+  "T10X",
+  "Model Y 'Juniper' RWD",
+  "EV3 Long Range",
+  "EV6 GT-Line 84 kWh",
+  "Inster",
+  "Ioniq 5 Advance 84 kWh",
+  "5 E-Tech Iconic Cinq",
+  "Kangoo E-Tech",
+  "Seal 160 kW",
+  "Atto 3",
+  "Torres EVX",
+];
 
 export default async function VehiclesPage({
   searchParams,
@@ -28,8 +55,28 @@ export default async function VehiclesPage({
   const where: Prisma.VehicleWhereInput = {};
   if (sp.marka) where.brand = sp.marka;
   if (sp.segment) where.segment = sp.segment;
-  if (sp.kasa) where.bodyType = sp.kasa;
+
+  // Kasa filtresi
+  if (sp.kasa) {
+    const mapped = BODY_TYPE_MAPPING[sp.kasa];
+    if (mapped) {
+      where.bodyType = { in: mapped };
+    } else {
+      where.bodyType = sp.kasa;
+    }
+  }
+
+  // Türkiye Satış Durumu
   if (sp.durum) where.marketStatus = sp.durum;
+
+  // Kampanyalı Araçlar
+  if (sp.kampanya === "1") {
+    where.OR = [
+      { model: { in: CAMPAIGN_MODELS } },
+      { brand: { in: ["TOGG", "Tesla", "Kia", "Hyundai", "Renault", "BYD"] } },
+    ];
+  }
+
   const minFiyat = Number(sp.minFiyat);
   const maxFiyat = Number(sp.maxFiyat);
   const minMenzil = Number(sp.minMenzil);
@@ -45,9 +92,7 @@ export default async function VehiclesPage({
       : sp.sirala === "hizlanma"
       ? { acceleration: "asc" }
       : sp.sirala === "puan"
-      ? // MongoDB'de null, azalan sıralamada sayıların ardına düşer:
-        // puanı olmayan (henüz incelenmemiş) araçlar listenin sonunda kalır.
-        { rating: "desc" }
+      ? { rating: "desc" }
       : { price: "asc" };
 
   const [vehicles, brands, segments, bodyTypes, stats, news] = await Promise.all([
@@ -61,7 +106,12 @@ export default async function VehiclesPage({
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      {/* DOLUBATARYA TARZI ARAÇ TİPİNE GÖRE KEŞFET (Yeşil sütun yerine) */}
+      {/* VİTRİN: TOGG, TESLA, KIA EV, HYUNDAI IONIQ/INSTER */}
+      <Suspense fallback={<div className="h-64 rounded-2xl bg-white animate-pulse" />}>
+        <FeaturedVehiclesShowcase />
+      </Suspense>
+
+      {/* ARAÇ TİPİNE GÖRE KEŞFET (Ticari, TR Satışta, Kampanyalı Araçlar) */}
       <Suspense fallback={<div className="h-28 rounded-2xl bg-white animate-pulse" />}>
         <BodyTypeExplorer />
       </Suspense>
@@ -83,7 +133,7 @@ export default async function VehiclesPage({
           />
 
           {vehicles.length === 0 ? (
-            <div className="rounded-2xl border border-neutral-200 bg-white p-12 text-center text-sm font-semibold text-neutral-500 shadow-sm">
+            <div className="rounded-2xl border border-neutral-200 bg-white p-12 text-center text-sm font-semibold text-neutral-500 shadow-xs">
               Filtrelerinize uygun araç bulunamadı. Lütfen filtre kriterlerini genişletin.
             </div>
           ) : (
@@ -121,17 +171,21 @@ export default async function VehiclesPage({
                   <td className="px-4 py-3 font-bold text-neutral-900">
                     {v.brand} {v.model}
                   </td>
-                  <td className="px-4 py-3 text-neutral-600">{v.segment}</td>
-                  <td className="px-4 py-3 font-semibold text-volt-dark">{v.rangeKm} km</td>
+                  <td className="px-4 py-3 text-neutral-500">{v.segment || "-"}</td>
+                  <td className="px-4 py-3 font-semibold text-neutral-900">{v.rangeKm} km</td>
                   <td className="px-4 py-3 text-neutral-600">{v.batteryKwh} kWh</td>
                   <td className="px-4 py-3 text-neutral-600">{v.motorPowerHp} HP</td>
                   <td className="px-4 py-3 text-neutral-600">
-                    {v.dcChargeKw != null ? `${v.dcChargeKw} kW` : "—"}
+                    {v.dcChargeKw ? `${v.dcChargeKw} kW` : "—"}
                   </td>
                   <td className="px-4 py-3 text-neutral-600">{v.acceleration} sn</td>
-                  <td className="px-4 py-3 text-neutral-600">{v.consumption} kWh</td>
-                  <td className="px-4 py-3 text-neutral-600">%{v.otvRate}</td>
-                  <td className="px-4 py-3 text-right font-black text-evos">
+                  <td className="px-4 py-3 text-neutral-600">{v.consumption} kWh/100km</td>
+                  <td className="px-4 py-3">
+                    <span className="rounded bg-sky-50 px-2 py-0.5 text-[10px] font-black text-sky-800 border border-sky-100">
+                      %{v.otvRate}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right font-black text-neutral-900">
                     {formatTL(v.price)}
                   </td>
                 </tr>
@@ -141,20 +195,21 @@ export default async function VehiclesPage({
         </div>
       </section>
 
-      <p className="px-1 text-[11px] leading-relaxed text-neutral-500">
-        Fiyatlar Türkiye anahtar teslim liste fiyatlarıdır ve sık değişir. Menzil
-        ile tüketim değerleri üretici beyanı değil, gerçek kullanım ortalamalarıdır
-        (kaynak: EV Database). Boş bırakılan alanlar için doğrulanmış veri yoktur.
-      </p>
-
-      <section>
-        <SectionTitle title="ARAÇ HABERLERİ" href="/arac-merkezi" color="#0f766e" />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {news.map((a) => (
-            <NewsCard key={a.id} article={a} />
-          ))}
-        </div>
-      </section>
+      {/* İLGİLİ HABERLER */}
+      {news.length > 0 && (
+        <section>
+          <SectionTitle
+            title="ARAÇ DÜNYASINDAN GELİŞMELER"
+            href="/kategori/arac-merkezi"
+            color="#0f766e"
+          />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {news.map((a) => (
+              <NewsCard key={a.id} article={a} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

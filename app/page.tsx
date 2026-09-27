@@ -10,6 +10,9 @@ import NewsletterForm from "@/components/ui/NewsletterForm";
 import {
   IconTag,
 } from "@/components/ui/Icons";
+import TurkeyEvSalesWidget from "@/components/home/TurkeyEvSalesWidget";
+import EvCampaignsSection from "@/components/home/EvCampaignsSection";
+import FeaturedVehiclesShowcase from "@/components/vehicles/FeaturedVehiclesShowcase";
 import {
   getHeadlines,
   getLatest,
@@ -117,155 +120,45 @@ export default async function HomePage() {
         />
       )}
 
-      {/* GÜNLÜK YAZILAR: EDİTÖRÜN KALEMİNDEN & YAZARLARDAN (Eski versiyon geri getirildi) */}
-      <section className="px-3 sm:px-0 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Sol: Editörün Kaleminden */}
-        <div className="flex flex-col gap-3">
+      {/* EDİTÖRÜN KALEMİNDEN */}
+      {safeEditorArticles.length > 0 && (
+        <section className="px-3 sm:px-0">
           <SectionTitle
             title="EDİTÖRÜN KALEMİNDEN"
             color="#0f172a"
             href="/kategori/haber-merkezi"
+            subtitle="Elektrikli mobilite üzerine editör analiz ve incelemeleri"
           />
-          <div className="flex flex-col gap-5 bg-white border border-neutral-200 rounded-lg p-5 shadow-sm">
-            {safeEditorArticles.length > 0 ? (
-              (() => {
-                const first = safeEditorArticles[0];
-                const rest = safeEditorArticles.slice(1);
-                return (
-                  <>
-                    {/* Featured Large Card */}
-                    <Link href={`/haber/${first.slug}`} className="group flex flex-col gap-3 pb-4 border-b border-neutral-100">
-                      <div className="relative aspect-[16/9] w-full overflow-hidden rounded bg-neutral-100">
-                        {first.image && (
-                          <img src={first.image} alt={first.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider">
-                          {first.category?.name || "Editör İncelemesi"}
-                        </span>
-                        <h3 className="text-base font-black text-neutral-900 leading-snug group-hover:text-sky-600 transition">
-                          {first.title}
-                        </h3>
-                        <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">{first.spot}</p>
-                        <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
-                          {first.author?.avatar && (
-                            <img src={first.author.avatar} alt="" className="h-4 w-4 rounded-full object-cover" />
-                          )}
-                          <span className="truncate">{first.author?.name || "Editör"}</span>
-                          <span>·</span>
-                          <span className="shrink-0">{timeAgo(first.publishedAt || new Date())}</span>
-                        </div>
-                      </div>
-                    </Link>
-
-                    {/* Smaller horizontal list */}
-                    <div className="flex flex-col gap-4">
-                      {rest.map((a) => (
-                        <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-4 group border-b border-neutral-100 last:border-0 pb-4 last:pb-0">
-                          <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded bg-neutral-100">
-                            {a.image && (
-                              <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
-                            )}
-                          </div>
-                          <div className="flex flex-col gap-1 min-w-0">
-                            <h4 className="text-sm font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
-                              {a.title}
-                            </h4>
-                            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-neutral-400">
-                              {a.author?.avatar && (
-                                <img src={a.author.avatar} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
-                              )}
-                              <span className="truncate">{a.author?.name || "Yazar"}</span>
-                              <span>·</span>
-                              <span className="shrink-0">{timeAgo(a.publishedAt || new Date())}</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </>
-                );
-              })()
-            ) : (
-              <p className="text-xs text-neutral-500 py-4 text-center">Henüz editör yazısı bulunmuyor.</p>
-            )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs">
+            {safeEditorArticles.map((a) => (
+              <Link key={a.id} href={`/haber/${a.slug}`} className="group flex flex-col gap-2.5">
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-neutral-100">
+                  {a.image && (
+                    <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-105 transition duration-300" />
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider">
+                    {a.category?.name || "Editör İncelemesi"}
+                  </span>
+                  <h4 className="text-xs sm:text-sm font-black text-neutral-900 group-hover:text-emerald-700 transition leading-snug line-clamp-2">
+                    {a.title}
+                  </h4>
+                  <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
+                    <span className="truncate">{a.author?.name || "Editör"}</span>
+                    <span>·</span>
+                    <span>{timeAgo(a.publishedAt || new Date())}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
-        </div>
+        </section>
+      )}
 
-        {/* Sağ: Yazarlardan */}
-        <div className="flex flex-col gap-3">
-          <SectionTitle
-            title="YAZARLARDAN"
-            color="#0f172a"
-            href="/kategori/teknoloji"
-          />
-          <div className="flex flex-col gap-5 bg-white border border-neutral-200 rounded-lg p-5 shadow-sm">
-            {safeAuthorArticles.length > 0 ? (
-              (() => {
-                const first = safeAuthorArticles[0];
-                const rest = safeAuthorArticles.slice(1);
-                return (
-                  <>
-                    {/* Featured Large Card */}
-                    <Link href={`/haber/${first.slug}`} className="group flex flex-col gap-3 pb-4 border-b border-neutral-100">
-                      <div className="relative aspect-[16/9] w-full overflow-hidden rounded bg-neutral-100">
-                        {first.image && (
-                          <img src={first.image} alt={first.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider">
-                          {first.category?.name || "Yazar İncelemesi"}
-                        </span>
-                        <h3 className="text-base font-black text-neutral-900 leading-snug group-hover:text-sky-600 transition">
-                          {first.title}
-                        </h3>
-                        <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">{first.spot}</p>
-                        <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
-                          {first.author?.avatar && (
-                            <img src={first.author.avatar} alt="" className="h-4 w-4 rounded-full object-cover" />
-                          )}
-                          <span className="truncate">{first.author?.name || "Yazar"}</span>
-                          <span>·</span>
-                          <span className="shrink-0">{timeAgo(first.publishedAt || new Date())}</span>
-                        </div>
-                      </div>
-                    </Link>
-
-                    {/* Smaller horizontal list */}
-                    <div className="flex flex-col gap-4">
-                      {rest.map((a) => (
-                        <Link key={a.id} href={`/haber/${a.slug}`} className="flex items-start gap-4 group border-b border-neutral-100 last:border-0 pb-4 last:pb-0">
-                          <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded bg-neutral-100">
-                            {a.image && (
-                              <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-102 transition duration-300" />
-                            )}
-                          </div>
-                          <div className="flex flex-col gap-1 min-w-0">
-                            <h4 className="text-sm font-black text-neutral-900 group-hover:text-sky-600 transition leading-snug line-clamp-2">
-                              {a.title}
-                            </h4>
-                            <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-neutral-400">
-                              {a.author?.avatar && (
-                                <img src={a.author.avatar} alt="" className="h-3.5 w-3.5 rounded-full object-cover" />
-                              )}
-                              <span className="truncate">{a.author?.name || "Yazar"}</span>
-                              <span>·</span>
-                              <span className="shrink-0">{timeAgo(a.publishedAt || new Date())}</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </>
-                );
-              })()
-            ) : (
-              <p className="text-xs text-neutral-500 py-4 text-center">Henüz yazar yazısı bulunmuyor.</p>
-            )}
-          </div>
-        </div>
+      {/* EV ARAÇ KAMPANYALARI & FİNANSMAN (Yazarlar Kısmı Yeniden Tasarlandı) */}
+      <section className="px-3 sm:px-0">
+        <EvCampaignsSection />
       </section>
 
       {/* ANA İÇERİK + SAĞ SÜTUN */}
@@ -291,6 +184,11 @@ export default async function HomePage() {
               </div>
             </section>
           )}
+
+          {/* VİTRİN: TOGG, TESLA, KIA EV, HYUNDAI */}
+          <section className="px-3 sm:px-0">
+            <FeaturedVehiclesShowcase />
+          </section>
 
           {/* ARAÇLARI KEŞFET */}
           {safeVehicles.length > 0 && (
@@ -380,6 +278,9 @@ export default async function HomePage() {
 
         {/* SAĞ SÜTUN */}
         <aside className="flex w-full shrink-0 flex-col gap-5 px-3 sm:px-0 lg:w-[330px]">
+          {/* TÜRKİYE RESMÎ EV SATIŞ TABLOSU (ODMD) */}
+          <TurkeyEvSalesWidget />
+
           {/* ÖTV REHBERİ SÜTUNU (Site renkleriyle uyumlu, %25 taban dilimli) */}
           <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
             <div className="flex items-center justify-between bg-[#0B1E3F] px-4 py-3.5 text-white">
