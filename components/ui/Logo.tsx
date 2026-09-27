@@ -16,7 +16,7 @@ export default function Logo({
   size = "md",
   theme,
   showTagline = true,
-  tagline = "TÜRKİYE'NİN ELEKTRİKLİ ARAÇ MERKEZİ",
+  tagline = "ELEKTRİFİKASYON",
   className = "",
   href = "/",
 }: LogoProps) {
@@ -26,8 +26,8 @@ export default function Logo({
   // Boyut ölçeklendirmeleri
   const emblemSizes = {
     sm: "w-7 h-7",
-    md: "w-9 h-9 sm:w-10 sm:h-10",
-    lg: "w-11 h-11 sm:w-12 sm:h-12",
+    md: "w-8 h-8 sm:w-9 sm:h-9",
+    lg: "w-10 h-10 sm:w-11 sm:h-11",
   };
 
   const titleSizes = {
@@ -37,85 +37,68 @@ export default function Logo({
   };
 
   const taglineSizes = {
-    sm: "text-[7.5px] tracking-[0.18em]",
-    md: "text-[8.5px] sm:text-[9px] tracking-[0.22em]",
-    lg: "text-[10px] tracking-[0.24em]",
+    sm: "text-[7px] tracking-[0.24em]",
+    md: "text-[8px] sm:text-[8.5px] tracking-[0.28em]",
+    lg: "text-[9.5px] sm:text-[10px] tracking-[0.3em]",
   };
 
-  // Kurumsal, dinamik ve göze çarpan otomotiv amblemi (Hız kanalları + Supersonic Autopilot Vektörü)
+  // Kurumsal & Modern Dönüşüm ve Elektrifikasyon Danışmanı Amblemi
+  // - İki dinamik orbital yay: Elektrikli Dönüşümü (Transition loop) simgeler
+  // - 45° hassas pusula iğnesi: Geleceğe yol gösteren EV Danışmanı & Otopilot rehberliğini simgeler
   const emblem = (
     <div className={`relative shrink-0 flex items-center justify-center ${emblemSizes[size]}`}>
       <svg
-        viewBox="0 0 44 44"
+        viewBox="0 0 40 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-full transition-transform duration-200 group-hover:scale-105"
+        className="w-full h-full transition-all duration-300 group-hover:rotate-45 group-hover:scale-105"
       >
         <defs>
-          <linearGradient id="emblemBg" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#0B132B" />
-            <stop offset="100%" stopColor="#1E293B" />
+          <linearGradient id="needleCyan" x1="20" y1="20" x2="29" y2="11" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#0284C7" />
+            <stop offset="100%" stopColor="#38BDF8" />
           </linearGradient>
 
-          <linearGradient id="emblemVector" x1="24" y1="10" x2="38" y2="34" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#00D2D3" />
-            <stop offset="50%" stopColor="#0284C7" />
-            <stop offset="100%" stopColor="#2563EB" />
-          </linearGradient>
-
-          <linearGradient id="specularGlint" x1="0" y1="0" x2="44" y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+          <linearGradient id="arcGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#0284C7" />
+            <stop offset="100%" stopColor="#0EA5E9" />
           </linearGradient>
         </defs>
 
-        {/* 1. Dış Gövde: Lüks Otomotiv Faseti */}
-        <rect
-          x="1.5"
-          y="1.5"
-          width="41"
-          height="41"
-          rx="12"
-          fill="url(#emblemBg)"
-          stroke={isDark ? "#334155" : "#1E293B"}
-          strokeWidth="1.5"
+        {/* 1. Sol Üst Dönüşüm Yayı (Gelenekselden Geleceğe Geçiş) */}
+        <path
+          d="M12 30C7.58 26.5 5 21 5 15C5 8.37 10.37 3 17 3C22 3 26.5 6 28.5 10.5"
+          stroke={isDark ? "#FFFFFF" : "#0F172A"}
+          strokeWidth="3.2"
+          strokeLinecap="round"
         />
 
-        {/* 2. Üst Işık Yansıma Çizgisi */}
-        <rect
-          x="2.5"
-          y="2.5"
-          width="39"
-          height="18"
-          rx="10"
-          stroke="url(#specularGlint)"
-          strokeWidth="1"
-          fill="none"
+        {/* 2. Sağ Alt Elektrifikasyon Yayı (Temiz Enerjiye Varış) */}
+        <path
+          d="M28 10C32.42 13.5 35 19 35 25C35 31.63 29.63 37 23 37C18 37 13.5 34 11.5 29.5"
+          stroke="url(#arcGrad)"
+          strokeWidth="3.2"
+          strokeLinecap="round"
         />
 
-        {/* 3. Aerodinamik 'E' Hız Kanatları (Parlak Beyaz) */}
-        <path
-          d="M12 13.5H23C24.4 13.5 25.2 14.8 24.5 16.1L23.8 17.5H12V13.5Z"
-          fill="#FFFFFF"
-        />
-        <path
-          d="M12 20H21C22.4 20 23.2 21.3 22.5 22.6L21.8 24H12V20Z"
-          fill="#FFFFFF"
-          fillOpacity="0.9"
-        />
-        <path
-          d="M12 26.5H23C24.4 26.5 25.2 27.8 24.5 29.1L23.8 30.5H12V26.5Z"
-          fill="#FFFFFF"
-        />
+        {/* 3. Danışman Pusula İğnesi (Kuzeydoğu / 45° Gelecek & Yol Gösterici) */}
+        {/* İleri/Yukarı Kanat: Elektrik Mavisi (Elektrifikasyon) */}
+        <polygon points="20,20 28.5,11.5 21,11" fill={isDark ? "#38BDF8" : "#0284C7"} />
+        <polygon points="20,20 28.5,11.5 29,19" fill={isDark ? "#7DD3FC" : "#0EA5E9"} />
 
-        {/* 4. Supersonic Autopilot Yön Vektörü (Elektrik Mavisi & Turkuaz) */}
-        <path
-          d="M25 12L34 22L25 32H29.5L37 22L29.5 12H25Z"
-          fill="url(#emblemVector)"
-        />
+        {/* Geri/Aşağı Kanat: Güven & Otorite (Koyu Antrasit / Beyaz) */}
+        <polygon points="20,20 11.5,28.5 19,29" fill={isDark ? "#FFFFFF" : "#0F172A"} />
+        <polygon points="20,20 11.5,28.5 11,21" fill={isDark ? "#94A3B8" : "#334155"} />
 
-        {/* 5. Hassas Merkez Enerji Çekirdeği */}
-        <circle cx="21" cy="22" r="1.5" fill="#00D2D3" />
+        {/* 4. Merkez Hassas Mil / Rulman Çekirdeği */}
+        <circle
+          cx="20"
+          cy="20"
+          r="2.2"
+          fill={isDark ? "#0B132B" : "#FFFFFF"}
+          stroke={isDark ? "#38BDF8" : "#0F172A"}
+          strokeWidth="1.6"
+        />
       </svg>
     </div>
   );
@@ -153,21 +136,12 @@ export default function Logo({
           </span>
         </div>
 
-        {/* Alt Kurumsal Slogan / Tagline */}
+        {/* Tek Kelime Marka Sloganı / Dönüşüm Tanımı */}
         {showTagline && variant !== "compact" && (
-          <div className="flex items-center gap-1.5 mt-1">
+          <div className="flex items-center mt-1">
             <span
-              className={`inline-flex items-center px-1 py-0.5 rounded text-[7.5px] font-black tracking-wider leading-none ${
-                isDark
-                  ? "bg-sky-950/80 border border-sky-500/40 text-sky-300"
-                  : "bg-sky-50 border border-sky-200/80 text-sky-700"
-              }`}
-            >
-              TR
-            </span>
-            <span
-              className={`font-extrabold uppercase ${
-                isDark ? "text-neutral-400" : "text-neutral-600"
+              className={`font-black uppercase tracking-[0.28em] ${
+                isDark ? "text-sky-400/90" : "text-sky-600"
               } ${taglineSizes[size]}`}
             >
               {tagline}

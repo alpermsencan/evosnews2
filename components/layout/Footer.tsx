@@ -11,9 +11,8 @@ export default function Footer() {
           <div className="flex max-w-sm flex-col gap-4">
             <Logo size="lg" showTagline={true} />
             <p className="text-sm leading-relaxed text-slate-400">
-              Elektrikli mobilitenin Türkiye&apos;deki yayın ve teknoloji merkezi. Haber,
-              doğrulanmış fabrika verileri, canlı şarj ağı haritası, 2.el pazarı ve yapay zekâ destekli araç
-              danışmanlığı tek platformda.
+              Türkiye&apos;nin elektrifikasyon ve elektrikli araç dönüşüm platformu.
+              Doğrulanmış model verileri, canlı şarj altyapısı, 2. el pazarı ve akıllı EV danışmanlığı tek merkezde.
             </p>
             <div className="pt-2">
               <NewsletterForm variant="dark" />
