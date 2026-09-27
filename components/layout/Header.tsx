@@ -3,19 +3,16 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import Sidebar from "./Sidebar";
 import Logo from "@/components/ui/Logo";
 import NotificationBell from "@/components/user/NotificationBell";
 import UserMenu from "@/components/user/UserMenu";
 import { TOP_NAV } from "@/lib/nav";
 import {
   IconClose,
-  IconMenu,
   IconSearch,
 } from "@/components/ui/Icons";
 
 export default function Header() {
-  const [openMenu, setOpenMenu] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [q, setQ] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -49,18 +46,9 @@ export default function Header() {
       {/* 1. ANA BAŞLIK: LOGO & ARAMA (SADE, MODERN & PROFESYONEL) */}
       <div className="border-b border-neutral-200/80 bg-white">
         <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-3 sm:px-4">
-          {/* Sol Kolon: Menü Butonu & Sade Logo */}
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              onClick={() => setOpenMenu(true)}
-              aria-label="Menüyü aç"
-              className="flex h-9 w-9 items-center justify-center rounded-lg text-neutral-700 hover:bg-neutral-100 hover:text-neutral-950 transition active:scale-95 cursor-pointer"
-            >
-              <IconMenu className="h-5 w-5" />
-            </button>
-
-            {/* Temiz & Profesyonel Logo */}
-            <Logo size="md" showTagline={true} theme="light" />
+          {/* Sol Kolon: Doğrudan Logo */}
+          <div className="flex items-center shrink-0">
+            <Logo size="md" theme="light" />
           </div>
 
           {/* Orta Kolon: Sade & Şık Arama Çubuğu (Desktop) */}
@@ -189,9 +177,6 @@ export default function Header() {
           </div>
         </div>
       </nav>
-
-      {/* Yan Menü (Sidebar Drawer) */}
-      <Sidebar open={openMenu} onClose={() => setOpenMenu(false)} />
     </header>
   );
 }
