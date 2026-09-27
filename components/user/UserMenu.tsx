@@ -27,9 +27,9 @@ export default function UserMenu() {
     return (
       <Link
         href="/giris"
-        className="flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] px-3 text-xs font-black text-[#1F1F1F] transition sm:h-10 sm:px-4"
+        className="flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-white/[0.1] hover:bg-white/[0.18] border border-cyan-400/30 px-3 text-xs font-black text-white transition sm:h-10 sm:px-4"
       >
-        <IconUser className="h-4 w-4 sm:h-5 sm:w-5 text-[#1F1F1F]" />
+        <IconUser className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-300" />
         <span>GİRİŞ</span>
       </Link>
     );
@@ -50,10 +50,10 @@ export default function UserMenu() {
         onClick={() => setOpen((s) => !s)}
         aria-label="Hesap menüsü"
         aria-expanded={open}
-        className="flex h-9 items-center gap-2 rounded-xl bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] px-2 pr-3 transition sm:h-10 text-[#1F1F1F]"
+        className="flex h-9 items-center gap-2 rounded-xl bg-white/[0.1] hover:bg-white/[0.18] border border-cyan-400/30 px-2 pr-3 transition sm:h-10 text-white"
       >
         <Avatar src={user.avatar} name={user.name} size="xs" />
-        <span className="hidden max-w-28 truncate text-xs font-black text-[#1F1F1F] sm:inline">
+        <span className="hidden max-w-28 truncate text-xs font-black text-white sm:inline">
           {user.name.split(" ")[0]}
         </span>
       </button>

@@ -45,27 +45,37 @@ export default function Header() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 w-full select-none shadow-xs">
-      {/* 1. ANA SAHNE: LOGO & KONTROL MERKEZİ (DOLUBATARYA BEYAZ & CAM STİLİ: #FFFFFF, #1F1F1F, #05C46C, #F4F4F4) */}
-      <div className="relative bg-white/95 backdrop-blur-md border-b border-[#EAEAEA]">
+    <header className="sticky top-0 z-50 w-full select-none shadow-sm">
+      {/* 1. ANA SAHNE: LOGO BÖLÜMÜ VE TURKUAZ BAND (PREMIUM TURQUOISE & OBSIDIAN GLASS) */}
+      <div className="relative bg-gradient-to-r from-[#031d28] via-[#08384d] to-[#031d28] border-b border-cyan-500/25 backdrop-blur-xl shadow-lg">
+        {/* Turkuaz Ortam Işıması (Ambient Turquoise Glow) */}
+        <div className="pointer-events-none absolute -top-12 left-8 w-80 h-28 bg-cyan-400/20 blur-3xl rounded-full" />
+        <div className="pointer-events-none absolute -top-12 right-12 w-64 h-28 bg-teal-500/15 blur-3xl rounded-full" />
+
         <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-3 px-3 sm:px-4">
-          {/* Sol Kolon: Hamburger Menü + Modern Logo + Sürüm Rozeti */}
+          {/* Sol Kolon: Hamburger Menü + Logo + Turkuaz Yan Band */}
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             <button
               onClick={() => setOpenMenu(true)}
               aria-label="Menüyü aç"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] text-[#1F1F1F] transition active:scale-95 cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.08] hover:bg-white/[0.15] border border-cyan-400/30 text-white transition active:scale-95 cursor-pointer"
             >
-              <IconMenu className="h-6 w-6 text-[#1F1F1F]" />
+              <IconMenu className="h-6 w-6 text-cyan-200" />
             </button>
 
-            {/* Modern Logo (DoluBatarya Teması) */}
-            <Logo size="md" showTagline={true} theme="light" />
+            {/* Modern Logo */}
+            <Logo size="md" showTagline={true} theme="dark" />
 
-            {/* Platform Rozeti */}
-            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#DDFFF0] border border-[#05C46C]/30 text-[10px] font-black tracking-widest text-[#05C46C] uppercase shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#05C46C] animate-pulse"></span>
-              <span>2026 EDITION</span>
+            {/* Dikey Turkuaz Ayrım Bandı */}
+            <div className="hidden lg:block h-7 w-[2px] bg-gradient-to-b from-transparent via-cyan-400 to-transparent mx-1" />
+
+            {/* Logonun Yanındaki Turkuaz Band / Rozet */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/50 text-[11px] font-black tracking-wider text-cyan-200 uppercase shadow-xs shadow-cyan-500/15">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-300"></span>
+              </span>
+              <span>2026 ELEKTRİKLİ MOBİLİTE</span>
             </div>
           </div>
 
@@ -73,16 +83,16 @@ export default function Header() {
           <div className="hidden lg:flex flex-1 max-w-md xl:max-w-lg mx-4">
             <form
               onSubmit={submitSearch}
-              className="group relative flex w-full items-center rounded-full bg-[#F4F4F4] hover:bg-[#EAEAEA] focus-within:bg-white border border-[#EAEAEA] focus-within:border-[#05C46C] focus-within:ring-2 focus-within:ring-[#05C46C]/20 px-3.5 py-2 transition-all shadow-xs"
+              className="group relative flex w-full items-center rounded-full bg-white/[0.07] hover:bg-white/[0.12] focus-within:bg-white/[0.15] border border-cyan-400/30 focus-within:border-cyan-300 focus-within:ring-2 focus-within:ring-cyan-400/30 px-3.5 py-2 transition-all shadow-inner"
             >
-              <IconSearch className="h-4 w-4 shrink-0 text-[#888888] group-focus-within:text-[#05C46C] transition-colors" />
+              <IconSearch className="h-4 w-4 shrink-0 text-cyan-300 group-focus-within:text-cyan-200 transition-colors" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Araç, marka, batarya, şarj istasyonu veya haber ara..."
-                className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-[#1F1F1F] placeholder:text-[#888888] outline-none font-medium"
+                className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-white placeholder:text-cyan-100/60 outline-none font-medium"
               />
-              <kbd className="hidden xl:inline-flex items-center px-2 py-0.5 rounded bg-white border border-[#EAEAEA] text-[10px] font-mono font-bold text-[#656565]">
+              <kbd className="hidden xl:inline-flex items-center px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/30 text-[10px] font-mono font-bold text-cyan-200">
                 Ara ↵
               </kbd>
             </form>
@@ -90,10 +100,10 @@ export default function Header() {
 
           {/* Sağ Kolon: Hızlı Aksiyonlar, Bildirim & Kullanıcı Menüsü */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Hızlı Aksiyon: İlan Ver Butonu (DoluBatarya Green #05C46C) */}
+            {/* Hızlı Aksiyon: İlan Ver Butonu (Turkuaz Gradyan) */}
             <Link
               href="/ilanlar/yeni"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#05C46C] hover:bg-[#08B565] text-white font-black text-xs shadow-xs transition active:scale-95"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 text-slate-950 font-black text-xs shadow-md shadow-cyan-500/25 active:scale-95 transition-all"
             >
               <span>⚡</span>
               <span>İlan Ver</span>
@@ -103,17 +113,17 @@ export default function Header() {
             <button
               onClick={() => setOpenSearch((s) => !s)}
               aria-label="Arama yap"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] text-[#1F1F1F] transition lg:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.08] hover:bg-white/[0.15] border border-cyan-400/30 text-cyan-200 transition lg:hidden"
             >
               {openSearch ? (
-                <IconClose className="h-5 w-5 text-[#1F1F1F]" />
+                <IconClose className="h-5 w-5 text-white" />
               ) : (
-                <IconSearch className="h-5 w-5 text-[#1F1F1F]" />
+                <IconSearch className="h-5 w-5 text-cyan-300" />
               )}
             </button>
 
             {/* Bildirim Zili */}
-            <div className="flex items-center justify-center rounded-xl bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] transition">
+            <div className="flex items-center justify-center rounded-xl bg-white/[0.08] hover:bg-white/[0.15] border border-cyan-400/30 transition">
               <NotificationBell />
             </div>
 
@@ -126,21 +136,21 @@ export default function Header() {
         {openSearch && (
           <form
             onSubmit={submitSearch}
-            className="flex items-center gap-2 border-t border-[#EAEAEA] bg-white px-3.5 py-3 lg:hidden"
+            className="flex items-center gap-2 border-t border-cyan-500/30 bg-[#042433] px-3.5 py-3 lg:hidden"
           >
-            <div className="flex flex-1 items-center rounded-xl bg-[#F4F4F4] border border-[#EAEAEA] px-3 py-2 text-[#1F1F1F]">
-              <IconSearch className="h-4 w-4 shrink-0 text-[#888888]" />
+            <div className="flex flex-1 items-center rounded-xl bg-white/[0.1] border border-cyan-400/30 px-3 py-2 text-white">
+              <IconSearch className="h-4 w-4 shrink-0 text-cyan-300" />
               <input
                 ref={inputRef}
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Araç, şarj, haber veya marka ara..."
-                className="w-full bg-transparent px-2.5 text-sm text-[#1F1F1F] placeholder:text-[#888888] outline-none"
+                className="w-full bg-transparent px-2.5 text-sm text-white placeholder:text-cyan-100/60 outline-none"
               />
             </div>
             <button
               type="submit"
-              className="rounded-xl bg-[#05C46C] hover:bg-[#08B565] px-4 py-2 text-xs font-black text-white transition active:scale-95"
+              className="rounded-xl bg-cyan-400 hover:bg-cyan-300 px-4 py-2 text-xs font-black text-slate-950 transition active:scale-95"
             >
               Ara
             </button>
@@ -148,14 +158,14 @@ export default function Header() {
         )}
       </div>
 
-      {/* 2. KATEGORİ & NAVİGASYON ŞERİDİ (DOLUBATARYA RENKLERİ VE STİLİ: #FFFFFF, #1F1F1F, #05C46C, #F4F4F4) */}
+      {/* 2. KATEGORİ & NAVİGASYON ŞERİDİ (DOLUBATARYA BEYAZ ŞERİT & TURKUAZ VURGU) */}
       <nav
         className={`bg-white/95 backdrop-blur-md border-b border-[#EAEAEA] transition-all duration-300 ${
           scrolled ? "shadow-md border-[#E0E0E0]" : ""
         }`}
       >
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-2 sm:px-4">
-          {/* Yatay Navigasyon Linkleri (DoluBatarya Teması) */}
+          {/* Yatay Navigasyon Linkleri */}
           <ul className="no-scrollbar flex items-center gap-1 overflow-x-auto whitespace-nowrap py-1.5 w-full lg:w-auto">
             {TOP_NAV.map((item) => {
               const active = isActive(item.href);
@@ -165,13 +175,13 @@ export default function Header() {
                     href={item.href}
                     className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold tracking-wide uppercase transition-all duration-200 ${
                       active
-                        ? "bg-[#05C46C] text-white hover:bg-[#08B565] shadow-xs"
-                        : "text-[#1F1F1F] hover:text-[#05C46C] hover:bg-[#F4F4F4]"
+                        ? "bg-gradient-to-r from-cyan-500 to-teal-500 text-slate-950 font-black shadow-xs"
+                        : "text-[#1F1F1F] hover:text-cyan-700 hover:bg-cyan-50/70"
                     }`}
                   >
                     <span>{item.label}</span>
                     {active && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-950 animate-pulse" />
                     )}
                   </Link>
                 </li>
@@ -179,7 +189,7 @@ export default function Header() {
             })}
           </ul>
 
-          {/* Sağ Kolon: Hızlı Araçlar (DoluBatarya Renk Paleti) */}
+          {/* Sağ Kolon: Hızlı Araçlar */}
           <div className="hidden lg:flex items-center gap-2 py-1.5">
             <Link
               href="/karsilastirma/araba"
@@ -191,7 +201,7 @@ export default function Header() {
 
             <Link
               href="/ai-danisman"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#DDFFF0] border border-[#05C46C]/30 text-xs font-black text-[#05C46C] hover:bg-[#05C46C] hover:text-white transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-50 border border-cyan-400/40 text-xs font-black text-cyan-800 hover:bg-cyan-500 hover:text-slate-950 transition"
             >
               <span className="text-xs">✨</span>
               <span>AI Danışman</span>
