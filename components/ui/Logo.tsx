@@ -31,7 +31,7 @@ export default function Logo({
     lg: "text-2xl sm:text-[28px]",
   };
 
-  // Yepyeni, modern aerodinamik hız ve otopilot kanatları (Supersonic Dual-Chevron)
+  // Lüks Otomotiv Performans Amblemi: Siyah & Yarış Kırmızısı Süpersonik Kanatlar
   const emblem = (
     <div className={`relative shrink-0 flex items-center justify-center ${emblemSizes[size]}`}>
       <svg
@@ -41,22 +41,22 @@ export default function Logo({
         className="w-full h-full transition-transform duration-200 group-hover:scale-105"
       >
         <defs>
-          <linearGradient id="supChevron" x1="14" y1="8" x2="32" y2="28" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#0284C7" />
-            <stop offset="100%" stopColor="#0EA5E9" />
+          <linearGradient id="supRedChevron" x1="14" y1="8" x2="32" y2="28" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#DC2626" />
+            <stop offset="100%" stopColor="#EF4444" />
           </linearGradient>
         </defs>
 
-        {/* 1. Sol Kanat: Stabilite & Gövde (Obsidian / Beyaz) */}
+        {/* 1. Sol Kanat: Derin Obsidian Siyahı (Açık mod) / Titanyum Beyaz (Koyu mod) */}
         <path
           d="M5 8.5L16.5 18L5 27.5H10.5L22 18L10.5 8.5H5Z"
-          fill={isDark ? "#FFFFFF" : "#0F172A"}
+          fill={isDark ? "#FFFFFF" : "#0A0D14"}
         />
 
-        {/* 2. Sağ Kanat: İleri Hız & Otopilot Vektörü (Elektrik Mavisi) */}
+        {/* 2. Sağ Kanat: Otomotiv Yarış Kırmızısı (Yüksek Hız & Otopilot İntikali) */}
         <path
           d="M15 8.5L26.5 18L15 27.5H20.5L32 18L20.5 8.5H15Z"
-          fill={isDark ? "#38BDF8" : "url(#supChevron)"}
+          fill="url(#supRedChevron)"
         />
       </svg>
     </div>
@@ -76,15 +76,15 @@ export default function Logo({
     <div className={`flex items-center gap-2.5 sm:gap-3 group select-none ${className}`}>
       {emblem}
 
-      {/* Tamamen Slogansız, Sade, Güçlü Tipografi */}
+      {/* Lüks Siyah & Kırmızı Tipografi */}
       <div className={`flex items-baseline font-black tracking-tight ${titleSizes[size]}`}>
         {/* EV */}
         <span className={`font-black tracking-tight ${isDark ? "text-white" : "text-neutral-950"}`}>
           EV
         </span>
 
-        {/* OTO */}
-        <span className="font-black tracking-tight text-sky-600 dark:text-sky-400 mx-[2px]">
+        {/* OTO (Otomotiv Kırmızısı) */}
+        <span className="font-black tracking-tight text-red-600 dark:text-red-500 mx-[2px]">
           OTO
         </span>
 

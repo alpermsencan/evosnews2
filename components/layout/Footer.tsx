@@ -5,12 +5,12 @@ import NewsletterForm from "@/components/ui/NewsletterForm";
 
 export default function Footer() {
   return (
-    <footer className="mt-16 bg-[#040813] text-white border-t border-white/[0.08]">
+    <footer className="mt-16 bg-[#08090C] text-white border-t border-neutral-800">
       <div className="mx-auto max-w-[1280px] px-4 py-12">
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div className="flex max-w-sm flex-col gap-4">
-            <Logo size="lg" showTagline={true} />
-            <p className="text-sm leading-relaxed text-slate-400">
+            <Logo size="lg" />
+            <p className="text-sm leading-relaxed text-neutral-400">
               Türkiye&apos;nin elektrifikasyon ve elektrikli araç dönüşüm platformu.
               Doğrulanmış model verileri, canlı şarj altyapısı, 2. el pazarı ve akıllı EV danışmanlığı tek merkezde.
             </p>
@@ -22,7 +22,7 @@ export default function Footer() {
           <div className="grid flex-1 grid-cols-2 gap-6 sm:grid-cols-4 lg:max-w-3xl">
             {FOOTER_GROUPS.map((group) => (
               <div key={group.title} className="flex flex-col gap-3">
-                <h4 className="text-[11px] font-black tracking-[0.16em] text-cyan-400 uppercase">
+                <h4 className="text-[11px] font-black tracking-[0.16em] text-red-500 uppercase">
                   {group.title}
                 </h4>
                 <ul className="flex flex-col gap-2">
@@ -30,7 +30,7 @@ export default function Footer() {
                     <li key={item.href + item.label}>
                       <Link
                         href={item.href}
-                        className="text-sm text-slate-400 transition hover:text-white hover:underline underline-offset-4"
+                        className="text-sm text-neutral-400 transition hover:text-white hover:underline underline-offset-4"
                       >
                         {item.label}
                       </Link>
@@ -43,8 +43,8 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/[0.06] bg-[#02050c]">
-        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-2 px-4 py-4 text-center text-xs text-slate-500 sm:flex-row sm:text-left">
+      <div className="border-t border-neutral-900 bg-[#050608]">
+        <div className="mx-auto flex max-w-[1280px] flex-col items-center justify-between gap-2 px-4 py-4 text-center text-xs text-neutral-500 sm:flex-row sm:text-left">
           <span>
             © {new Date().getFullYear()} EVOtoPilot. Tüm hakları saklıdır.
           </span>

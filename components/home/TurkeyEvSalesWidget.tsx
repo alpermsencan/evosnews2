@@ -34,9 +34,11 @@ export default function TurkeyEvSalesWidget() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-neutral-150 pb-3.5">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-black text-sm font-black">
-            📊
-          </span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-black text-red-500 border border-neutral-800 shadow-xs">
+            <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2.5">
+              <path d="M18 20V10M12 20V4M6 20V14" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
           <div>
             <h3 className="text-sm font-black text-neutral-900 tracking-tight flex items-center gap-2">
               <span>TÜRKİYE ELEKTRİKLİ ARAÇ SATIŞLARI</span>
@@ -57,7 +59,7 @@ export default function TurkeyEvSalesWidget() {
             onClick={() => setActiveTab("ranking")}
             className={`px-3 py-1 rounded-md transition ${
               activeTab === "ranking"
-                ? "bg-white text-neutral-900 shadow-xs"
+                ? "bg-black text-white shadow-xs font-bold"
                 : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
@@ -68,7 +70,7 @@ export default function TurkeyEvSalesWidget() {
             onClick={() => setActiveTab("stats")}
             className={`px-3 py-1 rounded-md transition ${
               activeTab === "stats"
-                ? "bg-white text-neutral-900 shadow-xs"
+                ? "bg-black text-white shadow-xs font-bold"
                 : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
@@ -82,11 +84,11 @@ export default function TurkeyEvSalesWidget() {
         <div className="flex flex-col p-2.5 rounded-xl bg-neutral-50">
           <span className="text-[10px] font-bold text-neutral-400 uppercase">Toplam EV Tescil</span>
           <span className="text-base font-black text-neutral-900 tracking-tight">92.420 adet</span>
-          <span className="text-[10px] text-emerald-600 font-bold">+%64.2 Yıllık</span>
+          <span className="text-[10px] text-red-600 font-bold">+%64.2 Yıllık</span>
         </div>
         <div className="flex flex-col p-2.5 rounded-xl bg-neutral-50">
           <span className="text-[10px] font-bold text-neutral-400 uppercase">EV Pazar Payı</span>
-          <span className="text-base font-black text-emerald-600 tracking-tight">%10.4</span>
+          <span className="text-base font-black text-neutral-900 tracking-tight">%10.4</span>
           <span className="text-[10px] text-neutral-500 font-medium">Toplam Otomobil</span>
         </div>
         <div className="flex flex-col p-2.5 rounded-xl bg-neutral-50">
@@ -96,8 +98,8 @@ export default function TurkeyEvSalesWidget() {
         </div>
         <div className="flex flex-col p-2.5 rounded-xl bg-neutral-50">
           <span className="text-[10px] font-bold text-neutral-400 uppercase">En Hızlı Büyüyen</span>
-          <span className="text-base font-black text-sky-600 tracking-tight">Kia EV Serisi</span>
-          <span className="text-[10px] text-sky-600 font-bold">+%42.0 Artış</span>
+          <span className="text-base font-black text-neutral-900 tracking-tight">Kia EV Serisi</span>
+          <span className="text-[10px] text-red-600 font-bold">+%42.0 Artış</span>
         </div>
       </div>
 
@@ -120,11 +122,11 @@ export default function TurkeyEvSalesWidget() {
               {/* Rank */}
               <span className={`col-span-1 text-center font-black ${
                 item.rank === 1
-                  ? "text-amber-500 font-extrabold"
+                  ? "text-red-600 font-black"
                   : item.rank === 2
-                  ? "text-neutral-400"
+                  ? "text-neutral-700 font-bold"
                   : item.rank === 3
-                  ? "text-amber-700"
+                  ? "text-neutral-600 font-bold"
                   : "text-neutral-400"
               }`}>
                 {item.rank}
@@ -135,7 +137,7 @@ export default function TurkeyEvSalesWidget() {
                 {item.slug ? (
                   <Link
                     href={`/araclar/${item.slug}`}
-                    className="font-bold text-neutral-900 hover:text-emerald-600 transition truncate"
+                    className="font-bold text-neutral-900 hover:text-red-600 transition truncate"
                   >
                     <span className="font-black text-neutral-900">{item.brand}</span>{" "}
                     <span className="text-neutral-600">{item.model}</span>

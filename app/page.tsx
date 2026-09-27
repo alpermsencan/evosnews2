@@ -138,10 +138,10 @@ export default async function HomePage() {
                   )}
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-black uppercase text-teal-700 tracking-wider">
+                  <span className="text-[10px] font-black uppercase text-red-600 tracking-wider">
                     {a.category?.name || "Editör İncelemesi"}
                   </span>
-                  <h4 className="text-xs sm:text-sm font-black text-neutral-900 group-hover:text-emerald-700 transition leading-snug line-clamp-2">
+                  <h4 className="text-xs sm:text-sm font-black text-neutral-900 group-hover:text-red-600 transition leading-snug line-clamp-2">
                     {a.title}
                   </h4>
                   <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
@@ -281,19 +281,19 @@ export default async function HomePage() {
           {/* TÜRKİYE RESMÎ EV SATIŞ TABLOSU (ODMD) */}
           <TurkeyEvSalesWidget />
 
-          {/* ÖTV REHBERİ SÜTUNU (Site renkleriyle uyumlu, %25 taban dilimli) */}
+          {/* ÖTV REHBERİ SÜTUNU (Lüks Siyah & Kırmızı) */}
           <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between bg-[#0B1E3F] px-4 py-3.5 text-white">
-              <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/20 text-sky-400">
+            <div className="flex items-center justify-between bg-black px-4 py-3.5 text-white border-b border-neutral-800">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-neutral-800 text-red-500">
                   <IconTag className="h-4 w-4" />
                 </span>
                 <div>
                   <h3 className="text-sm font-black tracking-wide">ÖTV REHBERİ</h3>
-                  <p className="text-[10px] text-sky-200/80 font-medium">2026 Elektrikli Araç Vergi Dilimleri</p>
+                  <p className="text-[10px] text-neutral-400 font-medium">2026 Elektrikli Araç Vergi Dilimleri</p>
                 </div>
               </div>
-              <span className="rounded bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 text-[10px] font-black">
+              <span className="rounded bg-red-600/20 text-red-400 border border-red-500/40 px-2 py-0.5 text-[10px] font-black">
                 GÜNCEL
               </span>
             </div>

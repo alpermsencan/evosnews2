@@ -147,10 +147,10 @@ export default function EvCampaignsSection() {
       {/* Üst Başlık & Filtreler */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-neutral-100 pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500 text-black text-xs font-black">
-              %0
-            </span>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black text-red-500 border border-neutral-800 shadow-xs">
+              <span className="text-[11px] font-black">%</span>
+            </div>
             <h2 className="text-base font-black tracking-tight text-neutral-900">
               EV ARAÇ KAMPANYALARI & FİNANSMAN
             </h2>
@@ -167,7 +167,7 @@ export default function EvCampaignsSection() {
             onClick={() => setFilter("all")}
             className={`px-3 py-1.5 rounded-lg transition ${
               filter === "all"
-                ? "bg-white text-neutral-900 shadow-xs"
+                ? "bg-black text-white shadow-xs"
                 : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
@@ -178,8 +178,8 @@ export default function EvCampaignsSection() {
             onClick={() => setFilter("zero-interest")}
             className={`px-3 py-1.5 rounded-lg transition ${
               filter === "zero-interest"
-                ? "bg-white text-emerald-700 shadow-xs"
-                : "text-neutral-500 hover:text-emerald-700"
+                ? "bg-black text-white shadow-xs"
+                : "text-neutral-500 hover:text-red-600"
             }`}
           >
             %0 Faiz Fırsatları
@@ -189,8 +189,8 @@ export default function EvCampaignsSection() {
             onClick={() => setFilter("green-loan")}
             className={`px-3 py-1.5 rounded-lg transition ${
               filter === "green-loan"
-                ? "bg-white text-sky-700 shadow-xs"
-                : "text-neutral-500 hover:text-sky-700"
+                ? "bg-black text-white shadow-xs"
+                : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
             Yeşil Taşıt Kredileri
@@ -200,8 +200,8 @@ export default function EvCampaignsSection() {
             onClick={() => setFilter("trade-in")}
             className={`px-3 py-1.5 rounded-lg transition ${
               filter === "trade-in"
-                ? "bg-white text-amber-700 shadow-xs"
-                : "text-neutral-500 hover:text-amber-700"
+                ? "bg-black text-white shadow-xs"
+                : "text-neutral-500 hover:text-neutral-900"
             }`}
           >
             Takas & İndirim
@@ -214,7 +214,7 @@ export default function EvCampaignsSection() {
         {filtered.map((item) => (
           <div
             key={item.id}
-            className="flex flex-col justify-between rounded-xl border border-neutral-200 bg-neutral-50/40 p-4 transition hover:border-emerald-500/50 hover:bg-white hover:shadow-md"
+            className="flex flex-col justify-between rounded-xl border border-neutral-200 bg-neutral-50/40 p-4 transition hover:border-red-600/40 hover:bg-white hover:shadow-md"
           >
             <div>
               {/* Üst Rozetler */}
@@ -225,8 +225,8 @@ export default function EvCampaignsSection() {
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wide ${
                     item.interestRate.includes("0")
-                      ? "bg-emerald-500 text-black shadow-xs"
-                      : "bg-neutral-900 text-white"
+                      ? "bg-red-600 text-white shadow-xs"
+                      : "bg-black text-white"
                   }`}
                 >
                   {item.interestRate}
@@ -240,7 +240,7 @@ export default function EvCampaignsSection() {
 
               {/* Banka Partnerliği */}
               <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-neutral-600 font-semibold bg-white border border-neutral-200 rounded-lg px-2.5 py-1.5">
-                <span className="text-emerald-600 font-bold">🏛️</span>
+                <span className="text-neutral-500 font-bold">🏛️</span>
                 <span className="truncate">{item.bankPartner}</span>
               </div>
 
@@ -260,7 +260,7 @@ export default function EvCampaignsSection() {
               <ul className="mt-3 space-y-1.5 text-[11px] text-neutral-600">
                 {item.perks.map((p, idx) => (
                   <li key={idx} className="flex items-start gap-1.5">
-                    <span className="text-emerald-500 font-bold shrink-0">✓</span>
+                    <span className="text-red-600 font-bold shrink-0">✓</span>
                     <span className="leading-tight">{p}</span>
                   </li>
                 ))}
@@ -274,7 +274,7 @@ export default function EvCampaignsSection() {
               </span>
               <Link
                 href={`/araclar/${item.vehicleSlug}`}
-                className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1 text-[11px]"
+                className="font-bold text-neutral-900 hover:text-red-600 hover:underline flex items-center gap-1 text-[11px] transition"
               >
                 Modeli İncele →
               </Link>

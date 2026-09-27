@@ -163,7 +163,7 @@ export default async function FeaturedVehiclesShowcase() {
 
         <Link
           href="/araclar"
-          className="text-xs font-bold text-neutral-600 hover:text-emerald-700 flex items-center gap-1 self-start sm:self-auto transition"
+          className="text-xs font-bold text-neutral-600 hover:text-red-600 flex items-center gap-1 self-start sm:self-auto transition"
         >
           Tüm 79 Modeli Gör →
         </Link>
@@ -183,7 +183,7 @@ export default async function FeaturedVehiclesShowcase() {
             <Link
               key={conf.slug}
               href={`/araclar/${conf.slug}`}
-              className="group flex flex-col justify-between overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50/40 p-3.5 transition-all hover:-translate-y-1 hover:border-emerald-500/60 hover:bg-white hover:shadow-lg"
+              className="group flex flex-col justify-between overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50/40 p-3.5 transition-all hover:-translate-y-1 hover:border-red-600/50 hover:bg-white hover:shadow-lg"
             >
               <div>
                 {/* Rozet & Kasa */}
@@ -214,7 +214,7 @@ export default async function FeaturedVehiclesShowcase() {
                 </div>
 
                 {/* Model İsmi */}
-                <h3 className="mt-2.5 text-sm font-black text-neutral-900 group-hover:text-emerald-700 transition leading-snug">
+                <h3 className="mt-2.5 text-sm font-black text-neutral-900 group-hover:text-red-600 transition leading-snug">
                   {conf.brand} {conf.model}
                 </h3>
 
@@ -239,11 +239,11 @@ export default async function FeaturedVehiclesShowcase() {
               <div className="mt-3 pt-2.5 border-t border-neutral-150 flex items-center justify-between">
                 <div>
                   <span className="block text-[9px] font-bold text-neutral-600 uppercase">Başlangıç</span>
-                  <span className="text-xs sm:text-sm font-black text-emerald-700 tracking-tight">
+                  <span className="text-xs sm:text-sm font-black text-neutral-950 tracking-tight">
                     {formatTL(price)}
                   </span>
                 </div>
-                <span className="rounded-lg bg-neutral-900 group-hover:bg-emerald-600 text-white px-2.5 py-1 text-[11px] font-bold transition">
+                <span className="rounded-lg bg-neutral-950 group-hover:bg-red-600 text-white px-2.5 py-1 text-[11px] font-bold transition">
                   İncele →
                 </span>
               </div>

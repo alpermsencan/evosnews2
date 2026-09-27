@@ -55,9 +55,9 @@ export default function Header() {
           <div className="hidden lg:flex flex-1 max-w-md xl:max-w-lg mx-2">
             <form
               onSubmit={submitSearch}
-              className="group relative flex w-full items-center rounded-lg bg-neutral-100/90 hover:bg-neutral-150/70 focus-within:bg-white border border-neutral-200/80 focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-200/70 px-3 py-1.5 transition-all"
+              className="group relative flex w-full items-center rounded-lg bg-neutral-100/80 hover:bg-neutral-100 focus-within:bg-white border border-neutral-200/90 focus-within:border-red-600 focus-within:ring-2 focus-within:ring-red-100 px-3 py-1.5 transition-all"
             >
-              <IconSearch className="h-4 w-4 shrink-0 text-neutral-400 group-focus-within:text-neutral-700 transition-colors" />
+              <IconSearch className="h-4 w-4 shrink-0 text-neutral-400 group-focus-within:text-red-600 transition-colors" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
@@ -72,12 +72,12 @@ export default function Header() {
 
           {/* Sağ Kolon: Aksiyonlar, Bildirim & Profil */}
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {/* İlan Ver Butonu: Sade, Güçlü Siyah Buton */}
+            {/* İlan Ver Butonu: Lüks Siyah & Kırmızı Detay */}
             <Link
               href="/ilanlar/yeni"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs transition active:scale-95 shadow-xs"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-black hover:bg-neutral-900 text-white font-bold text-xs transition active:scale-95 shadow-xs border border-neutral-900 group"
             >
-              <span>+</span>
+              <span className="text-red-500 font-black">+</span>
               <span>İlan Ver</span>
             </Link>
 
@@ -108,7 +108,7 @@ export default function Header() {
             onSubmit={submitSearch}
             className="flex items-center gap-2 border-t border-neutral-200 bg-neutral-50 px-3.5 py-2.5 lg:hidden"
           >
-            <div className="flex flex-1 items-center rounded-lg bg-white border border-neutral-200 px-3 py-1.5 text-neutral-900">
+            <div className="flex flex-1 items-center rounded-lg bg-white border border-neutral-200 focus-within:border-red-600 px-3 py-1.5 text-neutral-900">
               <IconSearch className="h-4 w-4 shrink-0 text-neutral-400" />
               <input
                 ref={inputRef}
@@ -120,7 +120,7 @@ export default function Header() {
             </div>
             <button
               type="submit"
-              className="rounded-lg bg-neutral-900 hover:bg-neutral-800 px-3.5 py-1.5 text-xs font-bold text-white transition active:scale-95"
+              className="rounded-lg bg-black hover:bg-neutral-900 px-3.5 py-1.5 text-xs font-bold text-white transition active:scale-95"
             >
               Ara
             </button>
@@ -128,7 +128,7 @@ export default function Header() {
         )}
       </div>
 
-      {/* 2. KATEGORİ & NAVİGASYON ŞERİDİ (SADE & ZARİF BEYAZ ŞERİT) */}
+      {/* 2. KATEGORİ & NAVİGASYON ŞERİDİ (LÜKS SİYAH & KIRMIZI DETAYLI) */}
       <nav
         className={`border-b border-neutral-200/80 bg-white transition-shadow duration-200 ${
           scrolled ? "shadow-xs" : ""
@@ -145,13 +145,13 @@ export default function Header() {
                     href={item.href}
                     className={`relative flex items-center px-3 py-2 rounded-md text-xs tracking-wider uppercase transition-colors ${
                       active
-                        ? "text-neutral-950 font-black bg-neutral-100"
-                        : "text-neutral-600 hover:text-neutral-950 font-bold hover:bg-neutral-50"
+                        ? "text-neutral-950 font-black bg-neutral-100/70"
+                        : "text-neutral-600 hover:text-red-600 font-bold hover:bg-neutral-50"
                     }`}
                   >
                     <span>{item.label}</span>
                     {active && (
-                      <span className="absolute bottom-0 inset-x-3 h-[2px] bg-neutral-900 rounded-full" />
+                      <span className="absolute bottom-0 inset-x-2.5 h-[2px] bg-red-600 rounded-full" />
                     )}
                   </Link>
                 </li>
@@ -163,14 +163,14 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-2 py-1">
             <Link
               href="/karsilastirma/araba"
-              className="px-2.5 py-1.5 rounded-md text-xs font-bold text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100 transition"
+              className="px-2.5 py-1.5 rounded-md text-xs font-bold text-neutral-600 hover:text-red-600 hover:bg-neutral-100 transition"
             >
               Karşılaştır
             </Link>
 
             <Link
               href="/ai-danisman"
-              className="px-3 py-1.5 rounded-md bg-neutral-100 hover:bg-neutral-200 border border-neutral-200/80 text-xs font-bold text-neutral-800 transition"
+              className="px-3 py-1.5 rounded-md bg-neutral-100 hover:bg-neutral-200 hover:text-red-600 border border-neutral-200/80 text-xs font-bold text-neutral-800 transition"
             >
               AI Danışman
             </Link>

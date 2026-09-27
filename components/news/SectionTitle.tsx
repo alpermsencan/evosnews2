@@ -4,7 +4,7 @@ import { IconChevronRight } from "@/components/ui/Icons";
 export default function SectionTitle({
   title,
   href,
-  color = "#e30613",
+  color = "#DC2626",
   subtitle,
 }: {
   title: string;
@@ -13,9 +13,9 @@ export default function SectionTitle({
   subtitle?: string;
 }) {
   return (
-    <div className="mb-3 flex flex-wrap items-end justify-between gap-2 border-b-2 border-neutral-200 pb-2">
+    <div className="mb-3.5 flex flex-wrap items-end justify-between gap-2 border-b-2 border-neutral-200 pb-2.5">
       <div className="flex min-w-0 flex-col">
-        <h2 className="flex items-center gap-2 text-lg font-black tracking-tight text-neutral-900 sm:text-xl">
+        <h2 className="flex items-center gap-2.5 text-lg font-black tracking-tight text-neutral-900 sm:text-xl">
           <span
             className="h-5 w-1.5 shrink-0 rounded-full"
             style={{ backgroundColor: color }}
@@ -23,7 +23,7 @@ export default function SectionTitle({
           {title}
         </h2>
         {subtitle && (
-          <p className="mt-1 line-clamp-2 text-xs text-neutral-500 sm:text-sm">
+          <p className="mt-1 line-clamp-2 text-xs text-neutral-500 sm:text-sm font-medium">
             {subtitle}
           </p>
         )}
@@ -31,7 +31,7 @@ export default function SectionTitle({
       {href && (
         <Link
           href={href}
-          className="flex shrink-0 items-center gap-1 text-xs font-bold text-neutral-500 transition hover:text-evos sm:text-sm"
+          className="flex shrink-0 items-center gap-1 text-xs font-bold text-neutral-600 transition hover:text-red-600 sm:text-sm"
         >
           TÜMÜ
           <IconChevronRight className="h-4 w-4" />
