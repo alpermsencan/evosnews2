@@ -46,60 +46,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full select-none">
-      {/* 1. ÜST MİKRO TELEMETRİ & VERİ ŞERİDİ (PREMIUM STATUS BAR) */}
-      <div className="hidden md:block bg-[#040711] border-b border-white/[0.06] text-[11px] text-slate-400 py-1.5 px-4">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between">
-          {/* Canlı Veri & Piyasa İndikatörü */}
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 font-bold text-emerald-400">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              2026 CANLI VERİ
-            </span>
-            <span className="text-white/20">|</span>
-            <span className="font-medium text-slate-300">
-              <strong className="text-white font-bold">130+</strong> Model Kataloğu
-            </span>
-            <span className="text-white/20">·</span>
-            <span className="font-medium text-slate-300">
-              <strong className="text-white font-bold">8.420+</strong> Şarj Noktası
-            </span>
-            <span className="text-white/20">·</span>
-            <span className="font-medium text-slate-300">
-              Ort. WLTP Menzil: <strong className="text-cyan-400 font-bold">512 km</strong>
-            </span>
-          </div>
-
-          {/* Hızlı Servis Linkleri */}
-          <div className="flex items-center gap-4 text-xs font-semibold">
-            <Link
-              href="/otv-rehberi"
-              className="text-slate-400 hover:text-cyan-400 transition flex items-center gap-1"
-            >
-              <span>📊</span>
-              <span>ÖTV Rehberi</span>
-            </Link>
-            <Link
-              href="/sarj-agi/rota"
-              className="text-slate-400 hover:text-cyan-400 transition flex items-center gap-1"
-            >
-              <span>⚡</span>
-              <span>Rota Planlayıcı</span>
-            </Link>
-            <Link
-              href="/ai-danisman"
-              className="text-cyan-400 hover:text-cyan-300 transition flex items-center gap-1 font-bold"
-            >
-              <span>✨</span>
-              <span>AI Danışman</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. ANA SAHNE: LOGO & KONTROL MERKEZİ (PREMIUM OBSIDIAN GLASS) */}
+      {/* 1. ANA SAHNE: LOGO & KONTROL MERKEZİ (PREMIUM OBSIDIAN GLASS) */}
       <div className="relative bg-gradient-to-r from-[#060b17] via-[#0a1329] to-[#060b17] border-b border-white/[0.08] backdrop-blur-xl shadow-lg">
         {/* Ortam Işıması (Ambient Glow) */}
         <div className="pointer-events-none absolute -top-12 left-8 w-80 h-28 bg-cyan-500/15 blur-3xl rounded-full" />
@@ -116,7 +63,7 @@ export default function Header() {
               <IconMenu className="h-6 w-6 text-slate-200" />
             </button>
 
-            {/* Yeni Modern Logo */}
+            {/* Modern Logo */}
             <Logo size="md" showTagline={true} />
 
             {/* Platform Rozeti */}
@@ -147,10 +94,10 @@ export default function Header() {
 
           {/* Sağ Kolon: Hızlı Aksiyonlar, Bildirim & Kullanıcı Menüsü */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Hızlı Aksiyon: İlan Ver Butonu */}
+            {/* Hızlı Aksiyon: İlan Ver Butonu (DoluBatarya Green #05C46C) */}
             <Link
               href="/ilanlar/yeni"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs shadow-md shadow-cyan-500/20 active:scale-95 transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#05C46C] hover:bg-[#08B565] text-white font-black text-xs shadow-md shadow-[#05C46C]/25 active:scale-95 transition-all"
             >
               <span>⚡</span>
               <span>İlan Ver</span>
@@ -197,7 +144,7 @@ export default function Header() {
             </div>
             <button
               type="submit"
-              className="rounded-xl bg-cyan-500 px-4 py-2 text-xs font-black text-slate-950 transition hover:bg-cyan-400 active:scale-95"
+              className="rounded-xl bg-[#05C46C] hover:bg-[#08B565] px-4 py-2 text-xs font-black text-white transition active:scale-95"
             >
               Ara
             </button>
@@ -205,30 +152,30 @@ export default function Header() {
         )}
       </div>
 
-      {/* 3. MODERN NAVİGASYON ŞERİDİ (PREMIUM SLATE GLASS BAR) */}
+      {/* 2. KATEGORİ & NAVİGASYON ŞERİDİ (DOLUBATARYA RENKLERİ VE STİLİ: #FFFFFF, #1F1F1F, #05C46C, #F4F4F4) */}
       <nav
-        className={`bg-[#080f22]/95 backdrop-blur-md border-b border-white/[0.08] transition-all duration-300 ${
-          scrolled ? "shadow-xl shadow-black/40 border-cyan-500/20" : ""
+        className={`bg-white/95 backdrop-blur-md border-b border-[#EAEAEA] transition-all duration-300 ${
+          scrolled ? "shadow-md border-[#E0E0E0]" : ""
         }`}
       >
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-2 sm:px-4">
-          {/* Yatay Navigasyon Linkleri */}
-          <ul className="no-scrollbar flex items-center gap-1.5 overflow-x-auto whitespace-nowrap py-1.5 w-full lg:w-auto">
+          {/* Yatay Navigasyon Linkleri (DoluBatarya Teması) */}
+          <ul className="no-scrollbar flex items-center gap-1 overflow-x-auto whitespace-nowrap py-1.5 w-full lg:w-auto">
             {TOP_NAV.map((item) => {
               const active = isActive(item.href);
               return (
                 <li key={item.href + item.label} className="shrink-0">
                   <Link
                     href={item.href}
-                    className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-black tracking-wider uppercase transition-all duration-200 ${
+                    className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold tracking-wide uppercase transition-all duration-200 ${
                       active
-                        ? "text-cyan-300 bg-cyan-500/15 border border-cyan-500/30 shadow-xs shadow-cyan-500/20"
-                        : "text-slate-300 hover:text-white hover:bg-white/[0.06]"
+                        ? "bg-[#05C46C] text-white hover:bg-[#08B565] shadow-xs"
+                        : "text-[#1F1F1F] hover:text-[#05C46C] hover:bg-[#F4F4F4]"
                     }`}
                   >
                     <span>{item.label}</span>
                     {active && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                     )}
                   </Link>
                 </li>
@@ -236,11 +183,11 @@ export default function Header() {
             })}
           </ul>
 
-          {/* Sağ Kolon: Hızlı Araçlar (Desktop) */}
+          {/* Sağ Kolon: Hızlı Araçlar (DoluBatarya Renk Paleti) */}
           <div className="hidden lg:flex items-center gap-2 py-1.5">
             <Link
               href="/karsilastirma/araba"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-slate-300 hover:text-white hover:bg-white/[0.06] transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#1F1F1F] bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] transition"
             >
               <span>⚖</span>
               <span>Karşılaştır</span>
@@ -248,9 +195,9 @@ export default function Header() {
 
             <Link
               href="/ai-danisman"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500/15 to-teal-500/15 border border-emerald-500/30 text-[11px] font-black text-emerald-400 hover:text-emerald-300 transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#DDFFF0] border border-[#05C46C]/30 text-xs font-black text-[#05C46C] hover:bg-[#05C46C] hover:text-white transition"
             >
-              <span className="animate-spin text-xs">✨</span>
+              <span className="text-xs">✨</span>
               <span>AI Danışman</span>
             </Link>
           </div>
