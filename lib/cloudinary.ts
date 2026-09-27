@@ -56,14 +56,14 @@ export type UploadedImage = {
   bytes: number;
 };
 
-/** Dosyayı Cloudinary'ye veya Cloudinary yoksa yerel sunucu diskine (/public/uploads) yükler */
+/** Dosyayı Cloudinary'ye veya Cloudinary yoksa optimize edilmiş kalıcı WebP Data URI / yerel diske kaydeder */
 export async function uploadImage(
   file: File,
   folder = CLOUDINARY_FOLDER
 ): Promise<UploadedImage> {
   const buffer = Buffer.from(await file.arrayBuffer());
 
-  // Cloudinary yapılandırılmamışsa yerel disk /public/uploads/ klasörüne kaydet
+  // Cloudinary yapılandırılmamışsa
   if (!isCloudinaryReady) {
     const rawExt = path.extname(file.name || "") || ".jpg";
     const ext = rawExt.toLowerCase();
@@ -72,17 +72,43 @@ export async function uploadImage(
       .slice(0, 40);
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}-${safeBase}${ext}`;
 
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadsDir, { recursive: true });
-    await fs.writeFile(path.join(uploadsDir, fileName), buffer);
+    let optimizedBuffer = buffer;
+    let format = ext.replace(".", "") || "webp";
+
+    try {
+      const sharp = (await import("sharp")).default;
+      optimizedBuffer = await sharp(buffer)
+        .resize({ width: 1400, withoutEnlargement: true })
+        .webp({ quality: 82 })
+        .toBuffer();
+      format = "webp";
+    } catch (e) {
+      console.warn("[UPLOAD] sharp optimization fallback to original buffer:", e);
+    }
+
+    // Yerel diske de yaz
+    try {
+      const uploadsDir = path.join(process.cwd(), "public", "uploads");
+      await fs.mkdir(uploadsDir, { recursive: true });
+      await fs.writeFile(path.join(uploadsDir, fileName), optimizedBuffer);
+    } catch (e) {
+      console.warn("[UPLOAD] disk write error:", e);
+    }
+
+    // 400 KB altındaki görselleri veritabanında kalıcı tutmak için data URI olarak dön.
+    // Bu sayede Hostinger konteyner/sunucu yeniden başladığında görseller ASLA kaybolmaz!
+    const returnUrl =
+      optimizedBuffer.length <= 400 * 1024
+        ? `data:image/${format};base64,${optimizedBuffer.toString("base64")}`
+        : `/uploads/${fileName}`;
 
     return {
-      url: `/uploads/${fileName}`,
+      url: returnUrl,
       publicId: `local-${fileName}`,
       width: 1200,
       height: 800,
-      format: ext.replace(".", "") || "jpg",
-      bytes: buffer.length,
+      format,
+      bytes: optimizedBuffer.length,
     };
   }
 

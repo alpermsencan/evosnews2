@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import SafeImage from "@/components/ui/SafeImage";
 import { formatTL } from "@/lib/utils";
 import { IconBattery, IconBolt, IconGauge } from "@/components/ui/Icons";
 import BrandBadge from "@/components/ui/BrandBadge";
@@ -61,7 +61,7 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
         href={`/araclar/${vehicle.slug}`}
         className="relative block aspect-[16/10] w-full bg-neutral-100"
       >
-        <Image
+        <SafeImage
           src={displayImage}
           alt={`${vehicle.brand} ${vehicle.model}`}
           fill

@@ -49,6 +49,5 @@ next-env.d.ts
 !.env.example
 
 # uploaded files
-/public/uploads/*
-!/public/uploads/.gitkeep
+!/public/uploads/**
 

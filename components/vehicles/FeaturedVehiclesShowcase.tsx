@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatTL } from "@/lib/utils";
+import SafeImage from "@/components/ui/SafeImage";
 
 // Öne çıkan vitrin modellerinin hedef slug ve özellikleri
 const SHOWCASE_CONFIGS = [
@@ -16,7 +17,7 @@ const SHOWCASE_CONFIGS = [
     power: "218 HP",
     dcSpeed: "180 kW",
     body: "C-SUV",
-    image: "/uploads/1790500663017-ldoyp-2023-togg-t10x-ozellikler-teknik.jpg",
+    image: "https://dolubatarya.com/uploads/2021/12/2023-togg-t10x-ozellikler-teknik.jpg",
   },
   {
     brand: "TOGG",
@@ -207,13 +208,15 @@ export default async function FeaturedVehiclesShowcase() {
 
                 {/* Model Görseli */}
                 <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-neutral-100 flex items-center justify-center">
-                  <img
+                  <SafeImage
                     src={displayImage}
                     alt={`${conf.brand} ${conf.model}`}
-                    className="h-full w-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
+                    fill
+                    sizes="(max-width:640px) 100vw, 340px"
+                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                    fallbackSrc="/arac-placeholder.svg"
                   />
-                  <div className="absolute bottom-1.5 left-1.5 rounded bg-black/70 backdrop-blur-xs px-1.5 py-0.5 text-[10px] font-bold text-white">
+                  <div className="absolute bottom-1.5 left-1.5 rounded bg-black/70 backdrop-blur-xs px-1.5 py-0.5 text-[10px] font-bold text-white z-10">
                     {conf.body}
                   </div>
                 </div>
