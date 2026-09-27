@@ -9,6 +9,7 @@ import {
   IconClose,
   IconUser,
 } from "@/components/ui/Icons";
+import Logo from "@/components/ui/Logo";
 
 export default function Sidebar({
   open,
@@ -55,22 +56,14 @@ export default function Sidebar({
         aria-hidden={!open}
       >
         {/* Sidebar başlık */}
-        <div className="flex shrink-0 items-center justify-between bg-[#0B1E3F] px-4 py-3.5 text-white">
-          <Link
-            href="/"
-            onClick={onClose}
-            className="flex items-center gap-2 text-2xl font-black tracking-tight"
-          >
-            <span className="text-sky-400">
-              EVOtoPilot
-            </span>
-          </Link>
+        <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#060B18] via-[#091326] to-[#060B18] px-4 py-3.5 text-white border-b border-white/[0.08]">
+          <Logo size="sm" showTagline={false} />
           <button
             onClick={onClose}
             aria-label="Menüyü kapat"
-            className="rounded-full p-1.5 transition hover:bg-white/20"
+            className="rounded-xl p-1.5 bg-white/[0.06] hover:bg-white/[0.12] transition text-slate-300"
           >
-            <IconClose className="h-6 w-6" />
+            <IconClose className="h-5 w-5" />
           </button>
         </div>
 
