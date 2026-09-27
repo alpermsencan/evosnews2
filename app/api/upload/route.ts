@@ -4,7 +4,6 @@ import { getRequestUser } from "@/lib/auth";
 import { isAdminRequest } from "@/lib/admin-auth";
 import {
   destroyImage,
-  isCloudinaryReady,
   publicIdFromUrl,
   uploadImage,
   uploadVideo,
@@ -45,11 +44,6 @@ export async function POST(req: NextRequest) {
   const admin = await isAdminRequest(req);
   const member = admin ? null : await getRequestUser(req);
   if (!admin && !member) return fail("Yetkisiz işlem", 401);
-  if (!isCloudinaryReady)
-    return fail(
-      "Cloudinary yapılandırılmamış. .env dosyasına CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY ve CLOUDINARY_API_SECRET ekleyin.",
-      500
-    );
 
   try {
     const form = await req.formData();
@@ -103,7 +97,6 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const admin = await isAdminRequest(req);
   if (!admin) return fail("Yetkisiz işlem", 401);
-  if (!isCloudinaryReady) return fail("Cloudinary yapılandırılmamış", 500);
 
   const url = req.nextUrl.searchParams.get("url");
   if (!url) return fail("url parametresi gerekli");

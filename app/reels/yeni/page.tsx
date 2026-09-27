@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { isCloudinaryReady } from "@/lib/cloudinary";
 import ReelComposer from "@/components/social/ReelComposer";
 
 export const dynamic = "force-dynamic";
@@ -38,24 +37,16 @@ export default async function NewReelPage() {
         </Link>
       </div>
 
-      {!isCloudinaryReady ? (
-        <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] font-bold text-amber-800">
-          Video yükleme için Cloudinary yapılandırması gerekli. .env dosyasına
-          CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY ve CLOUDINARY_API_SECRET
-          değerlerini ekleyin.
-        </p>
-      ) : (
-        <ReelComposer
-          articles={articles.map((a) => ({
-            id: a.id,
-            label: a.title.length > 60 ? `${a.title.slice(0, 60)}...` : a.title,
-          }))}
-          vehicles={vehicles.map((v) => ({
-            id: v.id,
-            label: `${v.brand} ${v.model}`,
-          }))}
-        />
-      )}
+      <ReelComposer
+        articles={articles.map((a) => ({
+          id: a.id,
+          label: a.title.length > 60 ? `${a.title.slice(0, 60)}...` : a.title,
+        }))}
+        vehicles={vehicles.map((v) => ({
+          id: v.id,
+          label: `${v.brand} ${v.model}`,
+        }))}
+      />
     </div>
   );
 }

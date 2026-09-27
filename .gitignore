@@ -47,3 +47,8 @@ next-env.d.ts
 
 # .env.example depoya girsin — gerçek sırlar .env dosyasında kalır
 !.env.example
+
+# uploaded files
+/public/uploads/*
+!/public/uploads/.gitkeep
+

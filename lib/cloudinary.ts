@@ -1,5 +1,7 @@
 import "server-only";
 import { v2 as cloudinary } from "cloudinary";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 const cloudinaryUrl = process.env.CLOUDINARY_URL;
 let cloudName =
@@ -19,8 +21,15 @@ if (cloudinaryUrl && (!cloudName || !apiKey || !apiSecret)) {
 
 export const CLOUDINARY_FOLDER = process.env.CLOUDINARY_FOLDER || "evos";
 
-/** Cloudinary anahtarları .env dosyasında tanımlı mı? */
-export const isCloudinaryReady = Boolean((cloudName && apiKey && apiSecret) || cloudinaryUrl);
+/** Cloudinary anahtarları .env dosyasında geçerli şekilde tanımlı mı? */
+export const isCloudinaryReady = Boolean(
+  (cloudName &&
+    apiKey &&
+    apiSecret &&
+    !cloudName.includes("your-") &&
+    !apiKey.includes("your-")) ||
+    cloudinaryUrl
+);
 
 if (isCloudinaryReady) {
   if (cloudName && apiKey && apiSecret) {
@@ -47,12 +56,35 @@ export type UploadedImage = {
   bytes: number;
 };
 
-/** Dosyayı Cloudinary'ye yükler, güvenli URL döner */
+/** Dosyayı Cloudinary'ye veya Cloudinary yoksa yerel sunucu diskine (/public/uploads) yükler */
 export async function uploadImage(
   file: File,
   folder = CLOUDINARY_FOLDER
 ): Promise<UploadedImage> {
   const buffer = Buffer.from(await file.arrayBuffer());
+
+  // Cloudinary yapılandırılmamışsa yerel disk /public/uploads/ klasörüne kaydet
+  if (!isCloudinaryReady) {
+    const rawExt = path.extname(file.name || "") || ".jpg";
+    const ext = rawExt.toLowerCase();
+    const safeBase = (path.basename(file.name || "resim", rawExt) || "resim")
+      .replace(/[^a-zA-Z0-9_-]/g, "_")
+      .slice(0, 40);
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}-${safeBase}${ext}`;
+
+    const uploadsDir = path.join(process.cwd(), "public", "uploads");
+    await fs.mkdir(uploadsDir, { recursive: true });
+    await fs.writeFile(path.join(uploadsDir, fileName), buffer);
+
+    return {
+      url: `/uploads/${fileName}`,
+      publicId: `local-${fileName}`,
+      width: 1200,
+      height: 800,
+      format: ext.replace(".", "") || "jpg",
+      bytes: buffer.length,
+    };
+  }
 
   const result = await new Promise<Record<string, unknown>>((resolve, reject) => {
     cloudinary.uploader
@@ -97,14 +129,38 @@ export type UploadedVideo = {
 };
 
 /**
- * Reel videosunu Cloudinary'ye yükler. Kapak görseli, videonun ilk karesinin
- * .jpg türevi olarak aynı URL'den servis edilir (ek istek gerekmez).
+ * Reel videosunu Cloudinary'ye veya yerel diske yükler.
  */
 export async function uploadVideo(
   file: File,
   folder = `${CLOUDINARY_FOLDER}/reels`
 ): Promise<UploadedVideo> {
   const buffer = Buffer.from(await file.arrayBuffer());
+
+  if (!isCloudinaryReady) {
+    const rawExt = path.extname(file.name || "") || ".mp4";
+    const ext = rawExt.toLowerCase();
+    const safeBase = (path.basename(file.name || "video", rawExt) || "video")
+      .replace(/[^a-zA-Z0-9_-]/g, "_")
+      .slice(0, 40);
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}-${safeBase}${ext}`;
+
+    const uploadsDir = path.join(process.cwd(), "public", "uploads");
+    await fs.mkdir(uploadsDir, { recursive: true });
+    await fs.writeFile(path.join(uploadsDir, fileName), buffer);
+
+    const url = `/uploads/${fileName}`;
+    return {
+      url,
+      posterUrl: url,
+      publicId: `local-${fileName}`,
+      durationSec: 15,
+      width: 720,
+      height: 1280,
+      format: ext.replace(".", "") || "mp4",
+      bytes: buffer.length,
+    };
+  }
 
   const result = await new Promise<Record<string, unknown>>((resolve, reject) => {
     cloudinary.uploader
@@ -113,7 +169,6 @@ export async function uploadVideo(
           folder,
           resource_type: "video",
           overwrite: false,
-          // Dikey formatta makul çözünürlük ve otomatik kalite
           eager: [
             { width: 720, height: 1280, crop: "limit", quality: "auto" },
           ],
@@ -146,13 +201,26 @@ export function posterFromVideoUrl(url: string) {
   return url.replace(/\.[a-z0-9]+$/i, ".jpg");
 }
 
-/** Cloudinary'deki bir görseli siler (sadece bizim yüklediklerimiz) */
+/** Cloudinary'deki veya yerel diskteki bir görseli siler */
 export async function destroyImage(publicId: string) {
-  await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+  if (publicId.startsWith("local-")) {
+    const fileName = publicId.replace(/^local-/, "");
+    const filePath = path.join(process.cwd(), "public", "uploads", fileName);
+    try {
+      await fs.unlink(filePath);
+    } catch {}
+    return;
+  }
+  if (isCloudinaryReady) {
+    await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+  }
 }
 
-/** Cloudinary URL'inden public_id çıkarır; bizim görselimiz değilse null */
+/** URL'den public_id çıkarır */
 export function publicIdFromUrl(url: string): string | null {
+  if (url.startsWith("/uploads/")) {
+    return "local-" + url.replace("/uploads/", "");
+  }
   const match = /\/upload\/(?:v\d+\/)?(.+)\.[a-z0-9]+$/i.exec(url);
   if (!url.includes("res.cloudinary.com") || !match) return null;
   return match[1];
@@ -163,6 +231,17 @@ export async function uploadImageFromUrl(
   imageUrl: string,
   folder = CLOUDINARY_FOLDER
 ): Promise<UploadedImage> {
+  if (!isCloudinaryReady) {
+    return {
+      url: imageUrl,
+      publicId: `remote-${Date.now()}`,
+      width: 1200,
+      height: 800,
+      format: "jpg",
+      bytes: 0,
+    };
+  }
+
   const { createHash } = await import("node:crypto");
   const hash = createHash("sha1").update(imageUrl).digest("hex");
   const publicId = `kia-img-${hash}`;
