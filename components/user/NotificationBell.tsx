@@ -12,11 +12,11 @@ export default function NotificationBell() {
     <Link
       href={user ? "/bildirimler" : "/giris?devam=/bildirimler"}
       aria-label="Bildirimler"
-      className="relative flex h-10 w-10 items-center justify-center rounded-xl text-cyan-300 hover:text-white transition hover:bg-white/[0.1]"
+      className="relative flex h-9 w-9 items-center justify-center rounded-lg text-neutral-600 hover:text-neutral-950 transition hover:bg-neutral-100"
     >
       <IconBell className="h-5 w-5" />
       {user && unread > 0 && (
-        <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-400 px-1 text-[9px] font-black text-slate-950 shadow-xs">
+        <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-black text-white">
           {unread > 99 ? "99+" : unread}
         </span>
       )}
