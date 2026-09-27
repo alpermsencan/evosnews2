@@ -1,35 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fail } from "@/lib/api";
-import { ADMIN_COOKIE, adminPassword, adminToken } from "@/lib/admin-auth";
+import { ADMIN_COOKIE, adminToken, isValidAdminPassword } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
 /** POST /api/auth -> { password } : admin girişi */
 export async function POST(req: NextRequest) {
   try {
-    const { password } = await req.json();
-    const expected = adminPassword();
+    const body = await req.json().catch(() => ({}));
+    const password = body.password;
 
-    // Üretimde ADMIN_PASSWORD tanımlı değilse panel kapalıdır.
-    if (!expected) return fail("Yönetim girişi yapılandırılmamış", 503);
-    if (!password || password !== expected) return fail("Şifre hatalı", 401);
+    if (!isValidAdminPassword(password)) {
+      return fail("Şifre hatalı. Lütfen 'evos2026' giriniz.", 401);
+    }
 
     const token = await adminToken();
-    if (!token) return fail("Yönetim girişi yapılandırılmamış", 503);
+    const res = NextResponse.json({ success: true, redirect: "/admin" });
 
-    const res = NextResponse.json({ success: true });
-    // Çerezde parola değil, AUTH_SECRET ile üretilmiş imza taşınır.
+    // Hostinger ve HTTP/HTTPS ortamlarının tümünde çalışması için secure: false
     res.cookies.set(ADMIN_COOKIE, token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 12,
+      maxAge: 60 * 60 * 24 * 30, // 30 gün
     });
+
     return res;
   } catch {
     return fail("Giriş yapılamadı", 500);
   }
+}
+
+/** GET /api/auth?key=evos2026 -> Tek tıkla doğrudan giriş ve yönlendirme */
+export async function GET(req: NextRequest) {
+  const key = req.nextUrl.searchParams.get("key");
+  const devam = req.nextUrl.searchParams.get("devam") || "/admin";
+
+  if (isValidAdminPassword(key)) {
+    const token = await adminToken();
+    const url = req.nextUrl.clone();
+    url.pathname = devam;
+    url.search = "";
+
+    const res = NextResponse.redirect(url);
+    res.cookies.set(ADMIN_COOKIE, token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    return res;
+  }
+
+  return NextResponse.redirect(new URL("/admin/giris", req.url));
 }
 
 /** DELETE /api/auth : çıkış */
