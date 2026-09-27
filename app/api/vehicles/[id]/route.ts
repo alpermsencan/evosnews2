@@ -38,8 +38,11 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     const b = await req.json();
     const data: Record<string, unknown> = {};
 
-    for (const key of ["brand", "model", "segment", "bodyType", "image", "driveType", "description", "rangeSource"]) {
+    for (const key of ["brand", "model", "segment", "bodyType", "driveType", "description", "rangeSource"]) {
       if (b[key] !== undefined) data[key] = b[key];
+    }
+    if (b.image !== undefined && b.image.trim() !== "") {
+      data.image = b.image;
     }
     for (const key of NUMERIC) {
       if (b[key] !== undefined) data[key] = Number(b[key]);

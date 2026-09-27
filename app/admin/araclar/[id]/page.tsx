@@ -12,7 +12,10 @@ export default async function EditVehiclePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const v = await prisma.vehicle.findUnique({ where: { id } });
+  const v = await prisma.vehicle.findUnique({
+    where: { id },
+    include: { syncImages: true },
+  });
   if (!v) notFound();
 
   return (
@@ -47,7 +50,7 @@ export default async function EditVehiclePage({
           driveType: v.driveType,
           warranty: v.warranty,
           rating: v.rating,
-          image: v.image,
+          image: v.image || (v.syncImages.find((img) => img.isPrimary)?.url) || "",
           gallery: v.images || [],
           isFeatured: v.isFeatured,
           pros: v.pros,

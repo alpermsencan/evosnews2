@@ -33,12 +33,19 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
   // Prioritize verified syncImages over legacy static image URL
   const syncImages = vehicle.syncImages || [];
 
-  let displayImage = vehicle.image;
+  let displayImage = vehicle.image || "/arac-placeholder.svg";
   if (syncImages && syncImages.length > 0) {
-    const primaryImg = syncImages.find((img) => img.isPrimary) || syncImages[0];
-    if (primaryImg) {
+    const validSync = syncImages.filter(
+      (img) => img.type !== "ignored" && !img.url.includes("togg-t10x-iaa-2025.jpg")
+    );
+    const primaryImg = validSync.find((img) => img.isPrimary) || validSync[0];
+    if (primaryImg?.url) {
       displayImage = primaryImg.url;
     }
+  }
+
+  if (!displayImage || displayImage.trim() === "") {
+    displayImage = "/arac-placeholder.svg";
   }
 
   return (

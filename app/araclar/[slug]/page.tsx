@@ -34,7 +34,8 @@ export default async function VehicleDetail({ params }: Props) {
     where: { slug },
     include: {
       syncImages: {
-        orderBy: { createdAt: "asc" },
+        where: { NOT: { type: "ignored" } },
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
       },
     },
   });
@@ -92,14 +93,24 @@ export default async function VehicleDetail({ params }: Props) {
     ["ÖTV oranı", `%${vehicle.otvRate}`],
   ];
 
-  // Prioritize verified official syncImages (Cloudinary)
-  const officialImages = vehicle.syncImages.map((img) => img.url);
-  const galleryImages =
-    officialImages.length > 0
-      ? officialImages
-      : [vehicle.image, ...(vehicle.images || [])].filter(Boolean);
+  // Öncelik: Primary seçilen görsel, ardından syncImages veya aracın image/images alanları
+  const validSyncImages = vehicle.syncImages
+    .map((img) => img.url)
+    .filter((url) => !url.includes("togg-t10x-iaa-2025.jpg"));
 
-  const defaultImg = galleryImages[0] || vehicle.image;
+  const primarySync = vehicle.syncImages.find((img) => img.isPrimary)?.url;
+  const defaultImg =
+    primarySync ||
+    vehicle.image ||
+    validSyncImages[0] ||
+    vehicle.images?.[0] ||
+    "/arac-placeholder.svg";
+
+  const allGallery = Array.from(
+    new Set([defaultImg, ...validSyncImages, ...(vehicle.images || [])].filter(Boolean))
+  ).filter((url) => !url.includes("togg-t10x-iaa-2025.jpg"));
+
+  const galleryImages = allGallery.length > 0 ? allGallery : [defaultImg];
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
