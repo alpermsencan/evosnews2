@@ -148,6 +148,61 @@ export default function ModernVehicleSpecsGrid({ specs }: { specs: SpecsData }) 
           </div>
         ))}
       </div>
+
+      {/* Ekstra Donanım & Gelişmiş Özellikler (Katalog / Üretici Detayları) */}
+      {specs.extraSpecs &&
+        Object.entries(specs.extraSpecs).filter(([sec]) => {
+          const std = ["Güç ve Hız", "Batarya ve Şarj", "Araç Ölçüleri", "Ekstra Özellikler"];
+          return !std.includes(sec);
+        }).length > 0 && (
+          <div className="mt-4 flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-neutral-200 pb-2.5">
+              <h3 className="text-lg font-black text-neutral-900 tracking-tight flex items-center gap-2">
+                <span>🛡️</span> ÖNE ÇIKAN DONANIMLAR &amp; TEKNOLOJİLER
+              </h3>
+              <span className="text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                Resmi Katalog &amp; Donanım Detayları
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(specs.extraSpecs)
+                .filter(([sec]) => {
+                  const std = ["Güç ve Hız", "Batarya ve Şarj", "Araç Ölçüleri", "Ekstra Özellikler"];
+                  return !std.includes(sec);
+                })
+                .map(([sectionTitle, items], sIdx) => {
+                  const entries = Object.entries(items).filter(
+                    ([k, v]) => Boolean(k) && Boolean(v) && !k.includes("©")
+                  );
+                  if (entries.length === 0) return null;
+                  return (
+                    <div
+                      key={sIdx}
+                      className="flex flex-col rounded-xl border border-neutral-200 bg-white shadow-xs overflow-hidden"
+                    >
+                      <div className="flex items-center gap-2 px-4 py-3 bg-neutral-50/90 border-b border-neutral-150">
+                        <span className="text-sm">🔹</span>
+                        <h4 className="text-xs font-black text-neutral-900 uppercase tracking-wider">
+                          {sectionTitle}
+                        </h4>
+                      </div>
+                      <div className="flex flex-col divide-y divide-neutral-100 text-xs">
+                        {entries.map(([label, val], eIdx) => (
+                          <div
+                            key={eIdx}
+                            className="flex items-start justify-between px-4 py-2.5 hover:bg-neutral-50/60 transition gap-3"
+                          >
+                            <span className="font-semibold text-neutral-500 shrink-0">{label}</span>
+                            <span className="font-bold text-neutral-900 text-right leading-snug">{String(val)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
     </div>
   );
 }

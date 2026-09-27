@@ -93,6 +93,28 @@ async function findVehicleByParam(rawParam: string) {
       },
     });
     if (v) return v;
+
+    const tokens = stripped.split("-").filter((t) => t.length > 2);
+    if (tokens.length > 0) {
+      v = await prisma.vehicle.findFirst({
+        where: {
+          AND: tokens.map((token) => ({
+            OR: [
+              { slug: { contains: token, mode: "insensitive" } },
+              { model: { contains: token, mode: "insensitive" } },
+              { brand: { contains: token, mode: "insensitive" } },
+            ],
+          })),
+        },
+        include: {
+          syncImages: {
+            where: { NOT: { type: "ignored" } },
+            orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+          },
+        },
+      });
+      if (v) return v;
+    }
   }
 
   return null;
@@ -261,6 +283,60 @@ export default async function VehicleDetail({ params }: Props) {
           extraSpecs: vehicle.extraSpecs as Record<string, Record<string, string>> | null,
         }}
       />
+
+      {/* 4.5. Editör İncelemesi & Artılar / Eksiler */}
+      {(Boolean(vehicle.description) || (vehicle.pros && vehicle.pros.length > 0) || (vehicle.cons && vehicle.cons.length > 0)) && (
+        <div className="flex flex-col gap-4 p-5 sm:p-6 bg-white rounded-2xl border border-neutral-200 shadow-xs">
+          <div className="flex items-center gap-2 border-b border-neutral-150 pb-3">
+            <span className="text-xl">📝</span>
+            <h3 className="text-lg font-black text-neutral-900 tracking-tight">
+              {vehicle.brand} {vehicle.model} Genel Bakış &amp; Değerlendirme
+            </h3>
+          </div>
+
+          {vehicle.description && (
+            <p className="text-sm leading-relaxed text-neutral-700 font-medium">
+              {vehicle.description}
+            </p>
+          )}
+
+          {((vehicle.pros && vehicle.pros.length > 0) || (vehicle.cons && vehicle.cons.length > 0)) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+              {vehicle.pros && vehicle.pros.length > 0 && (
+                <div className="flex flex-col p-4 rounded-xl bg-emerald-50/60 border border-emerald-200">
+                  <div className="flex items-center gap-2 mb-2 text-xs font-black uppercase text-emerald-800 tracking-wider">
+                    <span className="text-base">✅</span> Öne Çıkan Artıları
+                  </div>
+                  <ul className="flex flex-col gap-1.5 text-xs text-neutral-800">
+                    {vehicle.pros.map((p, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-emerald-600 font-black shrink-0">+</span>
+                        <span className="font-semibold">{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {vehicle.cons && vehicle.cons.length > 0 && (
+                <div className="flex flex-col p-4 rounded-xl bg-rose-50/60 border border-rose-200">
+                  <div className="flex items-center gap-2 mb-2 text-xs font-black uppercase text-rose-800 tracking-wider">
+                    <span className="text-base">⚠️</span> Dikkat Edilmesi Gerekenler
+                  </div>
+                  <ul className="flex flex-col gap-1.5 text-xs text-neutral-800">
+                    {vehicle.cons.map((c, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-rose-600 font-black shrink-0">-</span>
+                        <span className="font-semibold">{c}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 5. Araç Tipine Göre Keşfet Modülü */}
       <VehicleTypeExplorer currentType={vehicle.bodyType} />
