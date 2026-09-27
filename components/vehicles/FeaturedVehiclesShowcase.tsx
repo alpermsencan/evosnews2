@@ -150,23 +150,15 @@ export default async function FeaturedVehiclesShowcase() {
     <section className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
       {/* Vitrin Başlığı */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-neutral-100 pb-3">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 text-black text-sm font-black shadow-xs">
-            ⭐
-          </span>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-black tracking-tight text-neutral-900">
-                ÖNE ÇIKAN VİTRİN MODELLERİ
-              </h2>
-              <span className="rounded-full bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[10px] font-black">
-                2026 Favorileri
-              </span>
-            </div>
-            <p className="text-xs text-neutral-500 font-medium">
-              TOGG, Tesla Model Y, KIA EV Serisi ve Hyundai Ioniq / Inster modelleri
-            </p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-neutral-900 text-sky-400 border border-neutral-800 shadow-xs">
+            <svg viewBox="0 0 24 24" fill="none" className="w-4.5 h-4.5" stroke="currentColor" strokeWidth="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" strokeLinejoin="round" />
+            </svg>
           </div>
+          <h2 className="text-base sm:text-lg font-black tracking-tight text-neutral-900">
+            ÖNE ÇIKAN VİTRİN MODELLERİ
+          </h2>
         </div>
 
         <Link
