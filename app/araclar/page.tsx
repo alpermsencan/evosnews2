@@ -111,12 +111,9 @@ export default async function VehiclesPage({
         <FeaturedVehiclesShowcase />
       </Suspense>
 
-      {/* ARAÇ TİPİNE GÖRE KEŞFET (Ticari, TR Satışta, Kampanyalı Araçlar) */}
-      <Suspense fallback={<div className="h-28 rounded-2xl bg-white animate-pulse" />}>
-        <BodyTypeExplorer />
-      </Suspense>
-
+      {/* ANA KATALOG VE FİLTRELEME ALANI */}
       <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {/* SOL: Açılır Menü Filtreler (Üste Alındı) */}
         <Suspense fallback={<div className="h-64 w-72 rounded-2xl bg-white" />}>
           <VehiclesExplorer
             brands={brands.map((b) => ({ value: b.brand, label: b.brand }))}
@@ -127,9 +124,14 @@ export default async function VehiclesPage({
         </Suspense>
 
         <div className="flex-1 min-w-0 flex flex-col gap-6 w-full">
+          {/* ARAÇ TİPİNE GÖRE KEŞFET (Ticari, TR Satışta, Kampanyalı Araçlar) */}
+          <Suspense fallback={<div className="h-28 rounded-2xl bg-white animate-pulse" />}>
+            <BodyTypeExplorer />
+          </Suspense>
+
           <SectionTitle
             title={`ELEKTRİKLİ MODELLER (${vehicles.length})`}
-            color="#0f766e"
+            color="#DC2626"
           />
 
           {vehicles.length === 0 ? (
@@ -148,7 +150,7 @@ export default async function VehiclesPage({
 
       {/* KARŞILAŞTIRMA TABLOSU */}
       <section>
-        <SectionTitle title="TEKNİK KARŞILAŞTIRMA TABLOSU" color="#0f766e" />
+        <SectionTitle title="TEKNİK KARŞILAŞTIRMA TABLOSU" color="#DC2626" />
         <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
           <table className="w-full min-w-[960px] text-left text-sm">
             <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
@@ -201,7 +203,7 @@ export default async function VehiclesPage({
           <SectionTitle
             title="ARAÇ DÜNYASINDAN GELİŞMELER"
             href="/kategori/arac-merkezi"
-            color="#0f766e"
+            color="#DC2626"
           />
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {news.map((a) => (

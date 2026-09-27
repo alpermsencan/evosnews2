@@ -166,11 +166,11 @@ export default function BodyTypeExplorer() {
   const hasAnyFilter = Boolean(currentKasa || currentDurum || currentKampanya);
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
+    <section className="flex flex-col gap-3 rounded-2xl border border-neutral-200/90 bg-white p-5 shadow-xs">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 pb-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500 text-black font-bold text-sm">
-            ⚡
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-neutral-950 text-white font-black text-xs">
+            <span className="w-2 h-2 rounded-full bg-red-600" />
           </span>
           <div>
             <h2 className="text-sm sm:text-base font-black text-neutral-900 tracking-tight">
@@ -185,7 +185,7 @@ export default function BodyTypeExplorer() {
         {hasAnyFilter && (
           <Link
             href="/araclar"
-            className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-bold text-neutral-600 transition hover:bg-neutral-200"
+            className="rounded-full bg-red-50 border border-red-200 px-3 py-1 text-xs font-bold text-red-600 transition hover:bg-red-100"
           >
             Filtreleri Temizle ✕
           </Link>
@@ -198,11 +198,11 @@ export default function BodyTypeExplorer() {
           href={toggleParam("durum", "TR_YAYINDA")}
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition-all ${
             currentDurum === "TR_YAYINDA"
-              ? "bg-emerald-600 text-white shadow-xs ring-2 ring-emerald-500/30"
-              : "border border-neutral-200 bg-neutral-50/70 text-neutral-700 hover:border-emerald-500 hover:bg-emerald-50/50 hover:text-emerald-800"
+              ? "bg-neutral-950 text-white shadow-xs ring-2 ring-neutral-900/30"
+              : "border border-neutral-200 bg-neutral-50/80 text-neutral-700 hover:border-black hover:text-black"
           }`}
         >
-          <span>🇹🇷</span>
+          <span className="w-2 h-2 rounded-full bg-red-600" />
           <span>Türkiye&apos;de Satılanlar</span>
           {currentDurum === "TR_YAYINDA" && <span className="text-[10px]">✕</span>}
         </Link>
@@ -211,11 +211,11 @@ export default function BodyTypeExplorer() {
           href={toggleParam("kampanya", "1")}
           className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-black transition-all ${
             currentKampanya === "1"
-              ? "bg-rose-600 text-white shadow-xs ring-2 ring-rose-500/30"
-              : "border border-neutral-200 bg-neutral-50/70 text-neutral-700 hover:border-rose-500 hover:bg-rose-50/50 hover:text-rose-800"
+              ? "bg-red-600 text-white shadow-xs ring-2 ring-red-500/30"
+              : "border border-neutral-200 bg-neutral-50/80 text-neutral-700 hover:border-red-600 hover:text-red-600"
           }`}
         >
-          <span>🔥</span>
+          <span className="w-2 h-2 rounded-full bg-white" />
           <span>Kampanyalı Araçlar (%0 Faiz & Destekler)</span>
           {currentKampanya === "1" && <span className="text-[10px]">✕</span>}
         </Link>
@@ -231,13 +231,13 @@ export default function BodyTypeExplorer() {
               href={buildKasaUrl(bt.value)}
               className={`group flex flex-col items-center justify-center gap-2 rounded-xl p-3.5 text-center transition-all ${
                 isActive
-                  ? "border-2 border-emerald-600 bg-emerald-50/80 text-emerald-800 shadow-xs ring-2 ring-emerald-500/20"
-                  : "border border-neutral-200 bg-neutral-50/50 text-neutral-700 hover:border-emerald-500 hover:bg-emerald-50/40 hover:text-emerald-800"
+                  ? "border-2 border-red-600 bg-red-50/70 text-red-700 shadow-xs"
+                  : "border border-neutral-200 bg-neutral-50/50 text-neutral-700 hover:border-neutral-900 hover:text-neutral-950"
               }`}
             >
               <div
                 className={`transition-transform duration-200 group-hover:scale-105 ${
-                  isActive ? "text-emerald-600" : "text-neutral-500 group-hover:text-emerald-600"
+                  isActive ? "text-red-600" : "text-neutral-500 group-hover:text-neutral-900"
                 }`}
               >
                 {bt.svg}
