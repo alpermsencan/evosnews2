@@ -362,6 +362,22 @@ model Vehicle {
   /// Editör puanı. Otomatik atanmaz; yalnızca gerçek bir inceleme yapıldıysa dolar.
   rating     Float?
 
+  // --- Detaylı Teknik Özellikler (DoluBatarya & Üretici Katalogları) ---
+  torqueNm         Int?     // Tork (Nm)
+  motorCount       String?  // Motor Sayısı (Tek Motor, Dual Motor, vs.)
+  motorType        String?  // Motor Türü (Permanent Magnet Synchronous, vs.)
+  batteryUsableKwh Float?   // Kullanılabilir Net Batarya (kWh)
+  acChargeKw       Float?   // AC Şarj Hızı (kW)
+  acChargeHour     Float?   // AC Şarj Süresi (saat)
+  lengthMm         Int?     // Uzunluk (mm)
+  widthMm          Int?     // Genişlik (mm)
+  heightMm         Int?     // Yükseklik (mm)
+  weightKg         Int?     // Boş Ağırlık (kg)
+  originCountry    String?  // Üretim / Menşei Ülke
+  heatPump         String?  // Isı Pompası (Var / Yok)
+  v2l              String?  // V2L Desteği (Var / Yok)
+  extraSpecs       Json?    // Ekstra teknik veriler
+
   /// GERÇEK MEVSİMSEL MENZİL
   /// `rangeKm` üreticinin ilan ettiği WLTP değeridir; gerçek kullanımda yazın
   /// klima, kışın ısıtma ve batarya sıcaklığı bunu düşürür. Bu iki alan ölçüme
@@ -397,12 +413,13 @@ model VehicleImage {
   alt                String?
   source             String
   sourceUrl          String
-  externalId         String   @unique
+  externalId         String
   isPrimary          Boolean  @default(false)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
   @@index([vehicleId])
+  @@index([externalId])
 }
 
 model VehicleVariant {
