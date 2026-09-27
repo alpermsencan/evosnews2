@@ -18,52 +18,78 @@ export async function GET(req: NextRequest, { params }: Ctx) {
       where: { vehicleId: id },
       orderBy: { createdAt: "desc" },
     });
-    return ok({ images });
+    return ok({ success: true, images });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Görseller alınamadı", 500);
   }
 }
 
-// POST: Add a new image manually
+// POST: Add new image(s) manually (supports single url or multiple urls)
 export async function POST(req: NextRequest, { params }: Ctx) {
   if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const { id } = await params;
 
   try {
-    const { url, cloudinaryPublicId, type, isPrimary } = await req.json();
+    const body = await req.json();
 
-    if (!url) return fail("url parametresi gereklidir", 400);
+    // Check if input is a single image or an array of urls/images
+    const urls: string[] = Array.isArray(body.urls)
+      ? body.urls
+      : Array.isArray(body.images)
+      ? body.images.map((item: unknown) =>
+          typeof item === "string" ? item : (item as { url?: string })?.url || ""
+        ).filter(Boolean)
+      : body.url
+      ? [body.url]
+      : [];
 
-    const extId = `manual-${Date.now()}`;
+    if (urls.length === 0) return fail("url veya urls parametresi gereklidir", 400);
 
-    // If isPrimary is true, unset other primaries
-    if (isPrimary) {
-      await prisma.vehicleImage.updateMany({
-        where: { vehicleId: id },
-        data: { isPrimary: false },
+    const isPrimary = !!body.isPrimary;
+    const type = body.type || "gallery";
+    const cloudinaryPublicId = body.cloudinaryPublicId || "";
+
+    const createdImages = [];
+    for (let i = 0; i < urls.length; i++) {
+      const url = urls[i];
+      const makePrimary = isPrimary && i === 0;
+
+      // If isPrimary is true, unset other primaries and update vehicle cover
+      if (makePrimary) {
+        await prisma.vehicleImage.updateMany({
+          where: { vehicleId: id },
+          data: { isPrimary: false },
+        });
+        await prisma.vehicle.update({
+          where: { id },
+          data: { image: url },
+        });
+      }
+
+      const image = await prisma.vehicleImage.create({
+        data: {
+          vehicleId: id,
+          url,
+          cloudinaryPublicId,
+          type,
+          source: "admin",
+          sourceUrl: url,
+          externalId: `manual-${Date.now()}-${i}`,
+          isPrimary: makePrimary,
+        },
       });
-      // Also update the main vehicle cover image URL
-      await prisma.vehicle.update({
-        where: { id },
-        data: { image: url },
-      });
+      createdImages.push(image);
     }
 
-    const image = await prisma.vehicleImage.create({
-      data: {
-        vehicleId: id,
-        url,
-        cloudinaryPublicId: cloudinaryPublicId || "",
-        type: type || "gallery",
-        source: "admin",
-        sourceUrl: url,
-        externalId: extId,
-        isPrimary: !!isPrimary,
-      },
-    });
-
     touchVehicles();
-    return ok({ image }, 201);
+    return ok(
+      {
+        success: true,
+        image: createdImages[0],
+        images: createdImages,
+      },
+      201
+    );
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Görsel eklenemedi", 500);
   }
@@ -84,7 +110,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
       return fail("Görsel bulunamadı", 404);
     }
 
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (type !== undefined) updateData.type = type;
     if (isPrimary !== undefined) updateData.isPrimary = !!isPrimary;
 
@@ -107,7 +133,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     });
 
     touchVehicles();
-    return ok({ image });
+    return ok({ success: true, image });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Güncellenemedi", 500);
   }

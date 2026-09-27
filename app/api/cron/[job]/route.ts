@@ -184,30 +184,9 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     const pruned = await pruneArchive();
     if (pruned.archived + pruned.drafts + pruned.offTopic > 0) tags.add(TAGS.articles);
 
-    // Araç fiyat senkronizasyonu entegrasyonu (Faz 1 & 2 - Kia & Hyundai)
-    let kiaVehicleSync = null;
-    let hyundaiVehicleSync = null;
-    try {
-      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
-      kiaVehicleSync = await syncBrandVehicles("kia-official");
-      if (kiaVehicleSync.status === "ok" && (kiaVehicleSync.created > 0 || kiaVehicleSync.updated > 0)) {
-        tags.add(TAGS.vehicles);
-      }
-    } catch (e) {
-      console.error("[CRON][ERROR] Kia vehicle sync failed", e);
-      kiaVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
-    }
-
-    try {
-      const { syncBrandVehicles } = await import("@/lib/vehicle-sync");
-      hyundaiVehicleSync = await syncBrandVehicles("hyundai-official");
-      if (hyundaiVehicleSync.status === "ok" && (hyundaiVehicleSync.created > 0 || hyundaiVehicleSync.updated > 0)) {
-        tags.add(TAGS.vehicles);
-      }
-    } catch (e) {
-      console.error("[CRON][ERROR] Hyundai vehicle sync failed", e);
-      hyundaiVehicleSync = { status: "error", message: e instanceof Error ? e.message : String(e) };
-    }
+    // Araç ve fiyat senkronizasyonu tamamen MANUEL moda alındı (arka planda otomatik çalışmaz)
+    const kiaVehicleSync = { status: "manual_mode", message: "Yalnızca admin panelinden manuel tetiklenir" };
+    const hyundaiVehicleSync = { status: "manual_mode", message: "Yalnızca admin panelinden manuel tetiklenir" };
 
     for (const tag of tags) revalidateTag(tag, "max");
 

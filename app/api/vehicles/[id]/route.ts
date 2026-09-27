@@ -54,6 +54,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     if (b.isFeatured !== undefined) data.isFeatured = !!b.isFeatured;
     if (b.pros !== undefined) data.pros = b.pros;
     if (b.cons !== undefined) data.cons = b.cons;
+    if (b.gallery !== undefined && Array.isArray(b.gallery)) data.images = b.gallery;
 
     const vehicle = await prisma.vehicle.update({ where: { id }, data });
     touchVehicles();

@@ -48,6 +48,7 @@ export default async function EditVehiclePage({
           warranty: v.warranty,
           rating: v.rating,
           image: v.image,
+          gallery: v.images || [],
           isFeatured: v.isFeatured,
           pros: v.pros,
           cons: v.cons,

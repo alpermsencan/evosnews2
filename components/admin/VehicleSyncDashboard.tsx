@@ -136,14 +136,7 @@ export default function VehicleSyncDashboard() {
     fetchData(page);
   }, [fetchData, page]);
 
-  // 45 saniyede bir otomatik hafif arka plan tazeleme
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchData(page);
-    }, 45000);
-    return () => clearInterval(interval);
-  }, [fetchData, page]);
-
+  // Manuel senkronizasyon tetikleme (tek marka veya tümü)
   const handleManualSync = async (brandKey: string) => {
     setSyncingBrand(brandKey);
     setToastMessage(null);
@@ -161,10 +154,17 @@ export default function VehicleSyncDashboard() {
         throw new Error(resData.error || "Senkronizasyon başarısız");
       }
 
-      setToastMessage({
-        type: "success",
-        text: `${brandKey.toUpperCase()} senkronizasyonu tamamlandı: ${resData.result?.unchanged ?? 0} güncel, ${resData.result?.updated ?? 0} yeni fiyat, ${resData.result?.imagesUnchanged ?? 0} görsel doğrulandı.`,
-      });
+      if (brandKey === "all") {
+        setToastMessage({
+          type: "success",
+          text: "Tüm resmi markaların manuel senkronizasyonu tamamlandı.",
+        });
+      } else {
+        setToastMessage({
+          type: "success",
+          text: `${brandKey.toUpperCase()} manuel senkronizasyonu tamamlandı: ${resData.result?.unchanged ?? 0} güncel, ${resData.result?.updated ?? 0} yeni fiyat, ${resData.result?.imagesUnchanged ?? 0} görsel doğrulandı.`,
+        });
+      }
 
       // Tabloyu tazele
       await fetchData(page);
@@ -206,6 +206,37 @@ export default function VehicleSyncDashboard() {
         </div>
       )}
 
+      {/* Manual Mode Banner */}
+      <div className="rounded-xl border border-blue-200 bg-blue-50/80 p-4 text-blue-900 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <span className="text-xl">🛠️</span>
+          <div>
+            <h4 className="text-sm font-black">Çalışma Modu: %100 Manuel Yönetim</h4>
+            <p className="text-xs text-blue-800 mt-0.5">
+              Arka planda otomatik araç senkronizasyonu ve fiyat güncellemesi tamamen devre dışıdır.
+              Veriler yalnızca sizin buradaki <strong>Manuel Senkronize Et</strong> butonlarına basmanızla veya <strong>Araçlar</strong> sekmesinden elle yaptığınız değişikliklerle güncellenir.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => handleManualSync("all")}
+          disabled={loading || syncingBrand !== null}
+          className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-700 px-4 py-2 text-xs font-black text-white shadow-sm hover:bg-blue-800 transition disabled:opacity-50"
+        >
+          {syncingBrand === "all" ? (
+            <>
+              <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <span>Tümü Senkronize Ediliyor...</span>
+            </>
+          ) : (
+            <>
+              <IconBolt className="h-3.5 w-3.5" />
+              <span>Tüm Markaları Manuel Sync Et</span>
+            </>
+          )}
+        </button>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
@@ -213,7 +244,7 @@ export default function VehicleSyncDashboard() {
             Araç Senkronizasyon & Fiyat Değişikliği Monitörü
           </h2>
           <p className="text-xs text-neutral-500">
-            Kia, Hyundai, Togg, BYD ve Tesla resmi üretici portallarından otomatik fiyat, teknik özellik ve görsel senkronizasyonu.
+            Resmi üretici portallarından isteğe bağlı manuel fiyat, teknik özellik ve görsel kontrolü.
           </p>
         </div>
         <button
@@ -292,13 +323,13 @@ export default function VehicleSyncDashboard() {
 
         <div className="rounded-lg border border-neutral-200 bg-white p-4 shadow-sm">
           <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
-            Sistem Sağlığı
+            Senkron Modu
           </span>
           <div className="mt-1 flex items-center gap-1.5">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-sm font-black text-emerald-700">Tümü Aktif</span>
+            <span className="inline-block h-2.5 w-2.5 rounded-full bg-blue-600" />
+            <span className="text-sm font-black text-blue-800">Tamamen Manuel</span>
           </div>
-          <p className="mt-1 text-[11px] text-neutral-500">Daily Cron: 07:00 TRT</p>
+          <p className="mt-1 text-[11px] text-neutral-500">Arka plan cron kapalı</p>
         </div>
       </div>
 
@@ -402,7 +433,7 @@ export default function VehicleSyncDashboard() {
                     ) : (
                       <>
                         <IconBolt className="h-3.5 w-3.5" />
-                        <span>{b.brand.toUpperCase()} SYNC ET</span>
+                        <span>{b.brand.toUpperCase()} MANUEL SYNC</span>
                       </>
                     )}
                   </button>

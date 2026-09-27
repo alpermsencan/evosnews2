@@ -241,9 +241,24 @@ export async function POST(req: NextRequest) {
       renault: "renault-official",
     };
 
+    if (brand === "all") {
+      const results: Record<string, unknown> = {};
+      for (const [b, src] of Object.entries(allowedSources)) {
+        try {
+          results[b] = await syncBrandVehicles(src, "MANUAL");
+        } catch (e) {
+          results[b] = { status: "error", message: e instanceof Error ? e.message : String(e) };
+        }
+      }
+      return ok({
+        brand: "all",
+        results,
+      });
+    }
+
     const sourceName = allowedSources[brand];
     if (!sourceName) {
-      return fail(`Desteklenmeyen marka: ${brand}. Geçerli markalar: kia, hyundai, togg, byd, tesla, renault`, 400);
+      return fail(`Desteklenmeyen marka: ${brand}. Geçerli markalar: kia, hyundai, togg, byd, tesla, renault, all`, 400);
     }
 
     const result = await syncBrandVehicles(sourceName, "MANUAL");

@@ -106,6 +106,41 @@ export async function POST(req: NextRequest) {
         description: b.description || "",
       },
     });
+
+    // Ana görsel VehicleImage tablosuna da eklensin
+    if (b.image && b.image !== "/arac-placeholder.svg") {
+      await prisma.vehicleImage.create({
+        data: {
+          vehicleId: vehicle.id,
+          url: b.image,
+          type: "exterior",
+          source: "admin",
+          sourceUrl: b.image,
+          externalId: `manual-main-${Date.now()}`,
+          isPrimary: true,
+        },
+      });
+    }
+
+    // Galeri görselleri toplu olarak VehicleImage tablosuna eklensin
+    if (Array.isArray(b.gallery) && b.gallery.length > 0) {
+      for (let i = 0; i < b.gallery.length; i++) {
+        const url = b.gallery[i];
+        if (!url || url === b.image) continue;
+        await prisma.vehicleImage.create({
+          data: {
+            vehicleId: vehicle.id,
+            url,
+            type: "gallery",
+            source: "admin",
+            sourceUrl: url,
+            externalId: `manual-gal-${Date.now()}-${i}`,
+            isPrimary: false,
+          },
+        });
+      }
+    }
+
     touchVehicles();
     return ok({ vehicle }, 201);
   } catch (e) {
