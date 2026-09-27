@@ -36,29 +36,31 @@ export default async function CommunityPage() {
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-orange-600 to-red-800 p-6 text-white">
-        <div className="flex items-center gap-2">
-          <IconUsers className="h-7 w-7" />
-          <h1 className="text-2xl font-black sm:text-4xl">TOPLULUK</h1>
+      <header className="flex flex-col gap-3 rounded-2xl bg-gradient-to-br from-[#0B1E3F] via-slate-900 to-slate-800 p-6 text-white shadow-md">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/20 text-sky-400">
+            <IconUsers className="h-6 w-6" />
+          </span>
+          <div>
+            <h1 className="text-2xl font-black sm:text-3xl tracking-tight">EV TOPLULUĞU</h1>
+            <p className="text-xs text-sky-200/80 font-medium">
+              Elektrikli araç sahiplerinin deneyim paylaştığı, soru sorduğu ve yardımlaştığı sosyal alan
+            </p>
+          </div>
         </div>
-        <p className="max-w-3xl text-sm text-white/85 sm:text-base">
-          Elektrikli araç sahiplerinin deneyim paylaştığı, soru sorduğu ve yol
-          notlarını aktardığı Evos topluluğu.
-        </p>
-        <div className="mt-1 grid grid-cols-3 gap-3">
-          <Stat label="Konu" value={`${stats._count}`} />
+
+        <div className="mt-1 grid grid-cols-3 gap-3 border-t border-white/10 pt-3">
+          <Stat label="Paylaşım" value={`${stats._count}`} />
           <Stat label="Beğeni" value={`${stats._sum.likes ?? 0}`} />
           <Stat label="Yanıt" value={`${stats._sum.replies ?? 0}`} />
         </div>
       </header>
 
-      {/* MODEL TOPLULUKLARI — her araç kendi tartışma alanına sahip.
-          Genel forumda "hangi model" sorusu her başlıkta tekrar ediyordu;
-          model bazlı gruplar aynı aracı kullananları bir araya getirir. */}
+      {/* MODEL TOPLULUKLARI — her araç kendi tartışma alanına sahip */}
       <ModelCommunities />
 
-      <div className="flex flex-col gap-6 lg:flex-row">
-        <div className="min-w-0 flex-1">
+      <div className="flex flex-col gap-6 lg:flex-row items-start">
+        <div className="min-w-0 flex-1 w-full">
           <CommunityBoard
             topics={topics.map((t) => t.topic)}
             initialPosts={posts.map((p) => ({
@@ -80,21 +82,21 @@ export default async function CommunityPage() {
             />
           )}
 
-          <div className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-5">
-            <h3 className="text-base font-black text-neutral-900">
-              Topluluk kuralları
+          <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+            <h3 className="text-sm font-black text-neutral-900 uppercase tracking-wide flex items-center gap-1.5">
+              <span>📋</span> Topluluk Kuralları
             </h3>
-            <ul className="flex flex-col gap-2 text-[13px] text-neutral-600">
-              <li>• Deneyiminizi mümkün olduğunca veriyle paylaşın.</li>
-              <li>• Marka tartışmalarında saygılı bir dil kullanın.</li>
-              <li>• Reklam ve satış ilanı paylaşmayın.</li>
-              <li>• Kişisel verilerinizi (plaka, şase) paylaşmayın.</li>
+            <ul className="flex flex-col gap-2 text-xs text-neutral-600 font-medium leading-relaxed">
+              <li>• Deneyiminizi mümkün olduğunca objektif veriyle paylaşın.</li>
+              <li>• Marka tartışmalarında saygılı ve yapıcı bir dil kullanın.</li>
+              <li>• Reklam ve satış ilanı paylaşımı yapmayınız.</li>
+              <li>• Güvenliğiniz için plaka veya şasi numarası paylaşmayınız.</li>
             </ul>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-neutral-200 bg-white">
-            <div className="bg-orange-600 px-4 py-3 text-sm font-black text-white">
-              EN ÇOK KONUŞULAN KONULAR
+          <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+            <div className="bg-[#0B1E3F] px-4 py-3 text-xs font-black text-white flex items-center gap-2">
+              <span>🔥</span> GÜNDEMDEKİ KONULAR
             </div>
             <ul className="flex flex-col">
               {topics.length === 0 && (

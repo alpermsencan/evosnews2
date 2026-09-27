@@ -347,7 +347,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                           <span className="text-base font-black text-white mt-0.5">{v.dcChargeKw ? `${v.dcChargeKw} kW` : "150 kW"}</span>
                         </div>
                         <div className="rounded bg-neutral-950 p-2.5 border border-neutral-800 flex flex-col">
-                          <span className="text-[8px] font-black text-neutral-500 uppercase">VoltScore GÜVEN</span>
+                          <span className="text-[8px] font-black text-neutral-500 uppercase">UZMAN PUANI</span>
                           <span className="text-base font-black text-white mt-0.5">{v.rating ? Math.round(v.rating * 20) : 85}/100</span>
                         </div>
                       </div>
@@ -659,7 +659,7 @@ export default function VehicleHubClient({ vehicles, articles, testDriveVehicle 
                 </span>
                 <h3 className="text-lg font-black text-neutral-900">{testDriveVehicle.brand} {testDriveVehicle.model} Test Sürüşü</h3>
                 <p className="text-xs text-neutral-500 leading-relaxed">
-                  {testDriveVehicle.brand} {testDriveVehicle.model} modeliyle gerçekleştireceğimiz video incelemeli test sürüşü ve VoltScore derecelendirmesi yakında yayında olacaktır. Detaylar ve canlı ölçümler için takipte kalın.
+                  {testDriveVehicle.brand} {testDriveVehicle.model} modeliyle gerçekleştireceğimiz video incelemeli test sürüşü ve detaylı uzman incelemesi yakında yayında olacaktır. Detaylar ve canlı ölçümler için takipte kalın.
                 </p>
               </div>
               <div className="mt-4 flex flex-col gap-1.5 p-3.5 bg-neutral-50 rounded border border-neutral-150">

@@ -6,6 +6,7 @@ import VehiclesExplorer from "@/components/vehicles/VehiclesExplorer";
 import SectionTitle from "@/components/news/SectionTitle";
 import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
+import BodyTypeExplorer from "@/components/vehicles/BodyTypeExplorer";
 import { formatTL } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -60,13 +61,10 @@ export default async function VehiclesPage({
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      <header className="flex flex-col gap-3 rounded-2xl bg-gradient-to-br from-teal-700 to-emerald-800 p-6 text-white shadow-sm">
-        <h1 className="text-2xl font-black sm:text-4xl">ARAÇLARI KEŞFET</h1>
-        <p className="max-w-2xl text-sm text-white/85 sm:text-base">
-          Türkiye pazarındaki elektrikli modelleri menzil, batarya kapasitesi,
-          şarj gücü ve fiyat kriterleriyle karşılaştırın.
-        </p>
-      </header>
+      {/* DOLUBATARYA TARZI ARAÇ TİPİNE GÖRE KEŞFET (Yeşil sütun yerine) */}
+      <Suspense fallback={<div className="h-28 rounded-2xl bg-white animate-pulse" />}>
+        <BodyTypeExplorer />
+      </Suspense>
 
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         <Suspense fallback={<div className="h-64 w-72 rounded-2xl bg-white" />}>

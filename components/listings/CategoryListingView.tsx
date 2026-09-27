@@ -12,6 +12,7 @@ import {
   IconSparkles,
 } from "@/components/ui/Icons";
 import { LISTING_CATEGORIES, ListingCategoryConfig } from "@/lib/listingCategories";
+import { CategoryIcon } from "./CategoryIcon";
 import ListingRowCard from "./ListingRowCard";
 import ListingCard, { ListingLite } from "./ListingCard";
 
@@ -164,7 +165,7 @@ export default function CategoryListingView({
                   : "bg-white/10 text-neutral-300 hover:bg-white/20 hover:text-white"
               }`}
             >
-              <span>{cat.icon}</span>
+              <CategoryIcon slug={cat.slug} className="h-3.5 w-3.5" />
               <span>{cat.name}</span>
             </Link>
           ))}
@@ -399,7 +400,6 @@ export default function CategoryListingView({
                 { label: "İlan Tarihine Göre (En Yeni)", value: "yeni" },
                 { label: "Fiyata Göre (Önce En Düşük)", value: "ucuz" },
                 { label: "Fiyata Göre (Önce En Yüksek)", value: "pahali" },
-                { label: "VoltScore Güven Puanına Göre", value: "puan" },
                 { label: "Kilometreye Göre (En Düşük)", value: "km-artan" },
                 { label: "Model Yılına Göre (En Yeni)", value: "yil-azalan" },
               ].map((opt) => (

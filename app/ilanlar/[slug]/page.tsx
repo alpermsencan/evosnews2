@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!l || l.status !== "PUBLISHED") return { title: "İlan bulunamadı" };
   return {
     title: l.title,
-    description: `${l.year} model, ${l.city}. ${formatTL(l.price)}. Batarya sağlığı, gerçek menzil ve VoltScore güven puanıyla.`,
+    description: `${l.year} model, ${l.city}. ${formatTL(l.price)}. Doğrulanmış batarya ve teknik verileriyle.`,
   };
 }
 
@@ -215,29 +215,6 @@ export default async function ListingDetail({
             </section>
           )}
 
-          {/* VOLTSCORE RADİAL GÜVEN PUANI */}
-          <section className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-5">
-            <h2 className="text-base font-black text-neutral-900 border-b border-neutral-100 pb-2 mb-1">
-              VoltScore™ Elektrikli Araç Güven Puanı
-            </h2>
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div className="w-full max-w-[280px] shrink-0">
-                <VoltScoreWidget score={listing.voltScore ?? 0} breakdown={breakdown} />
-              </div>
-              <div className="flex flex-col gap-2.5">
-                <p className="text-sm font-semibold text-neutral-850 leading-snug">
-                  VoltScore, aracın batarya ve şarj kondisyonunu tek bir güven endeksine indirger.
-                </p>
-                <p className="text-xs leading-relaxed text-neutral-500">
-                  Bu puan; batarya yönetim sisteminden (BMS) okunan anlık batarya kapasite kaybı (SOH), geçmiş hızlı şarj kullanım sıklığı, aracın yaşı ile yaptığı kilometre dengesi, kaza geçmişi ve üretici batarya garanti süreleri dikkate alınarak hesaplanır.
-                </p>
-                <div className="flex items-center gap-1.5 mt-1 bg-sky-50 text-sky-850 px-3 py-2 rounded text-xs font-semibold">
-                  <span>⚡</span>
-                  <span>Bu araç için hesaplanan veri kapsamı: %{breakdown?.coverage ?? 100}</span>
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
 
         {/* SAĞ SÜTUN — DETAYLAR & SATICI */}

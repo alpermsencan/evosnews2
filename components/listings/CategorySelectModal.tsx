@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconClose, IconFilter, IconSearch, IconChevronRight } from "@/components/ui/Icons";
 import { LISTING_CATEGORIES } from "@/lib/listingCategories";
+import { CategoryIcon } from "./CategoryIcon";
 
 export default function CategorySelectModal() {
   const router = useRouter();
@@ -101,8 +102,10 @@ export default function CategorySelectModal() {
                           : "border-neutral-200 bg-white hover:border-neutral-300 hover:bg-neutral-50/60"
                       }`}
                     >
-                      <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-neutral-100 text-3xl group-hover:scale-105 transition">
-                        {cat.icon}
+                      <span className={`flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl p-2.5 transition ${
+                        isSelected ? "bg-sky-600 text-white shadow-sm" : "bg-neutral-100 text-neutral-700 group-hover:bg-sky-50 group-hover:text-sky-600"
+                      }`}>
+                        <CategoryIcon slug={cat.slug} className="h-7 w-7" />
                       </span>
 
                       <div className="flex min-w-0 flex-1 flex-col">

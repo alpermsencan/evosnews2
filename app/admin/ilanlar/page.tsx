@@ -67,7 +67,6 @@ export default async function AdminListings({
               <th className="px-3 py-2">SATICI</th>
               <th className="px-3 py-2">DURUM</th>
               <th className="px-3 py-2">FİYAT</th>
-              <th className="px-3 py-2">PUAN</th>
               <th className="px-3 py-2">BATARYA</th>
               <th className="px-3 py-2">İŞLEM</th>
             </tr>
@@ -108,9 +107,6 @@ export default async function AdminListings({
                 </td>
                 <td className="px-3 py-2 font-black text-neutral-900">
                   {formatTL(l.price)}
-                </td>
-                <td className="px-3 py-2">
-                  <VoltScoreBadge score={l.voltScore} />
                 </td>
                 <td className="px-3 py-2 text-[11px] text-neutral-500">
                   {l.batteryReport?.verifiedAt

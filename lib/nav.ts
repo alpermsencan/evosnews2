@@ -17,7 +17,6 @@ export const TOP_NAV: NavItem[] = [
   { label: "2.EL İLANLAR", href: "/ilanlar" },
   { label: "ŞARJ", href: "/sarj-agi" },
   { label: "HABER MERKEZİ", href: "/kategori/haber-merkezi" },
-  { label: "FİYAT ANALİZİ", href: "/fiyat-analizi" },
   { label: "TOPLULUK", href: "/topluluk" },
 ];
 
@@ -36,11 +35,6 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
         href: "/ilanlar",
         desc: "Elektrikli araç pazarı, kategori bazlı vitrin",
         badge: "YENİ",
-      },
-      {
-        label: "Fiyat Analiz Endeksi",
-        href: "/fiyat-analizi",
-        desc: "Elektrikli araç piyasa değerleri ve trendler",
       },
     ],
   },
@@ -91,7 +85,6 @@ export const QUICK_LINKS: NavItem[] = [
   { label: "Araç Bul", href: "/araclar" },
   { label: "2.EL İLANLAR", href: "/ilanlar" },
   { label: "Şarj", href: "/sarj-agi" },
-  { label: "Fiyat Analizi", href: "/fiyat-analizi" },
   { label: "Haber Merkezi", href: "/kategori/haber-merkezi" },
 ];
 
@@ -103,7 +96,6 @@ export const FOOTER_GROUPS: NavGroup[] = [
       { label: "Teknoloji", href: "/kategori/teknoloji" },
       { label: "Dünya", href: "/kategori/dunya" },
       { label: "Test Sürüşü", href: "/kategori/test-surusu" },
-      { label: "Fiyat Analizi", href: "/fiyat-analizi" },
     ],
   },
   {

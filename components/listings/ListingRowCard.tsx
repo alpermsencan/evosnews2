@@ -69,11 +69,6 @@ export default function ListingRowCard({ listing }: { listing: ListingLite }) {
             <span className="rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-bold text-neutral-600 uppercase">
               {listing.condition === "SIFIR" ? "Sıfır" : "2. El"}
             </span>
-            {listing.voltScore && (
-              <span className="text-[11px] font-extrabold text-teal-700 hidden sm:inline">
-                VoltScore: {listing.voltScore}
-              </span>
-            )}
           </div>
 
           <span className="text-base sm:text-xl font-black text-blue-600 tracking-tight">

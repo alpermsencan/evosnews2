@@ -380,32 +380,34 @@ export default async function HomePage() {
 
         {/* SAĞ SÜTUN */}
         <aside className="flex w-full shrink-0 flex-col gap-5 px-3 sm:px-0 lg:w-[330px]">
-          {/* ÖTV REHBERİ SÜTUNU (Anasayfaya sağ tarafa yerleştirildi) */}
+          {/* ÖTV REHBERİ SÜTUNU (Site renkleriyle uyumlu, %25 taban dilimli) */}
           <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between bg-gradient-to-r from-violet-700 to-purple-800 px-4 py-3.5 text-white">
+            <div className="flex items-center justify-between bg-[#0B1E3F] px-4 py-3.5 text-white">
               <div className="flex items-center gap-2">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/20">
-                  <IconTag className="h-4 w-4 text-white" />
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/20 text-sky-400">
+                  <IconTag className="h-4 w-4" />
                 </span>
                 <div>
                   <h3 className="text-sm font-black tracking-wide">ÖTV REHBERİ</h3>
-                  <p className="text-[10px] text-white/80 font-medium">2026 Elektrikli Araç Vergi Dilimleri</p>
+                  <p className="text-[10px] text-sky-200/80 font-medium">2026 Elektrikli Araç Vergi Dilimleri</p>
                 </div>
               </div>
-              <span className="rounded bg-white/20 px-2 py-0.5 text-[10px] font-bold">GÜNCEL</span>
+              <span className="rounded bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 text-[10px] font-black">
+                GÜNCEL
+              </span>
             </div>
 
             <div className="flex flex-col divide-y divide-neutral-100 p-1">
-              {/* Dilim 1: %10 */}
+              {/* Dilim 1: %25 (Taban Dilim) */}
               <div className="flex items-center justify-between p-3 hover:bg-neutral-50 transition rounded-lg">
                 <div className="flex flex-col">
                   <span className="text-xs font-black text-neutral-900">Motor ≤ 160 kW</span>
                   <span className="text-[11px] text-neutral-500 font-medium">Matrah ≤ 1.450.000 TL</span>
-                  <span className="text-[10px] text-emerald-600 font-semibold mt-0.5">Togg T10X, Model Y SR, Atto 3</span>
+                  <span className="text-[10px] text-sky-700 font-semibold mt-0.5">Togg T10X, Model Y SR, Atto 3</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="rounded-lg bg-emerald-100 px-2.5 py-1 text-xs font-black text-emerald-700">
-                    %10 ÖTV
+                  <span className="rounded-lg bg-sky-50 border border-sky-200 px-2.5 py-1 text-xs font-black text-sky-800">
+                    %25 ÖTV
                   </span>
                 </div>
               </div>
@@ -415,10 +417,10 @@ export default async function HomePage() {
                 <div className="flex flex-col">
                   <span className="text-xs font-black text-neutral-900">Motor ≤ 160 kW</span>
                   <span className="text-[11px] text-neutral-500 font-medium">Matrah &gt; 1.450.000 TL</span>
-                  <span className="text-[10px] text-neutral-400 font-medium mt-0.5">Yüksek donanımlı tek motor</span>
+                  <span className="text-[10px] text-neutral-500 font-medium mt-0.5">Yüksek donanımlı tek motor</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="rounded-lg bg-amber-100 px-2.5 py-1 text-xs font-black text-amber-700">
+                  <span className="rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs font-black text-amber-800">
                     %40 ÖTV
                   </span>
                 </div>
@@ -429,10 +431,10 @@ export default async function HomePage() {
                 <div className="flex flex-col">
                   <span className="text-xs font-black text-neutral-900">Motor &gt; 160 kW</span>
                   <span className="text-[11px] text-neutral-500 font-medium">Matrah ≤ 1.350.000 TL</span>
-                  <span className="text-[10px] text-neutral-400 font-medium mt-0.5">Çift motor baz versiyonlar</span>
+                  <span className="text-[10px] text-neutral-500 font-medium mt-0.5">Çift motor baz versiyonlar</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="rounded-lg bg-orange-100 px-2.5 py-1 text-xs font-black text-orange-700">
+                  <span className="rounded-lg bg-orange-50 border border-orange-200 px-2.5 py-1 text-xs font-black text-orange-800">
                     %50 ÖTV
                   </span>
                 </div>
@@ -443,10 +445,10 @@ export default async function HomePage() {
                 <div className="flex flex-col">
                   <span className="text-xs font-black text-neutral-900">Motor &gt; 160 kW</span>
                   <span className="text-[11px] text-neutral-500 font-medium">Matrah &gt; 1.350.000 TL</span>
-                  <span className="text-[10px] text-rose-600 font-medium mt-0.5">Performans / Lüks AWD</span>
+                  <span className="text-[10px] text-rose-700 font-medium mt-0.5">Performans / Lüks AWD</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="rounded-lg bg-rose-100 px-2.5 py-1 text-xs font-black text-rose-700">
+                  <span className="rounded-lg bg-rose-50 border border-rose-200 px-2.5 py-1 text-xs font-black text-rose-800">
                     %60 ÖTV
                   </span>
                 </div>
@@ -454,8 +456,8 @@ export default async function HomePage() {
             </div>
 
             <div className="bg-neutral-50 p-3 border-t border-neutral-100">
-              <p className="text-[11px] leading-relaxed text-neutral-500">
-                💡 <strong>Not:</strong> Nihai etiket fiyatına ÖTV sonrası <strong>%20 KDV</strong> ilave edilir. 160 kW altındaki çoğu elektrikli model avantajlı <strong>%10</strong> dilimindedir.
+              <p className="text-[11px] leading-relaxed text-neutral-600">
+                💡 <strong>Not:</strong> Nihai etiket fiyatına ÖTV sonrası <strong>%20 KDV</strong> ilave edilir. Elektrikli araçlarda taban vergi dilimi <strong>%25</strong>&apos;ten başlamaktadır.
               </p>
             </div>
           </div>

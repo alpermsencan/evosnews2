@@ -8,6 +8,7 @@ import CategorySelectModal from "@/components/listings/CategorySelectModal";
 import { listingCardSelect } from "@/lib/listings";
 import { IconCar, IconChevronRight } from "@/components/ui/Icons";
 import { LISTING_CATEGORIES } from "@/lib/listingCategories";
+import { CategoryIcon } from "@/components/listings/CategoryIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -66,47 +67,29 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      {/* HEADER: 2.EL İLANLAR (İstatistik sütunları kaldırıldı) */}
-      <header className="flex flex-col gap-3 rounded-2xl bg-gradient-to-br from-evos-ink via-slate-900 to-slate-800 p-6 sm:p-8 text-white shadow-md">
+      {/* HEADER: 2.EL İLANLAR (Sadeleştirilmiş: yalnızca başlık ve Ücretsiz İlan Ver butonu) */}
+      <header className="flex flex-col gap-3 rounded-2xl bg-gradient-to-br from-evos-ink via-slate-900 to-slate-800 p-6 sm:p-7 text-white shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-400">
-              <IconCar className="h-7 w-7" />
+              <IconCar className="h-6 w-6" />
             </span>
-            <div>
-              <span className="text-[11px] font-black uppercase tracking-widest text-sky-400">
-                GÜVENLİ PAZARYERİ
-              </span>
-              <h1 className="text-2xl font-black sm:text-4xl text-white">2.EL İLANLAR</h1>
-            </div>
+            <h1 className="text-2xl font-black sm:text-3xl text-white tracking-tight">2.EL İLANLAR</h1>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href="/ilanlar/yeni"
-              className="rounded-xl bg-sky-500 px-5 py-2.5 text-xs font-black text-white shadow transition hover:bg-sky-400"
-            >
-              + ÜCRETSİZ İLAN VER
-            </Link>
-            <Link
-              href="/batarya-raporu"
-              className="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-xs font-black text-white transition hover:bg-white/20"
-            >
-              BATARYA RAPORU NEDİR?
-            </Link>
-          </div>
+          <Link
+            href="/ilanlar/yeni"
+            className="rounded-xl bg-sky-500 px-6 py-2.5 text-xs font-black text-white shadow transition hover:bg-sky-400"
+          >
+            + ÜCRETSİZ İLAN VER
+          </Link>
         </div>
-
-        <p className="max-w-3xl text-xs sm:text-sm text-neutral-300 leading-relaxed mt-1">
-          Klasik ilan siteleri aracın sadece fotoğrafını gösterir. Burada aracın elektrikli yaşam
-          verisi de var: ölçülmüş batarya sağlığı, gerçek menzil, şarj alışkanlığı ve bunları tek sayıya indiren VoltScore.
-        </p>
       </header>
 
       {/* BİRLEŞTİRİLMİŞ ARAMA VE TAM SAYFA FİLTRELER BUTONU */}
       <CategorySelectModal />
 
-      {/* 8 KATEGORİ HIZLI SEÇİM KARTLARI */}
+      {/* 8 KATEGORİ HIZLI SEÇİM KARTLARI (MODERN SVG SİMGELERLE) */}
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-black uppercase tracking-wider text-neutral-800 flex items-center gap-2">
@@ -121,11 +104,11 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
             <Link
               key={cat.slug}
               href={`/ilanlar/${cat.slug}`}
-              className="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white p-4 text-center shadow-sm transition hover:border-sky-400 hover:bg-sky-50/50 hover:shadow-md"
+              className="group flex flex-col items-center justify-center gap-2.5 rounded-2xl border border-neutral-200 bg-white p-4 text-center shadow-sm transition hover:border-sky-400 hover:bg-sky-50/50 hover:shadow-md"
             >
-              <span className="text-3xl group-hover:scale-110 transition duration-300">
-                {cat.icon}
-              </span>
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-100 text-neutral-600 transition group-hover:bg-sky-100 group-hover:text-sky-600">
+                <CategoryIcon slug={cat.slug} className="h-6 w-6" />
+              </div>
               <span className="text-xs sm:text-sm font-black text-neutral-900 group-hover:text-sky-700 transition leading-tight">
                 {cat.name}
               </span>

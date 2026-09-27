@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCompare } from "./CompareProvider";
 import { formatTL } from "@/lib/utils";
-import VoltScoreBadge from "@/components/listings/VoltScoreBadge";
 
 /**
  * Karşılaştırma tablosu.
@@ -233,7 +232,6 @@ export default function CompareTable() {
                       {r.title}
                     </Link>
                     <div className="flex items-center gap-2">
-                      {r.voltScore != null && <VoltScoreBadge score={r.voltScore} />}
                       <button
                         type="button"
                         onClick={() => remove(r.kind, r.slug)}

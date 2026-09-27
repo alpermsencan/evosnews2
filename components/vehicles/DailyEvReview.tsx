@@ -162,7 +162,7 @@ export default function DailyEvReview({ vehicle }: { vehicle: Vehicle }) {
                 <div className="rounded-lg bg-neutral-950 p-4 border border-neutral-800 flex flex-col gap-1">
                   <div className="flex items-center gap-2 text-neutral-500">
                     <IconShield className="h-4 w-4 text-blue-500" />
-                    <span className="text-[10px] font-black uppercase tracking-wider">VoltScore GÜVEN</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider">UZMAN PUANI</span>
                   </div>
                   <span className="text-2xl font-black text-white">{vehicle.rating ? Math.round(vehicle.rating * 20) : 85}/100</span>
                   <span className="text-[10px] text-neutral-500">Kullanıcı &amp; uzman değerlendirmesi</span>

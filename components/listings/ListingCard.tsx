@@ -64,10 +64,6 @@ export default function ListingCard({ listing }: { listing: ListingLite }) {
             </span>
           )}
         </div>
-
-        <div className="absolute right-2 top-2">
-          <VoltScoreBadge score={listing.voltScore} />
-        </div>
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-3">

@@ -87,7 +87,6 @@ export default async function MyListingsPage({
                   <th className="px-4 py-3">İLAN</th>
                   <th className="px-4 py-3">DURUM</th>
                   <th className="px-4 py-3">FİYAT</th>
-                  <th className="px-4 py-3">VOLTSCORE</th>
                   <th className="px-4 py-3">BATARYA RAPORU</th>
                 </tr>
               </thead>
@@ -117,9 +116,6 @@ export default async function MyListingsPage({
                       </td>
                       <td className="px-4 py-3 font-black text-neutral-900">
                         {formatTL(l.price)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <VoltScoreBadge score={l.voltScore} />
                       </td>
                       <td className="px-4 py-3 text-[12px] text-neutral-500">
                         {l.batteryReport?.verifiedAt
