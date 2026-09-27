@@ -189,7 +189,7 @@ export default async function FeaturedVehiclesShowcase() {
           return (
             <Link
               key={conf.slug}
-              href={`/arac/${conf.slug}`}
+              href={`/araclar/${conf.slug}`}
               className="group flex flex-col justify-between overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50/40 p-3.5 transition-all hover:-translate-y-1 hover:border-emerald-500/60 hover:bg-white hover:shadow-lg"
             >
               <div>

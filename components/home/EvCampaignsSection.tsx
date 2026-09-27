@@ -273,7 +273,7 @@ export default function EvCampaignsSection() {
                 ⏱ {item.expiryDate}
               </span>
               <Link
-                href={`/arac/${item.vehicleSlug}`}
+                href={`/araclar/${item.vehicleSlug}`}
                 className="font-bold text-emerald-700 hover:text-emerald-800 hover:underline flex items-center gap-1 text-[11px]"
               >
                 Modeli İncele →

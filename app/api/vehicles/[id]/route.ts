@@ -53,7 +53,16 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
       data[key] = b[key] === "" || b[key] === null || !Number.isFinite(n) || n <= 0 ? null : n;
     }
     if (b.warranty !== undefined) data.warranty = String(b.warranty).trim() || null;
-    if (b.slug !== undefined) data.slug = slugify(b.slug);
+    if (b.slug !== undefined) {
+      const raw = String(b.slug).trim();
+      if (raw) {
+        const candidate = slugify(raw);
+        const existing = await prisma.vehicle.findFirst({
+          where: { slug: candidate, NOT: { id } },
+        });
+        data.slug = existing ? `${candidate}-${id.slice(-4)}` : candidate;
+      }
+    }
     if (b.isFeatured !== undefined) data.isFeatured = !!b.isFeatured;
     if (b.pros !== undefined) data.pros = b.pros;
     if (b.cons !== undefined) data.cons = b.cons;

@@ -15,11 +15,92 @@ export const revalidate = 60;
 
 type Props = { params: Promise<{ slug: string }> };
 
+async function findVehicleByParam(rawParam: string) {
+  const clean = decodeURIComponent(rawParam).trim();
+  const lower = clean.toLowerCase();
+
+  // 1. Direct match by slug
+  let v = await prisma.vehicle.findFirst({
+    where: {
+      OR: [{ slug: lower }, { slug: clean }],
+    },
+    include: {
+      syncImages: {
+        where: { NOT: { type: "ignored" } },
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+      },
+    },
+  });
+  if (v) return v;
+
+  // 2. Direct match by ObjectId
+  if (/^[a-f\d]{24}$/i.test(clean)) {
+    v = await prisma.vehicle.findUnique({
+      where: { id: clean },
+      include: {
+        syncImages: {
+          where: { NOT: { type: "ignored" } },
+          orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+        },
+      },
+    });
+    if (v) return v;
+  }
+
+  // 3. Match by externalId or partial slug
+  v = await prisma.vehicle.findFirst({
+    where: {
+      OR: [
+        { externalId: lower },
+        { externalId: `dolubatarya-${lower}` },
+        { externalId: { contains: lower, mode: "insensitive" } },
+        { slug: { contains: lower, mode: "insensitive" } },
+      ],
+    },
+    include: {
+      syncImages: {
+        where: { NOT: { type: "ignored" } },
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+      },
+    },
+  });
+  if (v) return v;
+
+  // 4. Normalized variations (stripping common suffixes/prefixes)
+  const stripped = lower
+    .replace(/^dolubatarya-/, "")
+    .replace(/-[a-f0-9]{8}$/, "")
+    .replace(/-202[0-9]$/, "")
+    .replace(/-v[0-9]/, "")
+    .replace(/-fastback/, "")
+    .replace(/-sedan/, "")
+    .replace(/-ozellikler$/, "");
+
+  if (stripped && stripped.length > 2) {
+    v = await prisma.vehicle.findFirst({
+      where: {
+        OR: [
+          { slug: { contains: stripped, mode: "insensitive" } },
+          { externalId: { contains: stripped, mode: "insensitive" } },
+          { model: { contains: stripped, mode: "insensitive" } },
+        ],
+      },
+      include: {
+        syncImages: {
+          where: { NOT: { type: "ignored" } },
+          orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
+        },
+      },
+    });
+    if (v) return v;
+  }
+
+  return null;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const v = await prisma.vehicle.findFirst({
-    where: { OR: [{ slug }, { externalId: `dolubatarya-${slug}` }] },
-  });
+  const v = await findVehicleByParam(slug);
   if (!v) return { title: "Araç bulunamadı" };
   return {
     title: `${v.brand} ${v.model} (${v.year}) · Teknik Özellikler, Menzil ve Fiyat`,
@@ -31,15 +112,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function VehicleDetail({ params }: Props) {
   const { slug } = await params;
-  const vehicle = await prisma.vehicle.findFirst({
-    where: { OR: [{ slug }, { externalId: `dolubatarya-${slug}` }] },
-    include: {
-      syncImages: {
-        where: { NOT: { type: "ignored" } },
-        orderBy: [{ isPrimary: "desc" }, { createdAt: "desc" }],
-      },
-    },
-  });
+  const vehicle = await findVehicleByParam(slug);
 
   if (!vehicle) notFound();
 
