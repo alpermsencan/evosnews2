@@ -39,8 +39,11 @@ type Vehicle = {
 export default function DailyEvReview({ vehicle }: { vehicle: Vehicle }) {
   const [activeTab, setActiveTab] = useState<"live" | "theory">("live");
 
-  const primaryImg = vehicle.syncImages?.find((img) => img.isPrimary) || vehicle.syncImages?.[0];
-  const displayImage = primaryImg?.url || vehicle.image;
+  const primaryImg =
+    vehicle.syncImages?.find((img) => img.isPrimary && !img.url.startsWith("/media/")) ||
+    vehicle.syncImages?.find((img) => !img.url.startsWith("/media/"));
+  const vehicleCover = vehicle.image && !vehicle.image.startsWith("/media/") ? vehicle.image : null;
+  const displayImage = primaryImg?.url || vehicleCover || "/arac-placeholder.svg";
 
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-200 bg-neutral-900 text-white shadow-xl">

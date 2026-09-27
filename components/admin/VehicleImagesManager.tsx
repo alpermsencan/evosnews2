@@ -64,6 +64,12 @@ export default function VehicleImagesManager({ vehicleId }: VehicleImagesManager
       const data = await res.json();
       if (res.ok) {
         setSuccessMsg("Ana görsel başarıyla güncellendi.");
+        const selectedImg = images.find((img) => img.id === imageId);
+        if (selectedImg?.url) {
+          window.dispatchEvent(
+            new CustomEvent("vehicle-image-changed", { detail: { url: selectedImg.url } })
+          );
+        }
         await fetchImages();
       } else {
         setError(data.error || data.message || "Birincil yapma işlemi başarısız.");
@@ -206,6 +212,11 @@ export default function VehicleImagesManager({ vehicleId }: VehicleImagesManager
       }
 
       setSuccessMsg(`${uploadedUrls.length} adet görsel başarıyla eklendi!`);
+      if (images.length === 0 && uploadedUrls[0]) {
+        window.dispatchEvent(
+          new CustomEvent("vehicle-image-changed", { detail: { url: uploadedUrls[0] } })
+        );
+      }
       await fetchImages();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Yükleme sırasında hata oluştu.");

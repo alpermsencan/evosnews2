@@ -96,19 +96,22 @@ export default async function VehicleDetail({ params }: Props) {
   // Öncelik: Primary seçilen görsel, ardından syncImages veya aracın image/images alanları
   const validSyncImages = vehicle.syncImages
     .map((img) => img.url)
-    .filter((url) => !url.includes("togg-t10x-iaa-2025.jpg"));
+    .filter((url) => Boolean(url) && !url.includes("togg-t10x-iaa-2025.jpg") && !url.startsWith("/media/"));
 
-  const primarySync = vehicle.syncImages.find((img) => img.isPrimary)?.url;
+  const primarySync = vehicle.syncImages.find((img) => img.isPrimary && !img.url.startsWith("/media/"))?.url;
+  const validVehicleImg = vehicle.image && !vehicle.image.startsWith("/media/") ? vehicle.image : null;
+  const validVehicleImages = (vehicle.images || []).filter((u) => Boolean(u) && !u.startsWith("/media/"));
+
   const defaultImg =
     primarySync ||
-    vehicle.image ||
+    validVehicleImg ||
     validSyncImages[0] ||
-    vehicle.images?.[0] ||
+    validVehicleImages[0] ||
     "/arac-placeholder.svg";
 
   const allGallery = Array.from(
-    new Set([defaultImg, ...validSyncImages, ...(vehicle.images || [])].filter(Boolean))
-  ).filter((url) => !url.includes("togg-t10x-iaa-2025.jpg"));
+    new Set([defaultImg, ...validSyncImages, ...validVehicleImages].filter(Boolean))
+  ).filter((url) => !url.includes("togg-t10x-iaa-2025.jpg") && !url.startsWith("/media/"));
 
   const galleryImages = allGallery.length > 0 ? allGallery : [defaultImg];
 

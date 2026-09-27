@@ -33,10 +33,17 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
   // Prioritize verified syncImages over legacy static image URL
   const syncImages = vehicle.syncImages || [];
 
-  let displayImage = vehicle.image || "/arac-placeholder.svg";
+  let displayImage =
+    vehicle.image && !vehicle.image.startsWith("/media/")
+      ? vehicle.image
+      : "/arac-placeholder.svg";
+
   if (syncImages && syncImages.length > 0) {
     const validSync = syncImages.filter(
-      (img) => img.type !== "ignored" && !img.url.includes("togg-t10x-iaa-2025.jpg")
+      (img) =>
+        img.type !== "ignored" &&
+        !img.url.includes("togg-t10x-iaa-2025.jpg") &&
+        !img.url.startsWith("/media/")
     );
     const primaryImg = validSync.find((img) => img.isPrimary) || validSync[0];
     if (primaryImg?.url) {
@@ -44,7 +51,7 @@ export default function VehicleCard({ vehicle }: { vehicle: VehicleLite }) {
     }
   }
 
-  if (!displayImage || displayImage.trim() === "") {
+  if (!displayImage || displayImage.trim() === "" || displayImage.startsWith("/media/")) {
     displayImage = "/arac-placeholder.svg";
   }
 
