@@ -45,30 +45,26 @@ export default function Header() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 w-full select-none">
-      {/* 1. ANA SAHNE: LOGO & KONTROL MERKEZİ (PREMIUM OBSIDIAN GLASS) */}
-      <div className="relative bg-gradient-to-r from-[#060b17] via-[#0a1329] to-[#060b17] border-b border-white/[0.08] backdrop-blur-xl shadow-lg">
-        {/* Ortam Işıması (Ambient Glow) */}
-        <div className="pointer-events-none absolute -top-12 left-8 w-80 h-28 bg-cyan-500/15 blur-3xl rounded-full" />
-        <div className="pointer-events-none absolute -top-12 right-12 w-64 h-28 bg-blue-600/10 blur-3xl rounded-full" />
-
+    <header className="sticky top-0 z-50 w-full select-none shadow-xs">
+      {/* 1. ANA SAHNE: LOGO & KONTROL MERKEZİ (DOLUBATARYA BEYAZ & CAM STİLİ: #FFFFFF, #1F1F1F, #05C46C, #F4F4F4) */}
+      <div className="relative bg-white/95 backdrop-blur-md border-b border-[#EAEAEA]">
         <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-3 px-3 sm:px-4">
           {/* Sol Kolon: Hamburger Menü + Modern Logo + Sürüm Rozeti */}
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             <button
               onClick={() => setOpenMenu(true)}
               aria-label="Menüyü aç"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-white transition active:scale-95 cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] text-[#1F1F1F] transition active:scale-95 cursor-pointer"
             >
-              <IconMenu className="h-6 w-6 text-slate-200" />
+              <IconMenu className="h-6 w-6 text-[#1F1F1F]" />
             </button>
 
-            {/* Modern Logo */}
-            <Logo size="md" showTagline={true} />
+            {/* Modern Logo (DoluBatarya Teması) */}
+            <Logo size="md" showTagline={true} theme="light" />
 
             {/* Platform Rozeti */}
-            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-500/30 text-[10px] font-black tracking-widest text-cyan-300 uppercase shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#DDFFF0] border border-[#05C46C]/30 text-[10px] font-black tracking-widest text-[#05C46C] uppercase shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#05C46C] animate-pulse"></span>
               <span>2026 EDITION</span>
             </div>
           </div>
@@ -77,16 +73,16 @@ export default function Header() {
           <div className="hidden lg:flex flex-1 max-w-md xl:max-w-lg mx-4">
             <form
               onSubmit={submitSearch}
-              className="group relative flex w-full items-center rounded-full bg-white/[0.05] hover:bg-white/[0.08] focus-within:bg-white/[0.1] border border-white/[0.1] focus-within:border-cyan-400/70 focus-within:ring-2 focus-within:ring-cyan-500/20 px-3.5 py-2 transition-all shadow-inner"
+              className="group relative flex w-full items-center rounded-full bg-[#F4F4F4] hover:bg-[#EAEAEA] focus-within:bg-white border border-[#EAEAEA] focus-within:border-[#05C46C] focus-within:ring-2 focus-within:ring-[#05C46C]/20 px-3.5 py-2 transition-all shadow-xs"
             >
-              <IconSearch className="h-4 w-4 shrink-0 text-cyan-400 group-focus-within:text-cyan-300 transition-colors" />
+              <IconSearch className="h-4 w-4 shrink-0 text-[#888888] group-focus-within:text-[#05C46C] transition-colors" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Araç, marka, batarya, şarj istasyonu veya haber ara..."
-                className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-white placeholder:text-slate-400 outline-none font-medium"
+                className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-[#1F1F1F] placeholder:text-[#888888] outline-none font-medium"
               />
-              <kbd className="hidden xl:inline-flex items-center px-2 py-0.5 rounded bg-white/[0.08] border border-white/[0.1] text-[10px] font-mono font-bold text-slate-400">
+              <kbd className="hidden xl:inline-flex items-center px-2 py-0.5 rounded bg-white border border-[#EAEAEA] text-[10px] font-mono font-bold text-[#656565]">
                 Ara ↵
               </kbd>
             </form>
@@ -97,7 +93,7 @@ export default function Header() {
             {/* Hızlı Aksiyon: İlan Ver Butonu (DoluBatarya Green #05C46C) */}
             <Link
               href="/ilanlar/yeni"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#05C46C] hover:bg-[#08B565] text-white font-black text-xs shadow-md shadow-[#05C46C]/25 active:scale-95 transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#05C46C] hover:bg-[#08B565] text-white font-black text-xs shadow-xs transition active:scale-95"
             >
               <span>⚡</span>
               <span>İlan Ver</span>
@@ -107,17 +103,17 @@ export default function Header() {
             <button
               onClick={() => setOpenSearch((s) => !s)}
               aria-label="Arama yap"
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-white transition lg:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] text-[#1F1F1F] transition lg:hidden"
             >
               {openSearch ? (
-                <IconClose className="h-5 w-5 text-slate-200" />
+                <IconClose className="h-5 w-5 text-[#1F1F1F]" />
               ) : (
-                <IconSearch className="h-5 w-5 text-cyan-400" />
+                <IconSearch className="h-5 w-5 text-[#1F1F1F]" />
               )}
             </button>
 
-            {/* Bildirim Zili (Cam Daire İçinde) */}
-            <div className="flex items-center justify-center rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] transition">
+            {/* Bildirim Zili */}
+            <div className="flex items-center justify-center rounded-xl bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] transition">
               <NotificationBell />
             </div>
 
@@ -130,16 +126,16 @@ export default function Header() {
         {openSearch && (
           <form
             onSubmit={submitSearch}
-            className="flex items-center gap-2 border-t border-white/[0.1] bg-[#070e1e] px-3.5 py-3 lg:hidden"
+            className="flex items-center gap-2 border-t border-[#EAEAEA] bg-white px-3.5 py-3 lg:hidden"
           >
-            <div className="flex flex-1 items-center rounded-xl bg-white/[0.08] border border-white/[0.15] px-3 py-2 text-white">
-              <IconSearch className="h-4 w-4 shrink-0 text-cyan-400" />
+            <div className="flex flex-1 items-center rounded-xl bg-[#F4F4F4] border border-[#EAEAEA] px-3 py-2 text-[#1F1F1F]">
+              <IconSearch className="h-4 w-4 shrink-0 text-[#888888]" />
               <input
                 ref={inputRef}
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Araç, şarj, haber veya marka ara..."
-                className="w-full bg-transparent px-2.5 text-sm text-white placeholder:text-slate-400 outline-none"
+                className="w-full bg-transparent px-2.5 text-sm text-[#1F1F1F] placeholder:text-[#888888] outline-none"
               />
             </div>
             <button

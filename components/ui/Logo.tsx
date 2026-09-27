@@ -4,6 +4,7 @@ import Link from "next/link";
 interface LogoProps {
   variant?: "default" | "compact" | "horizontal" | "icon-only" | "footer";
   size?: "sm" | "md" | "lg";
+  theme?: "light" | "dark";
   showTagline?: boolean;
   className?: string;
   href?: string;
@@ -12,10 +13,14 @@ interface LogoProps {
 export default function Logo({
   variant = "default",
   size = "md",
+  theme,
   showTagline = true,
   className = "",
   href = "/",
 }: LogoProps) {
+  // Tema belirleme: footer için varsayılan dark, diğerleri için varsayılan light
+  const isDark = theme ? theme === "dark" : variant === "footer";
+
   // Boyut ölçeklendirmeleri
   const emblemSizes = {
     sm: "w-8 h-8",
@@ -31,48 +36,54 @@ export default function Logo({
 
   const taglineSizes = {
     sm: "text-[8px] tracking-[0.2em]",
-    md: "text-[9px] tracking-[0.24em]",
-    lg: "text-[10px] tracking-[0.28em]",
+    md: "text-[9px] tracking-[0.22em]",
+    lg: "text-[10px] tracking-[0.26em]",
   };
 
   const emblem = (
     <div className={`relative shrink-0 flex items-center justify-center ${emblemSizes[size]} group`}>
       {/* Arka plan yumuşak neon elektrik halesi (ambient glow) */}
-      <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-cyan-500/30 via-blue-600/25 to-teal-400/20 blur-md opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+      <div
+        className={`absolute inset-0 rounded-xl blur-md transition-opacity duration-500 ${
+          isDark
+            ? "bg-gradient-to-tr from-cyan-500/30 via-blue-600/25 to-teal-400/20 opacity-80 group-hover:opacity-100"
+            : "bg-gradient-to-tr from-[#05C46C]/25 via-sky-500/20 to-teal-400/20 opacity-70 group-hover:opacity-90"
+        }`}
+      />
 
       {/* Vektörel Amblem */}
       <svg
         viewBox="0 0 44 44"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="relative w-full h-full drop-shadow-[0_2px_10px_rgba(0,240,255,0.35)] transition-transform duration-300 group-hover:scale-105"
+        className="relative w-full h-full drop-shadow-[0_2px_8px_rgba(5,196,108,0.25)] transition-transform duration-300 group-hover:scale-105"
       >
         <defs>
-          {/* Ana Amblem Gövde Gradyanı (Koyu Safir & Titanyum Derinlik) */}
+          {/* Ana Amblem Gövde Gradyanı */}
           <linearGradient id="evoBase" x1="2" y1="2" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#0E1E38" />
-            <stop offset="50%" stopColor="#081022" />
-            <stop offset="100%" stopColor="#040711" />
+            <stop offset="0%" stopColor="#121D2C" />
+            <stop offset="50%" stopColor="#0B1320" />
+            <stop offset="100%" stopColor="#050912" />
           </linearGradient>
 
           {/* Dış Çerçeve Çelik & Neon Işıma Gradyanı */}
           <linearGradient id="evoBorder" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#38BDF8" />
-            <stop offset="30%" stopColor="#00F0FF" />
-            <stop offset="70%" stopColor="#1E40AF" />
-            <stop offset="100%" stopColor="#10B981" />
+            <stop offset="0%" stopColor="#05C46C" />
+            <stop offset="40%" stopColor="#00F0FF" />
+            <stop offset="80%" stopColor="#2563EB" />
+            <stop offset="100%" stopColor="#05C46C" />
           </linearGradient>
 
           {/* Dinamik Elektrik Kanadı (EV & İleri Vektör) */}
           <linearGradient id="evoElectric" x1="6" y1="8" x2="38" y2="36" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor="#00F0FF" />
             <stop offset="45%" stopColor="#38BDF8" />
-            <stop offset="100%" stopColor="#2563EB" />
+            <stop offset="100%" stopColor="#05C46C" />
           </linearGradient>
 
           {/* Autopilot HUD Vektörü Gradyanı */}
           <linearGradient id="evoVolt" x1="20" y1="6" x2="38" y2="28" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#34D399" />
+            <stop offset="0%" stopColor="#05C46C" />
             <stop offset="100%" stopColor="#0284C7" />
           </linearGradient>
 
@@ -118,11 +129,11 @@ export default function Logo({
         <path
           d="M23.5 10L17.5 22H24.5L20 32.5L30.5 19.5H24L26.5 10H23.5Z"
           fill="#FFFFFF"
-          className="drop-shadow-[0_0_6px_#00F0FF]"
+          className="drop-shadow-[0_0_6px_#05C46C]"
         />
 
         {/* 6. Mikro Enerji Pulu / Radar Noktası */}
-        <circle cx="22" cy="7" r="1.2" fill="#00F0FF" />
+        <circle cx="22" cy="7" r="1.2" fill="#05C46C" />
       </svg>
     </div>
   );
@@ -145,29 +156,39 @@ export default function Logo({
         {/* Ana Tipografi */}
         <div className={`flex items-baseline font-black tracking-tight ${titleSizes[size]}`}>
           {/* EVO */}
-          <span className="text-white tracking-normal drop-shadow-sm font-black">
+          <span
+            className={`tracking-normal font-black ${
+              isDark ? "text-white drop-shadow-sm" : "text-[#1F1F1F]"
+            }`}
+          >
             EVO
           </span>
 
           {/* to */}
-          <span className="text-cyan-400 font-extrabold italic mx-[1px] text-[0.88em]">
+          <span className="text-[#05C46C] font-extrabold italic mx-[1px] text-[0.88em]">
             to
           </span>
 
           {/* Pilot */}
-          <span className="text-white font-black tracking-normal">
+          <span
+            className={`font-black tracking-normal ${
+              isDark ? "text-white" : "text-[#1F1F1F]"
+            }`}
+          >
             Pilot
           </span>
 
           {/* Üst Mikro Puls Noktası */}
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400 ml-1 mb-2 animate-pulse shadow-[0_0_8px_#00F0FF]" />
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#05C46C] ml-1 mb-2 animate-pulse shadow-[0_0_8px_#05C46C]" />
         </div>
 
-        {/* Alt Açıklama / Premium Tagline */}
+        {/* Alt Açıklama / Tagline */}
         {showTagline && variant !== "compact" && (
           <div className="flex items-center gap-1.5 mt-1">
             <span
-              className={`font-black uppercase text-cyan-300/80 ${taglineSizes[size]}`}
+              className={`font-black uppercase ${
+                isDark ? "text-cyan-300/80" : "text-[#757575]"
+              } ${taglineSizes[size]}`}
             >
               ELEKTRİKLİ MOBİLİTE PLATFORMU
             </span>

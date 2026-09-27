@@ -56,32 +56,32 @@ export default function Sidebar({
         aria-hidden={!open}
       >
         {/* Sidebar başlık */}
-        <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#060B18] via-[#091326] to-[#060B18] px-4 py-3.5 text-white border-b border-white/[0.08]">
-          <Logo size="sm" showTagline={false} />
+        <div className="flex shrink-0 items-center justify-between bg-white px-4 py-3.5 border-b border-[#EAEAEA]">
+          <Logo size="sm" showTagline={false} theme="light" />
           <button
             onClick={onClose}
             aria-label="Menüyü kapat"
-            className="rounded-xl p-1.5 bg-white/[0.06] hover:bg-white/[0.12] transition text-slate-300"
+            className="rounded-xl p-1.5 bg-[#F4F4F4] hover:bg-[#EAEAEA] border border-[#EAEAEA] transition text-[#1F1F1F]"
           >
             <IconClose className="h-5 w-5" />
           </button>
         </div>
 
         {/* Giriş bloğu */}
-        <div className="flex shrink-0 items-center gap-3 border-b border-neutral-200 bg-neutral-50 px-4 py-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sky-600">
+        <div className="flex shrink-0 items-center gap-3 border-b border-[#EAEAEA] bg-[#F4F4F4] px-4 py-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#05C46C] shadow-xs">
             <IconUser className="h-5 w-5" />
           </div>
           <div className="flex flex-1 flex-col leading-tight">
-            <span className="text-sm font-bold text-neutral-800">
+            <span className="text-sm font-extrabold text-[#1F1F1F]">
               EVOtoPilot hesabına giriş yap
             </span>
-            <span className="text-xs text-neutral-500">
+            <span className="text-xs text-[#757575]">
               Dijital garajın ve takip listen seni bekliyor
             </span>
           </div>
           <Link href="/giris">
-            <button className="shrink-0 rounded-md bg-[#0B1E3F] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-sky-950">
+            <button className="shrink-0 rounded-xl bg-[#05C46C] hover:bg-[#08B565] px-3.5 py-1.5 text-xs font-black text-white transition">
               GİRİŞ
             </button>
           </Link>
