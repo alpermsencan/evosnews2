@@ -143,16 +143,23 @@ export const getArticleBySlug = async (rawSlug: string, allowDraft: boolean = fa
   const clean = decoded.toLowerCase().trim();
   const slugified = slugify(decoded);
 
+  const orConditions: Array<{ slug?: string; id?: string }> = [
+    { slug: rawSlug },
+    { slug: decoded },
+    { slug: clean },
+    { slug: slugified },
+  ];
+
+  if (/^[0-9a-fA-F]{24}$/.test(rawSlug)) {
+    orConditions.push({ id: rawSlug });
+  }
+  if (/^[0-9a-fA-F]{24}$/.test(decoded) && decoded !== rawSlug) {
+    orConditions.push({ id: decoded });
+  }
+
   const article = await prisma.article.findFirst({
     where: {
-      OR: [
-        { slug: rawSlug },
-        { slug: decoded },
-        { slug: clean },
-        { slug: slugified },
-        { id: rawSlug },
-        { id: decoded },
-      ],
+      OR: orConditions,
     },
     include: { category: true, author: true },
   });

@@ -9,8 +9,9 @@ type Ctx = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Ctx) {
   const { id } = await params;
+  const isId = /^[0-9a-fA-F]{24}$/.test(id);
   const article = await prisma.article.findFirst({
-    where: { OR: [{ id }, { slug: id }] },
+    where: isId ? { OR: [{ id }, { slug: id }] } : { slug: id },
     include: { category: true, author: true, comments: true },
   });
   if (!article) return fail("Haber bulunamadı", 404);
