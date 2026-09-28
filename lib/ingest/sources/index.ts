@@ -257,6 +257,7 @@ export const DEFAULT_SOURCES: SourceSeed[] = [
     keywords: TR_TECH_FILTER,
     attribution: "Kaynak: ShiftDelete",
     autoPublish: true,
+    isActive: false,
   },
   {
     key: "news:webrazzi",
@@ -268,6 +269,7 @@ export const DEFAULT_SOURCES: SourceSeed[] = [
     keywords: TR_TECH_FILTER,
     attribution: "Kaynak: Webrazzi",
     autoPublish: true,
+    isActive: false,
   },
   {
     key: "news:log",
@@ -279,6 +281,7 @@ export const DEFAULT_SOURCES: SourceSeed[] = [
     keywords: TR_TECH_FILTER,
     attribution: "Kaynak: Log",
     autoPublish: true,
+    isActive: false,
   },
   {
     key: "news:electrek",

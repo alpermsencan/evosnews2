@@ -33,12 +33,19 @@ export default function NewsCard({
           />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <h3 className="line-clamp-3 text-[13px] font-bold leading-snug text-neutral-800 transition group-hover:text-evos">
+          <div className="flex items-center gap-1.5">
+            {article.sourceName && (
+              <span className="text-[10px] font-extrabold text-amber-600">
+                ⚡ {article.sourceName}
+              </span>
+            )}
+            <span className="text-[11px] font-semibold text-neutral-400">
+              {timeAgo(article.publishedAt)}
+            </span>
+          </div>
+          <h3 className="line-clamp-2 text-[13px] font-bold leading-snug text-neutral-800 transition group-hover:text-evos">
             {article.title}
           </h3>
-          <span className="text-[11px] font-semibold text-neutral-400">
-            {timeAgo(article.publishedAt)}
-          </span>
         </div>
       </Link>
     );
@@ -72,6 +79,11 @@ export default function NewsCard({
             >
               {article.category.name.toUpperCase()}
             </span>
+            {article.sourceName && (
+              <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-bold text-neutral-700 border border-neutral-200">
+                ⚡ {article.sourceName}
+              </span>
+            )}
             <span className="flex items-center gap-1 text-[11px] font-semibold text-neutral-400">
               <IconClock className="h-3 w-3" />
               {timeAgo(article.publishedAt)}
@@ -109,12 +121,19 @@ export default function NewsCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
         </div>
         <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-4">
-          <span
-            className="w-fit rounded px-2 py-0.5 text-[10px] font-black text-white"
-            style={{ backgroundColor: article.category.color }}
-          >
-            {article.category.name.toUpperCase()}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className="w-fit rounded px-2 py-0.5 text-[10px] font-black text-white"
+              style={{ backgroundColor: article.category.color }}
+            >
+              {article.category.name.toUpperCase()}
+            </span>
+            {article.sourceName && (
+              <span className="rounded bg-black/60 backdrop-blur px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-white/20">
+                ⚡ {article.sourceName}
+              </span>
+            )}
+          </div>
           <h3 className="text-lg font-black leading-tight text-white drop-shadow sm:text-2xl">
             {article.title}
           </h3>
@@ -144,6 +163,11 @@ export default function NewsCard({
         >
           {article.category.name.toUpperCase()}
         </span>
+        {article.sourceName && (
+          <span className="absolute right-2 top-2 rounded bg-black/70 backdrop-blur px-1.5 py-0.5 text-[10px] font-bold text-amber-300 border border-white/20">
+            ⚡ {article.sourceName}
+          </span>
+        )}
         {article.isVideo && (
           <span className="absolute bottom-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-evos text-white">
             <IconPlay className="h-4 w-4" />

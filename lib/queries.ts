@@ -24,11 +24,26 @@ export const ARTICLE_CARD_SELECT = {
 } as const;
 
 /**
- * Yayın filtresi.
- * Ingest edilen içerik DRAFT olarak gelir ve editör onaylayana kadar sitenin
- * hiçbir yerinde görünmemelidir. Her genel okuma bu koşulu içerir.
+ * Onaylı Elektrikli Araç (EV) Kaynakları.
+ * Kullanıcı talebi doğrultusunda tüm site genelindeki haberler yalnızca bu
+ * kaynaklardan derlenir ve Dolubatarya en yüksek ağırlığa sahiptir.
  */
-const PUBLISHED = { status: "PUBLISHED" } as const;
+export const ALLOWED_EV_SOURCES = [
+  "Dolubatarya",
+  "VoltHaber",
+  "DonanımHaber",
+  "Webtekno",
+  "Elektrikli Otomobil Haber",
+] as const;
+
+/**
+ * Yayın filtresi.
+ * Yalnızca PUBLISHED ve onaylı elektrikli araç kaynaklarından olan içerikler görünür.
+ */
+const PUBLISHED = {
+  status: "PUBLISHED",
+  sourceName: { in: [...ALLOWED_EV_SOURCES] },
+} as const;
 
 /**
  * ÖNBELLEKLEME NEDEN YOK
@@ -175,14 +190,77 @@ export const getHeadlines = async (limit: number = 6) => {
   return selectedSlides.slice(0, limit);
 };
 
-export const getLatest = (limit: number = 12, skip: number = 0) =>
-    prisma.article.findMany({
-      where: PUBLISHED,
+/**
+ * En son yayınlanan elektrikli araç haberleri.
+ * Dolubatarya'ya en yüksek ağırlık verilerek (en az %50) listelenir.
+ */
+export const getLatest = async (limit: number = 12, skip: number = 0) => {
+  const baseWhere = {
+    ...PUBLISHED,
+    NOT: { image: "" },
+  };
+
+  // Dolubatarya ağırlığı: Listenin en az %50'si Dolubatarya olsun
+  const dolubataryaQuota = Math.max(3, Math.ceil(limit * 0.5));
+  const dolubataryaArticles = await prisma.article.findMany({
+    where: {
+      ...baseWhere,
+      sourceName: "Dolubatarya",
+    },
+    orderBy: { publishedAt: "desc" },
+    take: dolubataryaQuota,
+    skip,
+    select: ARTICLE_CARD_SELECT,
+  });
+
+  const selected = [...dolubataryaArticles];
+  const seenIds = new Set(selected.map((a) => a.id));
+
+  // Kalan slotları diğer onaylı EV kaynaklarıyla doldur
+  const remaining = limit - selected.length;
+  if (remaining > 0) {
+    const partnerArticles = await prisma.article.findMany({
+      where: {
+        ...baseWhere,
+        sourceName: { in: ["VoltHaber", "DonanımHaber", "Webtekno", "Elektrikli Otomobil Haber"] },
+      },
       orderBy: { publishedAt: "desc" },
-      take: limit,
+      take: remaining * 2,
       skip,
       select: ARTICLE_CARD_SELECT,
     });
+
+    for (const a of partnerArticles) {
+      if (!seenIds.has(a.id)) {
+        seenIds.add(a.id);
+        selected.push(a);
+        if (selected.length >= limit) break;
+      }
+    }
+  }
+
+  // Eğer partnerlerden eksik kaldıysa Dolubatarya'dan devam et
+  if (selected.length < limit) {
+    const moreDolubatarya = await prisma.article.findMany({
+      where: {
+        ...baseWhere,
+        sourceName: "Dolubatarya",
+      },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      select: ARTICLE_CARD_SELECT,
+    });
+    for (const a of moreDolubatarya) {
+      if (!seenIds.has(a.id)) {
+        seenIds.add(a.id);
+        selected.push(a);
+        if (selected.length >= limit) break;
+      }
+    }
+  }
+
+  return selected.slice(0, limit);
+};
 
 export const getMostRead = (limit: number = 8) =>
     prisma.article.findMany({

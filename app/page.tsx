@@ -19,6 +19,7 @@ import {
   getFeaturedVehicles,
   getCommunityPosts,
   getActivePoll,
+  ALLOWED_EV_SOURCES,
 } from "@/lib/queries";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
@@ -69,7 +70,10 @@ export default async function HomePage() {
       return [];
     }),
     prisma.article.findMany({
-      where: { status: "PUBLISHED" },
+      where: {
+        status: "PUBLISHED",
+        sourceName: { in: [...ALLOWED_EV_SOURCES] },
+      },
       take: 12,
       orderBy: { publishedAt: "desc" },
       include: { author: true, category: true }
@@ -78,7 +82,10 @@ export default async function HomePage() {
       return [];
     }),
     prisma.article.findMany({
-      where: { status: "PUBLISHED" },
+      where: {
+        status: "PUBLISHED",
+        sourceName: { in: [...ALLOWED_EV_SOURCES] },
+      },
       skip: 4,
       take: 4,
       orderBy: { publishedAt: "desc" },
