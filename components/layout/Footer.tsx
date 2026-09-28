@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="mx-auto max-w-[1280px] px-4 py-12">
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div className="flex max-w-sm flex-col gap-4">
-            <Logo size="lg" />
+            <Logo size="lg" theme="dark" variant="footer" />
             <p className="text-sm leading-relaxed text-neutral-400">
               Türkiye&apos;nin elektrifikasyon ve elektrikli araç dönüşüm platformu.
               Doğrulanmış model verileri, canlı şarj altyapısı, 2. el pazarı ve akıllı EV danışmanlığı tek merkezde.

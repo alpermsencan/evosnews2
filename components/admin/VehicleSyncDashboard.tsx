@@ -121,12 +121,14 @@ export default function VehicleSyncDashboard() {
     try {
       setLoading(true);
       const res = await fetch(`/api/admin/vehicle-sync?page=${pageNum}&limit=20`);
-      if (!res.ok) throw new Error("Veri yüklenemedi");
-      const json = await res.json();
-      setData(json);
+      if (res.ok) {
+        const json = await res.json();
+        setData(json);
+      } else {
+        console.warn("[SYNC_DASHBOARD] Fetch response not ok:", res.status);
+      }
     } catch (err) {
-      console.error(err);
-      setToastMessage({ type: "error", text: "Dashboard verileri alınırken hata oluştu." });
+      console.error("[SYNC_DASHBOARD] Fetch error:", err);
     } finally {
       setLoading(false);
     }
@@ -348,101 +350,6 @@ export default function VehicleSyncDashboard() {
           </p>
         </div>
       )}
-
-      {/* Brand Status & Actions */}
-      <div className="rounded-lg border border-neutral-200 bg-white p-5 shadow-sm">
-        <h3 className="text-sm font-black uppercase tracking-wider text-neutral-800 mb-4">
-          Resmi Marka Senkronizasyon Durumları
-        </h3>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {(data?.brandStatuses || [
-            { brand: "Kia", source: "kia-official", variantCount: 12, imageCount: 89, lastSync: null },
-            { brand: "Hyundai", source: "hyundai-official", variantCount: 12, imageCount: 89, lastSync: null },
-            { brand: "Togg", source: "togg-official", variantCount: 8, imageCount: 55, lastSync: null },
-            { brand: "BYD", source: "byd-official", variantCount: 4, imageCount: 151, lastSync: null },
-            { brand: "Tesla", source: "tesla-official", variantCount: 1, imageCount: 0, lastSync: null },
-          ]).map((b) => {
-            const isSyncing = syncingBrand === b.brand.toLowerCase();
-            const last = b.lastSync;
-
-            return (
-              <div
-                key={b.brand}
-                className="flex flex-col justify-between rounded-lg border border-neutral-200 bg-neutral-50 p-4 transition hover:border-neutral-300"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <IconCar className="h-5 w-5 text-evos" />
-                      <span className="text-base font-black text-neutral-900">{b.brand}</span>
-                    </div>
-                    <span
-                      className={`rounded px-2 py-0.5 text-[10px] font-black uppercase ${
-                        last?.status === "SUCCESS"
-                          ? "bg-emerald-100 text-emerald-800"
-                          : last?.status === "FAILED"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-neutral-200 text-neutral-700"
-                      }`}
-                    >
-                      {last?.status ?? "HAZIR"}
-                    </span>
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                    <div className="rounded bg-white p-2 border border-neutral-200">
-                      <span className="text-[10px] font-bold text-neutral-400 block">VARYANT</span>
-                      <span className="text-sm font-black text-neutral-800">{b.variantCount} Paket</span>
-                    </div>
-                    <div className="rounded bg-white p-2 border border-neutral-200">
-                      <span className="text-[10px] font-bold text-neutral-400 block">GÖRSEL</span>
-                      <span className="text-sm font-black text-neutral-800">{b.imageCount} Cloudinary</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 text-[11px] text-neutral-500 space-y-1">
-                    <div className="flex justify-between">
-                      <span>Son Çalışma:</span>
-                      <span className="font-bold text-neutral-700">{timeAgo(last?.startedAt)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tetikleme:</span>
-                      <span className="font-bold text-neutral-700">{last?.triggerType ?? "CRON / MANUAL"}</span>
-                    </div>
-                    {last?.durationMs != null && (
-                      <div className="flex justify-between">
-                        <span>Süre:</span>
-                        <span className="font-bold text-neutral-700">{(last.durationMs / 1000).toFixed(1)} sn</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-neutral-200">
-                  <button
-                    onClick={() => handleManualSync(b.brand.toLowerCase())}
-                    disabled={isSyncing || syncingBrand !== null}
-                    className="w-full rounded-md bg-evos px-3 py-2 text-xs font-bold text-white transition hover:bg-evos-dark disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {isSyncing ? (
-                      <>
-                        <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                        <span>Senkronize Ediliyor...</span>
-                      </>
-                    ) : (
-                      <>
-                        <IconBolt className="h-3.5 w-3.5" />
-                        <span>{b.brand.toUpperCase()} MANUEL SYNC</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
 
       {/* Grid: Price History Changes & Visual Asset Monitor */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

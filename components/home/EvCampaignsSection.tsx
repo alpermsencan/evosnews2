@@ -12,7 +12,7 @@ interface CampaignItem {
   maturity: string;
   interestRate: string;
   tag: string;
-  tagColor: "emerald" | "blue" | "purple" | "amber";
+  tagColor: "red" | "black" | "neutral";
   perks: string[];
   vehicleSlug: string;
   expiryDate: string;
@@ -28,12 +28,12 @@ const CAMPAIGNS: CampaignItem[] = [
     loanAmount: "800.000 TL",
     maturity: "12 Ay",
     interestRate: "%0 FAİZ",
-    tag: "0 Faiz Avantajı",
-    tagColor: "emerald",
+    tag: "%0 Faiz Fırsatı",
+    tagColor: "red",
     perks: [
-      "800.000 TL kredi için 12 ay %0 faiz fırsatı",
+      "800.000 TL kredi tutarı için 12 ay %0 faiz desteği",
       "Alternatif: 1.000.000 TL 24 ay %1.99 faiz seçeneği",
-      "Kamu bankaları özel tahsisli hızlı onay",
+      "Kamu bankaları özel tahsisli öncelikli onay",
     ],
     vehicleSlug: "togg-t10x-v2-2026",
     expiryDate: "Ay Sonu Geçerli",
@@ -48,11 +48,11 @@ const CAMPAIGNS: CampaignItem[] = [
     maturity: "12 Ay",
     interestRate: "%1.49 FAİZ",
     tag: "Takas Desteği",
-    tagColor: "blue",
+    tagColor: "black",
     perks: [
-      "50.000 TL nakit takas teşviki",
+      "50.000 TL doğrudan nakit takas teşviki",
       "Anlaşmalı bankalarda %1.49 özel faiz oranı",
-      "Envanterden 7 günde hemen teslimat garantisi",
+      "Envanterden 7 günde hemen teslimat taahhüdü",
     ],
     vehicleSlug: "tesla-model-y-juniper-2026",
     expiryDate: "Sınırlı Kontenjan",
@@ -67,11 +67,11 @@ const CAMPAIGNS: CampaignItem[] = [
     maturity: "12 Ay",
     interestRate: "%0.99 FAİZ",
     tag: "Şarj Hediyesi",
-    tagColor: "purple",
+    tagColor: "neutral",
     perks: [
       "300.000 TL için 12 ay %0.99 faizli finansman",
-      "1 Yıllık Ücretsiz Eşarj şarj kartı hediyesi",
-      "WorldCard sahiplerine özel sigorta indirimi",
+      "1 Yıllık Ücretsiz Eşarj şarj paketi hediyesi",
+      "WorldCard sahiplerine özel kasko indirimi",
     ],
     vehicleSlug: "hyundai-inster",
     expiryDate: "Ay Sonuna Kadar",
@@ -86,10 +86,10 @@ const CAMPAIGNS: CampaignItem[] = [
     maturity: "12 Ay",
     interestRate: "%0.99 FAİZ",
     tag: "Yeşil Taşıt Kredisi",
-    tagColor: "emerald",
+    tagColor: "red",
     perks: [
       "Çevreci yeşil taşıt kredisi ile %0.99 kâr payı / faiz",
-      "EV3 için 20.000 TL takas desteği",
+      "EV3 alımlarında 20.000 TL takas desteği",
       "5 yıl / 150.000 km araç ve batarya garantisi",
     ],
     vehicleSlug: "kia-ev3-long-range-2026",
@@ -99,35 +99,35 @@ const CAMPAIGNS: CampaignItem[] = [
   {
     id: "renault-qnb",
     brand: "Renault",
-    model: "Megane E-Tech & Kangoo",
-    bankPartner: "QNB Finansbank",
+    model: "5 E-Tech & Megane E-Tech",
+    bankPartner: "QNB Finansbank & TEB",
     loanAmount: "200.000 TL",
     maturity: "12 Ay",
     interestRate: "%0 FAİZ",
-    tag: "0 Faiz + Wallbox",
-    tagColor: "emerald",
+    tag: "%0 Faiz",
+    tagColor: "red",
     perks: [
-      "200.000 TL 12 ay %0 faiz kampanyası",
-      "Ücretsiz ev tipi 22 kW Akıllı Wallbox kurulumu",
-      "KOBİ'lere özel ticari vergi muafiyet paketi",
+      "200.000 TL için 12 ay %0 faiz imkanı",
+      "Bireysel alımlarda dosya masrafı muafiyeti",
+      "Ev tipi şarj ünitesi (Wallbox) kurulum indirimi",
     ],
     vehicleSlug: "renault-5-e-tech-2026",
-    expiryDate: "Ay Sonu",
+    expiryDate: "Stoklarla Sınırlı",
     type: "zero-interest",
   },
   {
     id: "byd-is-bankasi",
     brand: "BYD",
-    model: "Atto 3 & Seal 160 kW",
+    model: "Atto 3 & Seal",
     bankPartner: "Türkiye İş Bankası",
     loanAmount: "350.000 TL",
     maturity: "12 Ay",
-    interestRate: "%1.69 FAİZ",
-    tag: "Nakit İndirim",
-    tagColor: "amber",
+    interestRate: "%1.29 FAİZ",
+    tag: "Özel Finansman",
+    tagColor: "black",
     perks: [
-      "100.000 TL'ye varan doğrudan lansman indirimi",
-      "İş Bankası Çevreci Taşıt Kredisi avantajı",
+      "350.000 TL için %1.29 avantajlı taşıt kredisi",
+      "İş Bankası Çevreci Taşıt Kredisi özel faiz indirimi",
       "8 yıl / 200.000 km Blade Batarya garantisi",
     ],
     vehicleSlug: "byd-seal-160-kw",
@@ -143,16 +143,16 @@ export default function EvCampaignsSection() {
     filter === "all" ? CAMPAIGNS : CAMPAIGNS.filter((c) => c.type === filter);
 
   return (
-    <section className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
+    <section className="flex flex-col gap-4 rounded-2xl border border-neutral-200/90 bg-white p-5 sm:p-6 shadow-xs">
       {/* Üst Başlık & Filtreler */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-neutral-100 pb-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black text-red-500 border border-neutral-800 shadow-xs">
-              <span className="text-[11px] font-black">%</span>
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-neutral-950 text-white shadow-xs">
+              <span className="w-2 h-2 rounded-full bg-red-600" />
             </div>
-            <h2 className="text-base font-black tracking-tight text-neutral-900">
-              EV ARAÇ KAMPANYALARI & FİNANSMAN
+            <h2 className="text-base font-black tracking-tight text-neutral-900 uppercase">
+              ARAÇ KAMPANYALARI & FİNANSMAN
             </h2>
           </div>
           <p className="text-xs text-neutral-500 font-medium mt-1">
@@ -167,8 +167,8 @@ export default function EvCampaignsSection() {
             onClick={() => setFilter("all")}
             className={`px-3 py-1.5 rounded-lg transition ${
               filter === "all"
-                ? "bg-black text-white shadow-xs"
-                : "text-neutral-500 hover:text-neutral-900"
+                ? "bg-neutral-950 text-white shadow-xs"
+                : "text-neutral-600 hover:text-neutral-950"
             }`}
           >
             Tümü ({CAMPAIGNS.length})
@@ -178,8 +178,8 @@ export default function EvCampaignsSection() {
             onClick={() => setFilter("zero-interest")}
             className={`px-3 py-1.5 rounded-lg transition ${
               filter === "zero-interest"
-                ? "bg-black text-white shadow-xs"
-                : "text-neutral-500 hover:text-red-600"
+                ? "bg-neutral-950 text-white shadow-xs"
+                : "text-neutral-600 hover:text-red-600"
             }`}
           >
             %0 Faiz Fırsatları
@@ -189,8 +189,8 @@ export default function EvCampaignsSection() {
             onClick={() => setFilter("green-loan")}
             className={`px-3 py-1.5 rounded-lg transition ${
               filter === "green-loan"
-                ? "bg-black text-white shadow-xs"
-                : "text-neutral-500 hover:text-neutral-900"
+                ? "bg-neutral-950 text-white shadow-xs"
+                : "text-neutral-600 hover:text-neutral-950"
             }`}
           >
             Yeşil Taşıt Kredileri
@@ -200,8 +200,8 @@ export default function EvCampaignsSection() {
             onClick={() => setFilter("trade-in")}
             className={`px-3 py-1.5 rounded-lg transition ${
               filter === "trade-in"
-                ? "bg-black text-white shadow-xs"
-                : "text-neutral-500 hover:text-neutral-900"
+                ? "bg-neutral-950 text-white shadow-xs"
+                : "text-neutral-600 hover:text-neutral-950"
             }`}
           >
             Takas & İndirim
@@ -214,86 +214,83 @@ export default function EvCampaignsSection() {
         {filtered.map((item) => (
           <div
             key={item.id}
-            className="flex flex-col justify-between rounded-xl border border-neutral-200 bg-neutral-50/40 p-4 transition hover:border-red-600/40 hover:bg-white hover:shadow-md"
+            className="group flex flex-col justify-between rounded-xl border border-neutral-200/90 bg-neutral-50/40 p-4 transition-all hover:border-red-600/50 hover:bg-white hover:shadow-md"
           >
             <div>
               {/* Üst Rozetler */}
-              <div className="flex items-center justify-between gap-2 mb-2.5">
-                <span className="text-[11px] font-black uppercase text-neutral-800 tracking-wider">
-                  {item.brand}
+              <div className="flex items-center justify-between gap-2 border-b border-neutral-150 pb-2.5 mb-3">
+                <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+                  {item.bankPartner}
                 </span>
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wide ${
-                    item.interestRate.includes("0")
+                  className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${
+                    item.interestRate.includes("%0")
                       ? "bg-red-600 text-white shadow-xs"
-                      : "bg-black text-white"
+                      : "bg-neutral-900 text-white"
                   }`}
                 >
                   {item.interestRate}
                 </span>
               </div>
 
-              {/* Araç Model Başlığı */}
-              <h3 className="text-sm font-black text-neutral-900 leading-snug">
-                {item.model}
-              </h3>
-
-              {/* Banka Partnerliği */}
-              <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-neutral-600 font-semibold bg-white border border-neutral-200 rounded-lg px-2.5 py-1.5">
-                <span className="text-neutral-500 font-bold">🏛️</span>
-                <span className="truncate">{item.bankPartner}</span>
+              {/* Model & Marka Başlığı */}
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-xs font-black text-red-600 uppercase tracking-wider">
+                  {item.brand}
+                </span>
+                <h3 className="text-sm font-black text-neutral-950 tracking-tight">
+                  {item.model}
+                </h3>
               </div>
 
-              {/* Kredi & Vade Özeti */}
-              <div className="mt-3 grid grid-cols-2 gap-2 text-center">
-                <div className="rounded-lg bg-neutral-100/70 p-2">
-                  <span className="block text-[9px] font-bold text-neutral-400 uppercase">Kredi Tutarı</span>
-                  <span className="text-xs font-black text-neutral-900">{item.loanAmount}</span>
+              {/* Finansal Metrik Kutuları */}
+              <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
+                <div className="rounded-lg border border-neutral-200/80 bg-white p-2">
+                  <span className="text-[9px] font-bold uppercase text-neutral-400 block">Kredi</span>
+                  <span className="text-xs font-black text-neutral-900 tracking-tight block mt-0.5">
+                    {item.loanAmount}
+                  </span>
                 </div>
-                <div className="rounded-lg bg-neutral-100/70 p-2">
-                  <span className="block text-[9px] font-bold text-neutral-400 uppercase">Vade</span>
-                  <span className="text-xs font-black text-neutral-900">{item.maturity}</span>
+                <div className="rounded-lg border border-neutral-200/80 bg-white p-2">
+                  <span className="text-[9px] font-bold uppercase text-neutral-400 block">Vade</span>
+                  <span className="text-xs font-black text-neutral-900 tracking-tight block mt-0.5">
+                    {item.maturity}
+                  </span>
+                </div>
+                <div className="rounded-lg border border-neutral-200/80 bg-white p-2">
+                  <span className="text-[9px] font-bold uppercase text-neutral-400 block">Oran</span>
+                  <span className={`text-xs font-black tracking-tight block mt-0.5 ${item.interestRate.includes("%0") ? "text-red-600" : "text-neutral-900"}`}>
+                    {item.interestRate}
+                  </span>
                 </div>
               </div>
 
-              {/* Maddeler */}
-              <ul className="mt-3 space-y-1.5 text-[11px] text-neutral-600">
-                {item.perks.map((p, idx) => (
-                  <li key={idx} className="flex items-start gap-1.5">
+              {/* Kampanya Avantajları (Perks) */}
+              <ul className="mt-3 flex flex-col gap-1.5 text-[11px] text-neutral-600">
+                {item.perks.map((perk, idx) => (
+                  <li key={idx} className="flex items-start gap-1.5 leading-snug">
                     <span className="text-red-600 font-bold shrink-0">✓</span>
-                    <span className="leading-tight">{p}</span>
+                    <span>{perk}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Alt İşlem Butonu & Geçerlilik */}
-            <div className="mt-4 pt-3 border-t border-neutral-150 flex items-center justify-between text-xs">
-              <span className="text-[10px] font-bold text-neutral-600 flex items-center gap-1">
-                ⏱ {item.expiryDate}
+            {/* Alt Buton & Son Tarih */}
+            <div className="mt-4 pt-3 border-t border-neutral-150 flex items-center justify-between gap-2">
+              <span className="text-[10px] font-medium text-neutral-400">
+                ⏳ {item.expiryDate}
               </span>
               <Link
                 href={`/araclar/${item.vehicleSlug}`}
-                className="font-bold text-neutral-900 hover:text-red-600 hover:underline flex items-center gap-1 text-[11px] transition"
+                className="inline-flex items-center gap-1 text-[11px] font-black text-neutral-900 group-hover:text-red-600 transition"
               >
-                Modeli İncele →
+                <span>Modeli İncele</span>
+                <span>→</span>
               </Link>
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Alt Bilgi Uyarısı */}
-      <div className="rounded-xl bg-neutral-50 p-3 text-[11px] text-neutral-600 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border border-neutral-100">
-        <span>
-          💡 <strong>Resmî Kampanya Bilgisi:</strong> Faiz oranları ve kredi tahsisleri ilgili bankaların ve markaların resmî yetkili satıcı şartlarına bağlıdır.
-        </span>
-        <Link
-          href="/kategori/haber-merkezi"
-          className="shrink-0 font-bold text-emerald-700 hover:underline"
-        >
-          Tüm Finansman Haberleri →
-        </Link>
       </div>
     </section>
   );
