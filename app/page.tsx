@@ -194,7 +194,7 @@ export default async function HomePage() {
                 color="#0f766e"
                 subtitle="Türkiye'de satışta olan öne çıkan elektrikli modeller"
               />
-              <CardRail itemClass="w-[62%] sm:w-[38%] lg:w-[27%]" autoPlay={true}>
+              <CardRail itemClass="w-[62%] sm:w-[38%] lg:w-[32%]" autoPlay={true}>
                 {safeVehicles.map((v) => (
                   <VehicleCard key={v.id} vehicle={v} />
                 ))}
