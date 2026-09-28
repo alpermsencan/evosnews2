@@ -3,10 +3,11 @@ import { tcmbSource } from "./tcmb";
 import { openChargeMapSource } from "./openchargemap";
 import { newsRssSource } from "./news-rss";
 import { marketStatsSource } from "./market-stats";
+import { dolubataryaSource } from "./dolubatarya";
 
 /**
  * İşleyici kaydı.
- * - Tekil kaynaklar kendi anahtarıyla çözülür ("tcmb", "openchargemap").
+ * - Tekil kaynaklar kendi anahtarıyla çözülür ("tcmb", "openchargemap", "news:dolubatarya").
  * - `kind: "news"` olan tüm kaynaklar ortak RSS işleyicisini paylaşır; yeni bir
  *   haber beslemesi eklemek için kod değil, panelden bir DataSource kaydı yeter.
  */
@@ -14,6 +15,8 @@ export const SOURCES: Record<string, SourceJob> = {
   [tcmbSource.key]: tcmbSource,
   [openChargeMapSource.key]: openChargeMapSource,
   [marketStatsSource.key]: marketStatsSource,
+  [dolubataryaSource.key]: dolubataryaSource,
+  dolubatarya: dolubataryaSource,
   news: newsRssSource,
 };
 
@@ -188,15 +191,61 @@ export const DEFAULT_SOURCES: SourceSeed[] = [
     attribution: marketStatsSource.attribution,
   },
   {
+    key: "news:dolubatarya",
+    name: "Dolubatarya",
+    kind: "news",
+    schedule: "0 */2 * * *",
+    endpoint: "https://www.youtube.com/@dolubatarya/posts",
+    categorySlug: "haber-merkezi",
+    attribution: "Kaynak: Dolubatarya",
+    autoPublish: true,
+    isActive: true,
+  },
+  {
+    key: "news:volthaber",
+    name: "VoltHaber",
+    kind: "news",
+    schedule: "0 */2 * * *",
+    endpoint: "https://volthaber.com/feed/",
+    categorySlug: "haber-merkezi",
+    attribution: "Kaynak: VoltHaber",
+    autoPublish: true,
+    isActive: true,
+  },
+  {
     key: "news:donanimhaber",
     name: "DonanımHaber",
     kind: "news",
-    schedule: "0 4 * * *",
+    schedule: "0 */2 * * *",
     endpoint: "https://www.donanimhaber.com/rss/tum/",
     categorySlug: "teknoloji",
     keywords: TR_TECH_FILTER,
     attribution: "Kaynak: DonanımHaber",
     autoPublish: true,
+    isActive: true,
+  },
+  {
+    key: "news:webtekno",
+    name: "Webtekno",
+    kind: "news",
+    schedule: "0 */2 * * *",
+    endpoint: "https://www.webtekno.com/rss.xml",
+    categorySlug: "teknoloji",
+    keywords: TR_TECH_FILTER,
+    attribution: "Kaynak: Webtekno",
+    autoPublish: true,
+    isActive: true,
+  },
+  {
+    key: "news:elektrikliotomobilhaber",
+    name: "Elektrikli Otomobil Haber",
+    kind: "news",
+    schedule: "0 */2 * * *",
+    endpoint: "https://elektrikliotomobilhaber.com/feed/",
+    categorySlug: "haber-merkezi",
+    attribution: "Kaynak: Elektrikli Otomobil Haber",
+    autoPublish: true,
+    isActive: true,
   },
   {
     key: "news:shiftdelete",

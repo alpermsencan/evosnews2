@@ -97,7 +97,7 @@ export async function ensureSources({ reset = false } = {}) {
 }
 
 function resolveJob(kind: string, key: string): SourceJob | null {
-  // Haber kaynakları panelden çoğaltılabilir; hepsi aynı RSS işleyicisini kullanır.
+  if (SOURCES[key]) return SOURCES[key];
   if (kind === "news") return SOURCES["news"] ?? null;
   return SOURCES[key] ?? null;
 }

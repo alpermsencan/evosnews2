@@ -19,6 +19,7 @@ export type Slide = {
   image: string;
   isVideo?: boolean;
   isBreaking?: boolean;
+  sourceName?: string | null;
   publishedAt: string | Date;
   category: { name: string; slug: string; color: string };
 };
@@ -109,6 +110,11 @@ export default function HeroCarousel({
                     <span className="rounded bg-red-600 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-white uppercase shadow-xs">
                       {(s.category?.name || "HABER").toUpperCase()}
                     </span>
+                    {s.sourceName && (
+                      <span className="rounded bg-white/20 border border-white/25 px-2 py-0.5 text-[10px] font-bold text-amber-300 tracking-wide">
+                        ⚡ {s.sourceName}
+                      </span>
+                    )}
                     {s.isVideo && (
                       <span className="flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
                         <IconPlay className="h-3 w-3 text-red-400" /> VİDEO

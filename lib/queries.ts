@@ -62,38 +62,117 @@ export const getCategories = () => prisma.category.findMany({ orderBy: { order: 
 export const getCategoryBySlug = (slug: string) => prisma.category.findUnique({ where: { slug } });
 
 /**
- * Manşet carousel'i.
+ * Manşet carousel'i (Hero Slider).
  *
- * Öncelik sırası: editörün MANŞET işaretlediği haberler → öne çıkarılanlar →
- * en yeni yayındaki haberler. Panelden hiç manşet seçilmemişse (ilk kurulum ya
- * da ingest'ten gelen içerikte bayrak set edilmediğinde) carousel boş kalıp
- * sayfadan tamamen kaybolmasın diye bu geri düşüş var. Görselsiz haber
- * carousel'de kırık kutu gibi durduğu için elenir.
+ * Yalnızca kullanıcının talep ettiği seçkin elektrikli araç kaynaklarından derlenir:
+ * 1. Dolubatarya (En yüksek ağırlık / öncelik - topluluk gönderileri & video haberleri)
+ * 2. VoltHaber
+ * 3. DonanımHaber Otomotiv
+ * 4. Webtekno Otomotiv
+ * 5. Elektrikli Otomobil Haber
  */
 export const getHeadlines = async (limit: number = 6) => {
-  const where = { ...PUBLISHED, NOT: { image: "" } } as const;
-  const query = (extra: object, take: number) =>
-    prisma.article.findMany({
-      where: { ...where, ...extra },
+  const baseWhere = {
+    ...PUBLISHED,
+    NOT: { image: "" },
+  };
+
+  // 1. ÖNCELİK: Dolubatarya (Ağırlıklı pay: limit 6 ise ilk 4 slot)
+  const dolubataryaQuota = Math.max(3, Math.ceil(limit * 0.6));
+  const dolubataryaSlides = await prisma.article.findMany({
+    where: {
+      ...baseWhere,
+      sourceName: "Dolubatarya",
+    },
+    orderBy: { publishedAt: "desc" },
+    take: dolubataryaQuota,
+    select: ARTICLE_CARD_SELECT,
+  });
+
+  const selectedSlides = [...dolubataryaSlides];
+  const seenIds = new Set(selectedSlides.map((s) => s.id));
+
+  // 2. ÖNCELİK: Diğer onaylı EV kaynakları (VoltHaber, DonanımHaber, Webtekno, Elektrikli Otomobil Haber)
+  const remaining = limit - selectedSlides.length;
+  if (remaining > 0) {
+    const partnerSlides = await prisma.article.findMany({
+      where: {
+        ...baseWhere,
+        sourceName: {
+          in: ["VoltHaber", "DonanımHaber", "Webtekno", "Elektrikli Otomobil Haber"],
+        },
+      },
       orderBy: { publishedAt: "desc" },
-      take,
+      take: remaining * 2,
       select: ARTICLE_CARD_SELECT,
     });
 
-  const slides = await query({ isHeadline: true }, limit);
-  if (slides.length >= limit) return slides;
-
-  const seen = new Set(slides.map((a) => a.id));
-  for (const extra of [{ isFeatured: true }, {}]) {
-    const fill = await query(extra, limit * 2);
-    for (const a of fill) {
-      if (seen.has(a.id)) continue;
-      seen.add(a.id);
-      slides.push(a);
-      if (slides.length === limit) return slides;
+    for (const slide of partnerSlides) {
+      if (!seenIds.has(slide.id)) {
+        seenIds.add(slide.id);
+        selectedSlides.push(slide);
+        if (selectedSlides.length >= limit) break;
+      }
     }
   }
-  return slides;
+
+  // 3. EĞER PARTNERLERDEN EKSİK KALDIYSA: Dolubatarya'dan daha fazla haber varsa ekle
+  if (selectedSlides.length < limit) {
+    const extraDolubatarya = await prisma.article.findMany({
+      where: {
+        ...baseWhere,
+        sourceName: "Dolubatarya",
+      },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      select: ARTICLE_CARD_SELECT,
+    });
+    for (const slide of extraDolubatarya) {
+      if (!seenIds.has(slide.id)) {
+        seenIds.add(slide.id);
+        selectedSlides.push(slide);
+        if (selectedSlides.length >= limit) break;
+      }
+    }
+  }
+
+  // 4. EĞER İLK KURULUMDA HÂLÂ EKSİKSE: Manşet ve genel yayındaki haberlerle doldur
+  if (selectedSlides.length < limit) {
+    const fallback = await prisma.article.findMany({
+      where: {
+        ...baseWhere,
+        isHeadline: true,
+      },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      select: ARTICLE_CARD_SELECT,
+    });
+    for (const slide of fallback) {
+      if (!seenIds.has(slide.id)) {
+        seenIds.add(slide.id);
+        selectedSlides.push(slide);
+        if (selectedSlides.length >= limit) break;
+      }
+    }
+  }
+
+  if (selectedSlides.length < limit) {
+    const fallbackAll = await prisma.article.findMany({
+      where: baseWhere,
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      select: ARTICLE_CARD_SELECT,
+    });
+    for (const slide of fallbackAll) {
+      if (!seenIds.has(slide.id)) {
+        seenIds.add(slide.id);
+        selectedSlides.push(slide);
+        if (selectedSlides.length >= limit) break;
+      }
+    }
+  }
+
+  return selectedSlides.slice(0, limit);
 };
 
 export const getLatest = (limit: number = 12, skip: number = 0) =>
