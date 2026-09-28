@@ -2,6 +2,7 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import { prisma } from "./prisma";
 import { TAGS, TTL } from "./cache";
+import { slugify } from "./api";
 
 export const ARTICLE_CARD_SELECT = {
   id: true,
@@ -131,13 +132,35 @@ export const countByCategory = (slug: string) => prisma.article.count({ where: {
  * kadar diğer ziyaretçilere görünmezdi. Yorumlar getArticleComments ile
  * önbelleksiz okunur.
  */
-export const getArticleBySlug = async (slug: string) => {
-    const article = await prisma.article.findUnique({
-      where: { slug },
-      include: { category: true, author: true },
-    });
-    return article && article.status === "PUBLISHED" ? article : null;
-  };
+export const getArticleBySlug = async (rawSlug: string, allowDraft: boolean = false) => {
+  if (!rawSlug || typeof rawSlug !== "string") return null;
+
+  let decoded = rawSlug;
+  try {
+    decoded = decodeURIComponent(rawSlug).trim();
+  } catch {}
+
+  const clean = decoded.toLowerCase().trim();
+  const slugified = slugify(decoded);
+
+  const article = await prisma.article.findFirst({
+    where: {
+      OR: [
+        { slug: rawSlug },
+        { slug: decoded },
+        { slug: clean },
+        { slug: slugified },
+        { id: rawSlug },
+        { id: decoded },
+      ],
+    },
+    include: { category: true, author: true },
+  });
+
+  if (!article) return null;
+  if (article.status === "PUBLISHED" || allowDraft) return article;
+  return null;
+};
 
 /**
  * Haber yorumları — ÖNBELLEKLENMEZ.

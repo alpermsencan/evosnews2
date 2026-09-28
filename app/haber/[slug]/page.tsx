@@ -23,11 +23,8 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const article = await prisma.article.findUnique({
-    where: { slug },
-    select: { title: true, spot: true, image: true },
-  });
-  if (!article) return { title: "Haber bulunamadı" };
+  const article = await getArticleBySlug(slug, true);
+  if (!article) return { title: "Haber bulunamadı | EVOtoPilot" };
   return {
     title: article.title,
     description: article.spot,
@@ -41,15 +38,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const viewer = await getCurrentUser();
+  const isPrivileged = viewer?.role === "ADMIN" || viewer?.role === "EDITOR";
+  const article = await getArticleBySlug(slug, isPrivileged);
   if (!article) notFound();
 
   // Okunma sayacı (fire-and-forget)
   prisma.article
     .update({ where: { id: article.id }, data: { views: { increment: 1 } } })
     .catch(() => {});
-
-  const viewer = await getCurrentUser();
 
   // Yorumlar önbelleklenmez; her istekte tazedir (bkz. lib/queries.ts).
   const comments = await getArticleComments(article.id);

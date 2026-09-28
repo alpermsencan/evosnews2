@@ -55,6 +55,7 @@ export default async function EditArticlePage({
           isFeatured: article.isFeatured,
           isBreaking: article.isBreaking,
           isVideo: article.isVideo,
+          status: article.status || "PUBLISHED",
           publishedAt: article.publishedAt.toISOString(),
         }}
         endpoint={`/api/articles/${article.id}`}

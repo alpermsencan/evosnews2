@@ -22,11 +22,29 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     const { id } = await params;
     const body = await req.json();
 
+    const existing = await prisma.article.findUnique({ where: { id } });
+    if (!existing) return fail("Haber bulunamadı", 404);
+
+    let nextSlug: string | undefined = undefined;
+    if (body.slug !== undefined || body.title !== undefined) {
+      const candidateRaw = (body.slug?.trim() || body.title?.trim() || existing.title || "").trim();
+      let candidate = slugify(candidateRaw);
+      if (!candidate) candidate = existing.slug || `haber-${id.slice(-6)}`;
+
+      const conflict = await prisma.article.findFirst({
+        where: { slug: candidate, NOT: { id } },
+      });
+      if (conflict) {
+        candidate = `${candidate}-${id.slice(-5)}`;
+      }
+      nextSlug = candidate;
+    }
+
     const article = await prisma.article.update({
       where: { id },
       data: {
         ...(body.title !== undefined && { title: body.title }),
-        ...(body.slug !== undefined && { slug: slugify(body.slug) }),
+        ...(nextSlug !== undefined && { slug: nextSlug }),
         ...(body.spot !== undefined && { spot: body.spot }),
         ...(body.content !== undefined && { content: body.content }),
         ...(body.image !== undefined && { image: body.image }),

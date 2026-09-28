@@ -56,13 +56,17 @@ export async function POST(req: NextRequest) {
       return fail("title, spot, content ve categoryId zorunludur");
     }
 
-    const slug = body.slug?.trim() ? slugify(body.slug) : slugify(title);
+    const rawCandidate = (body.slug?.trim() || title?.trim() || "").trim();
+    let slug = slugify(rawCandidate);
+    if (!slug) slug = `haber-${Date.now().toString().slice(-6)}`;
+
     const exists = await prisma.article.findUnique({ where: { slug } });
+    const finalSlug = exists ? `${slug}-${Date.now().toString().slice(-5)}` : slug;
 
     const article = await prisma.article.create({
       data: {
         title,
-        slug: exists ? `${slug}-${Date.now().toString().slice(-5)}` : slug,
+        slug: finalSlug,
         spot,
         content,
         image: image || "/haber-placeholder.svg",
