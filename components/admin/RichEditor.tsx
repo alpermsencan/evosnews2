@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { useMemo, useRef, useState } from "react";
 import type ReactQuillType from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 
 type QuillRef = { forwardedRef: React.RefObject<ReactQuillType | null> };
@@ -116,6 +115,8 @@ export default function RichEditor({
 
   return (
     <div className="flex flex-col gap-1.5">
+      {/* Quill CSS statik olarak servis edilir; Turbopack / PostCSS çökmesini önler */}
+      <link rel="stylesheet" href="/css/quill.snow.css" />
       <div className="evos-quill">
         <ReactQuill
           forwardedRef={quillRef}
