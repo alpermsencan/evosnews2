@@ -111,41 +111,39 @@ export default async function VehiclesPage({
         <FeaturedVehiclesShowcase />
       </Suspense>
 
-      {/* ANA KATALOG VE FİLTRELEME ALANI */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
-        {/* SOL: Açılır Menü Filtreler (Üste Alındı) */}
-        <Suspense fallback={<div className="h-64 w-72 rounded-2xl bg-white" />}>
-          <VehiclesExplorer
-            brands={brands.map((b) => ({ value: b.brand, label: b.brand }))}
-            segments={segments.map((s) => ({ value: s.segment, label: s.segment }))}
-            bodyTypes={bodyTypes.map((b) => ({ value: b.bodyType, label: b.bodyType }))}
-            totalCount={vehicles.length}
-          />
-        </Suspense>
+      {/* 1. ÜST FİLTRELEME ÇUBUĞU (Açılır Menülü Yatay Dropdown Bar) */}
+      <Suspense fallback={<div className="h-16 w-full rounded-2xl bg-white animate-pulse" />}>
+        <VehiclesExplorer
+          brands={brands.map((b) => ({ value: b.brand, label: b.brand }))}
+          segments={segments.map((s) => ({ value: s.segment, label: s.segment }))}
+          bodyTypes={bodyTypes.map((b) => ({ value: b.bodyType, label: b.bodyType }))}
+          totalCount={vehicles.length}
+        />
+      </Suspense>
 
-        <div className="flex-1 min-w-0 flex flex-col gap-6 w-full">
-          {/* ARAÇ TİPİNE GÖRE KEŞFET (Ticari, TR Satışta, Kampanyalı Araçlar) */}
-          <Suspense fallback={<div className="h-28 rounded-2xl bg-white animate-pulse" />}>
-            <BodyTypeExplorer />
-          </Suspense>
+      {/* 2. ARAÇ TİPİNE GÖRE HIZLI KEŞFET (Kasa Tipleri Yatay Ray) */}
+      <Suspense fallback={<div className="h-28 rounded-2xl bg-white animate-pulse" />}>
+        <BodyTypeExplorer />
+      </Suspense>
 
-          <SectionTitle
-            title={`ELEKTRİKLİ MODELLER (${vehicles.length})`}
-            color="#DC2626"
-          />
+      {/* 3. ANA KATALOG (Genişletilmiş Ferah 4 Kolonlu Grid) */}
+      <div className="flex flex-col gap-6 w-full">
+        <SectionTitle
+          title={`ELEKTRİKLİ MODELLER (${vehicles.length})`}
+          color="#DC2626"
+        />
 
-          {vehicles.length === 0 ? (
-            <div className="rounded-2xl border border-neutral-200 bg-white p-12 text-center text-sm font-semibold text-neutral-500 shadow-xs">
-              Filtrelerinize uygun araç bulunamadı. Lütfen filtre kriterlerini genişletin.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {vehicles.map((v) => (
-                <VehicleCard key={v.id} vehicle={v} />
-              ))}
-            </div>
-          )}
-        </div>
+        {vehicles.length === 0 ? (
+          <div className="rounded-2xl border border-neutral-200 bg-white p-12 text-center text-sm font-semibold text-neutral-500 shadow-xs">
+            Filtrelerinize uygun araç bulunamadı. Lütfen filtre kriterlerini genişletin.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {vehicles.map((v) => (
+              <VehicleCard key={v.id} vehicle={v} />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* KARŞILAŞTIRMA TABLOSU */}
