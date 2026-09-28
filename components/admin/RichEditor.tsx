@@ -2,8 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useMemo, useRef, useState } from "react";
-import type ReactQuillType from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
+import type ReactQuillType from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 
 type QuillRef = { forwardedRef: React.RefObject<ReactQuillType | null> };
@@ -11,7 +11,7 @@ type QuillRef = { forwardedRef: React.RefObject<ReactQuillType | null> };
 /** Quill tarayıcı API'lerine bağlı olduğu için SSR kapalı yüklenir */
 const ReactQuill = dynamic(
   async () => {
-    const { default: RQ } = await import("react-quill-new");
+    const { default: RQ } = await import("react-quill");
     const Wrapped = ({
       forwardedRef,
       ...props
