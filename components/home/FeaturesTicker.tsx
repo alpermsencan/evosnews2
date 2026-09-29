@@ -8,10 +8,10 @@ const FEATURE_ITEMS = [
     href: "/sarj-agi/rota",
   },
   {
-    icon: "🤖",
-    title: "AI ARAÇ DANIŞMANI",
-    description: "Ses destekli yapay zekâ asistanı ile en ideal aracınızı bulun.",
-    href: "/ai-danisman",
+    icon: "🚗",
+    title: "ARAÇ MERKEZİ",
+    description: "Segment şampiyonları, araç incelemeleri ve test sürüşleri.",
+    href: "/arac-merkezi",
   },
   {
     icon: "📍",
@@ -23,7 +23,7 @@ const FEATURE_ITEMS = [
     icon: "📊",
     title: "ŞARJ TARİFELERİ",
     description: "ZES, Eşarj, Trugo ve diğer tüm operatörlerin güncel AC/DC fiyatları.",
-    href: "/sarj-fiyatlari",
+    href: "/sarj-agi",
   },
   {
     icon: "🚗",
@@ -33,15 +33,15 @@ const FEATURE_ITEMS = [
   },
   {
     icon: "📑",
-    title: "ÖTV HESAPLAMA REHBERİ",
+    title: "ÖTV & FİNANSMAN REHBERİ",
     description: "Elektrikli araçlara özel güncel ÖTV matrah limitleri ve vergi hesaplayıcı.",
-    href: "/otv-rehberi",
+    href: "/finansman",
   },
   {
     icon: "🛡️",
-    title: "EVOS PROTECT GÜVENLİK",
+    title: "DOĞRULANMIŞ BATARYA RAPORU",
     description: "Batarya sağlığı sertifikalı ikinci el ilanlar ve VoltScore güven endeksi.",
-    href: "/evos-protect",
+    href: "/batarya-raporu",
   },
   {
     icon: "💬",

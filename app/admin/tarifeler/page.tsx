@@ -49,7 +49,7 @@ export default async function AdminTariffs() {
       </div>
 
       <p className="rounded-lg border border-neutral-200 bg-white p-4 text-[13px] leading-relaxed text-neutral-600">
-        Fiyatlar <Link href="/sarj-fiyatlari" className="font-bold text-volt-dark hover:underline">Şarj Fiyatları</Link>{" "}
+        Fiyatlar <Link href="/sarj-agi" className="font-bold text-volt-dark hover:underline">Şarj Ağı &amp; Fiyatları</Link>{" "}
         sayfasında ve şarj ağı operatör özetinde görünür. Burada düzenlenen her
         satır &quot;manuel&quot; olarak işaretlenir ve toplu içe aktarım
         (<code className="rounded bg-neutral-100 px-1">npm run db:tariffs</code>)

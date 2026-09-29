@@ -136,9 +136,9 @@ export default function HeroHybrid({ slides }: { slides: Slide[] }) {
                   <IconSearch className="h-4 w-4" /> UYGUN MODELLERİ BUL
                 </button>
                 <Link
-                  href="/otv-rehberi"
+                  href="/finansman"
                   className="flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-3 py-3 text-xs font-black text-white hover:bg-white/15 transition"
-                  title="2026 ÖTV Hesaplayıcı"
+                  title="2026 ÖTV & Finansman Hesaplayıcı"
                 >
                   <IconTag className="h-4 w-4" />
                 </Link>

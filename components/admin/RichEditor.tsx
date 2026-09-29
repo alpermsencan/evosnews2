@@ -1,52 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useMemo, useRef, useState } from "react";
-import type ReactQuillType from "react-quill";
+import { useEffect, useRef, useState } from "react";
 import { uploadToCloudinary } from "@/lib/uploadClient";
-
-type QuillRef = { forwardedRef: React.RefObject<ReactQuillType | null> };
-
-/** Quill tarayıcı API'lerine bağlı olduğu için SSR kapalı yüklenir */
-const ReactQuill = dynamic(
-  async () => {
-    const { default: RQ } = await import("react-quill");
-    const Wrapped = ({
-      forwardedRef,
-      ...props
-    }: QuillRef & React.ComponentProps<typeof RQ>) => (
-      <RQ ref={forwardedRef} {...props} />
-    );
-    Wrapped.displayName = "ReactQuillWrapped";
-    return Wrapped;
-  },
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-64 items-center justify-center rounded-md border border-neutral-300 bg-neutral-50 text-[11px] font-black text-neutral-400">
-        EDİTÖR YÜKLENİYOR...
-      </div>
-    ),
-  }
-);
-
-const FORMATS = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "code-block",
-  "list",
-  "indent",
-  "align",
-  "color",
-  "background",
-  "link",
-  "image",
-  "video",
-];
 
 export default function RichEditor({
   value,
@@ -59,75 +14,133 @@ export default function RichEditor({
   placeholder?: string;
   folder?: string;
 }) {
-  const quillRef = useRef<ReactQuillType | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const quillRef = useRef<any>(null);
+  const isInternalChangeRef = useRef(false);
+  const folderRef = useRef(folder);
+  folderRef.current = folder;
+
+  const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
-  /** Toolbar'daki görsel butonu: base64 yerine Cloudinary'ye yükler */
-  const imageHandler = useMemo(
-    () => () => {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = async () => {
-        const file = input.files?.[0];
-        if (!file) return;
-        setUploading(true);
-        setError("");
-        try {
-          const [url] = await uploadToCloudinary([file], folder);
-          const editor = quillRef.current?.getEditor();
-          if (!editor) return;
-          const range = editor.getSelection(true);
-          const index = range ? range.index : editor.getLength();
-          editor.insertEmbed(index, "image", url, "user");
-          editor.setSelection(index + 1, 0);
-        } catch (e) {
-          setError(e instanceof Error ? e.message : "Görsel yüklenemedi");
-        } finally {
-          setUploading(false);
-        }
-      };
-      input.click();
-    },
-    [folder]
-  );
+  useEffect(() => {
+    let isMounted = true;
 
-  const modules = useMemo(
-    () => ({
-      toolbar: {
-        container: [
-          [{ header: [2, 3, 4, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ color: [] }, { background: [] }],
-          [{ list: "ordered" }, { list: "bullet" }],
-          [{ align: [] }],
-          ["blockquote", "code-block"],
-          ["link", "image", "video"],
-          ["clean"],
-        ],
-        handlers: { image: imageHandler },
-      },
-      clipboard: { matchVisual: false },
-    }),
-    [imageHandler]
-  );
+    async function initQuill() {
+      if (!containerRef.current) return;
+
+      try {
+        const { default: Quill } = await import("quill");
+        if (!isMounted || !containerRef.current) return;
+
+        // Container içeriğini temizleyip taze bir editor div'i oluşturalım
+        containerRef.current.innerHTML = "";
+        const editorHost = document.createElement("div");
+        containerRef.current.appendChild(editorHost);
+
+        const quill = new Quill(editorHost, {
+          theme: "snow",
+          placeholder: placeholder || "İçeriği buraya yazın...",
+          modules: {
+            toolbar: {
+              container: [
+                [{ header: [2, 3, 4, false] }],
+                ["bold", "italic", "underline", "strike"],
+                [{ color: [] }, { background: [] }],
+                [{ list: "ordered" }, { list: "bullet" }],
+                [{ align: [] }],
+                ["blockquote", "code-block"],
+                ["link", "image", "video"],
+                ["clean"],
+              ],
+              handlers: {
+                image: () => {
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.accept = "image/*";
+                  input.onchange = async () => {
+                    const file = input.files?.[0];
+                    if (!file) return;
+                    setUploading(true);
+                    setError("");
+                    try {
+                      const [url] = await uploadToCloudinary([file], folderRef.current);
+                      if (!quillRef.current) return;
+                      const range = quillRef.current.getSelection(true);
+                      const index = range ? range.index : quillRef.current.getLength();
+                      quillRef.current.insertEmbed(index, "image", url, "user");
+                      quillRef.current.setSelection(index + 1, 0);
+                    } catch (e) {
+                      setError(e instanceof Error ? e.message : "Görsel yüklenemedi");
+                    } finally {
+                      setUploading(false);
+                    }
+                  };
+                  input.click();
+                },
+              },
+            },
+            clipboard: { matchVisual: false },
+          },
+        });
+
+        if (value) {
+          quill.root.innerHTML = value;
+        }
+
+        quill.on("text-change", () => {
+          if (!isMounted) return;
+          isInternalChangeRef.current = true;
+          const html = quill.root.innerHTML;
+          onChange(html === "<p><br></p>" ? "" : html);
+          setTimeout(() => {
+            isInternalChangeRef.current = false;
+          }, 0);
+        });
+
+        quillRef.current = quill;
+        setLoading(false);
+      } catch (err) {
+        console.error("Quill yüklenirken hata:", err);
+        setError("Editör başlatılamadı.");
+        setLoading(false);
+      }
+    }
+
+    initQuill();
+
+    return () => {
+      isMounted = false;
+      quillRef.current = null;
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Dışarıdan gelen `value` değiştiğinde (ör. veritabanından çekilip form doldurulunca) editörü senkronize et
+  useEffect(() => {
+    if (!quillRef.current || isInternalChangeRef.current) return;
+    const currentHtml = quillRef.current.root.innerHTML;
+    const targetHtml = value || "";
+    if (targetHtml !== currentHtml && (targetHtml || currentHtml !== "<p><br></p>")) {
+      quillRef.current.root.innerHTML = targetHtml;
+    }
+  }, [value]);
 
   return (
     <div className="flex flex-col gap-1.5">
-      {/* Quill CSS statik olarak servis edilir; Turbopack / PostCSS çökmesini önler */}
       <link rel="stylesheet" href="/css/quill.snow.css" />
-      <div className="evos-quill">
-        <ReactQuill
-          forwardedRef={quillRef}
-          theme="snow"
-          value={value}
-          onChange={onChange}
-          modules={modules}
-          formats={FORMATS}
-          placeholder={placeholder}
-        />
-      </div>
+      {loading && (
+        <div className="flex h-64 items-center justify-center rounded-md border border-neutral-300 bg-neutral-50 text-[11px] font-black text-neutral-400">
+          EDİTÖR YÜKLENİYOR...
+        </div>
+      )}
+      <div
+        className={`evos-quill ${loading ? "hidden" : "block"}`}
+        ref={containerRef}
+      />
       {uploading && (
         <span className="text-[11px] font-bold text-neutral-500">
           Görsel Cloudinary&apos;ye yükleniyor...

@@ -162,17 +162,17 @@ export default function Header() {
           {/* Sağ Kolon: Hızlı Araçlar */}
           <div className="hidden lg:flex items-center gap-2 py-1">
             <Link
-              href="/karsilastirma/araba"
+              href="/karsilastir"
               className="px-2.5 py-1.5 rounded-md text-xs font-bold text-neutral-600 hover:text-red-600 hover:bg-neutral-100 transition"
             >
               Karşılaştır
             </Link>
 
             <Link
-              href="/ai-danisman"
+              href="/finansman"
               className="px-3 py-1.5 rounded-md bg-neutral-100 hover:bg-neutral-200 hover:text-red-600 border border-neutral-200/80 text-xs font-bold text-neutral-800 transition"
             >
-              AI Danışman
+              Finansman &amp; ÖTV
             </Link>
           </div>
         </div>

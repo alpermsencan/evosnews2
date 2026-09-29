@@ -41,17 +41,19 @@ export default async function FinancePage() {
         </p>
       </header>
 
-      <FinanceCalculator
-        vehicles={vehicles.map((v) => ({
-          slug: v.slug,
-          label: `${v.brand} ${v.model}`,
-          price: v.price,
-          otvRate: v.otvRate,
-          consumption: v.consumption,
-        }))}
-        medianAcPrice={ac}
-        medianDcPrice={dc}
-      />
+      <div id="hesaplama" className="scroll-mt-20">
+        <FinanceCalculator
+          vehicles={vehicles.map((v) => ({
+            slug: v.slug,
+            label: `${v.brand} ${v.model}`,
+            price: v.price,
+            otvRate: v.otvRate,
+            consumption: v.consumption,
+          }))}
+          medianAcPrice={ac}
+          medianDcPrice={dc}
+        />
+      </div>
 
       <section>
         <SectionTitle title="HESAP NASIL YAPILIYOR?" color="#7c3aed" />
@@ -84,12 +86,12 @@ export default async function FinancePage() {
             Mevcut benzinli veya dizel tüketiminizi girerek elektrikli araçla yılda kaç TL tasarruf edeceğinizi anında görün.
           </p>
         </div>
-        <Link
-          href="/tasarruf-hesapla"
+        <a
+          href="#hesaplama"
           className="shrink-0 rounded-xl bg-emerald-600 px-5 py-3 text-xs font-black text-white transition hover:bg-emerald-700 shadow-md text-center"
         >
-          TASARRUFUNU HESAPLA →
-        </Link>
+          TASARRUFUNU HESAPLA ↑
+        </a>
       </section>
 
       <section className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-6 lg:flex-row lg:items-center">
@@ -99,18 +101,18 @@ export default async function FinancePage() {
             Sigorta/kasko, periyodik bakım, MTV ve lastik giderleri bu ekranda
             yer almaz — bunlar araca ve kullanıcıya göre çok değiştiği için
             varsayılan bir rakam vermek yanıltıcı olurdu. Batarya güvencesi için{" "}
-            <Link href="/evos-protect" className="font-bold text-sky-600 hover:underline">
-              EVO Protect
+            <Link href="/batarya-raporu" className="font-bold text-sky-600 hover:underline">
+              Batarya Raporu
             </Link>{" "}
             paketlerine bakabilirsiniz.
           </p>
         </div>
-        <Link
-          href="/otv-rehberi"
+        <a
+          href="#hesaplama"
           className="flex shrink-0 items-center justify-center gap-1 rounded-md bg-violet-600 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700"
         >
-          ÖTV REHBERİ <IconChevronRight className="h-4 w-4" />
-        </Link>
+          VERGİ HESAPLA <IconChevronRight className="h-4 w-4" />
+        </a>
       </section>
     </div>
   );

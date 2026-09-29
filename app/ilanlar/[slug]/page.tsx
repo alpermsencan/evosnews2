@@ -264,15 +264,15 @@ export default async function ListingDetail({
           )}
 
           <Link
-            href="/evos-protect"
+            href="/batarya-raporu"
             className="flex flex-col gap-2 rounded-lg bg-blue-700 p-5 text-white transition hover:bg-blue-800"
           >
             <IconShield className="h-6 w-6" />
             <span className="text-[15px] font-black leading-tight">
-              Bu aracı Evos Protect ile güvenceye alın
+              Doğrulanmış Batarya Raporu &amp; Güvence
             </span>
             <span className="text-[12px] text-white/80">
-              Batarya ve şarj ekosistemini kapsayan paketleri inceleyin.
+              Batarya sağlık endeksi (SOH) ve VoltScore güvence kriterlerini inceleyin.
             </span>
           </Link>
         </aside>

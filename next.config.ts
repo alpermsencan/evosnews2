@@ -19,10 +19,39 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
-      // Voice Intelligence, AI Danışman sayfasıyla birleşti (sesli asistan bölümü).
       {
         source: "/voice-intelligence",
-        destination: "/ai-danisman#sesli-asistan",
+        destination: "/arac-merkezi",
+        permanent: true,
+      },
+      {
+        source: "/ai-danisman",
+        destination: "/arac-merkezi",
+        permanent: true,
+      },
+      {
+        source: "/otv-rehberi",
+        destination: "/finansman",
+        permanent: true,
+      },
+      {
+        source: "/tasarruf-hesapla",
+        destination: "/finansman",
+        permanent: true,
+      },
+      {
+        source: "/evos-protect",
+        destination: "/batarya-raporu",
+        permanent: true,
+      },
+      {
+        source: "/sarj-fiyatlari",
+        destination: "/sarj-agi",
+        permanent: true,
+      },
+      {
+        source: "/karsilastirma/:path*",
+        destination: "/karsilastir",
         permanent: true,
       },
     ];

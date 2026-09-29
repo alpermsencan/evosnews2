@@ -86,10 +86,10 @@ export default async function AboutPage() {
           <Module href="/kategori/haber-merkezi" t="Haber merkezi" d="Günlük otomatik akış, Türkçe yeniden yazım, kaynak atfı." />
           <Module href="/araclar" t="Model kataloğu" d="Teknik veri, karşılaştırma ve gerçek mevsimsel menzil." />
           <Module href="/ilanlar" t="Pazaryeri" d="Sıfır ve ikinci el ilanlar, batarya raporu ve VoltScore ile." />
-          <Module href="/sarj-agi" t="Şarj ağı" d="İstasyon haritası, konuma göre sıralama ve gerçek sürüş rotası." />
-          <Module href="/sarj-fiyatlari" t="Şarj fiyatları" d="Operatör tarifelerinin AC/DC/ultra karşılaştırması." />
-          <Module href="/finansman" t="Finansman" d="Vergi, kredi taksiti ve enerji maliyeti tek ekranda." />
-          <Module href="/ai-danisman" t="AI Danışman" d="Kullanım profiline göre araç önerisi ve sesli asistan." />
+          <Module href="/sarj-agi" t="Şarj ağı &amp; fiyatları" d="İstasyon haritası, operatör tarifeleri ve şarj rotası." />
+          <Module href="/karsilastir" t="Araç karşılaştırma" d="Sıfır ve 2. el modelleri teknik verileriyle kıyaslayın." />
+          <Module href="/finansman" t="Finansman &amp; ÖTV" d="Vergi, kredi taksiti ve enerji maliyeti tek ekranda." />
+          <Module href="/arac-merkezi" t="Araç merkezi" d="Segment şampiyonları, araç incelemeleri ve test sürüşleri." />
           <Module href="/topluluk" t="Topluluk" d="Model bazlı gruplar, akış, reels ve tartışmalar." />
         </div>
       </section>

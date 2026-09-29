@@ -30,7 +30,7 @@ export default function EvosVoiceIntelligence() {
         setListening(false);
         // Ses tanıma bittiğinde otomatik AI Danışman sayfasına aramayla git
         setTimeout(() => {
-          router.push(`/ai-danisman?q=${encodeURIComponent(resultText)}`);
+          router.push(`/ara?q=${encodeURIComponent(resultText)}`);
         }, 1200);
       };
 
@@ -63,7 +63,7 @@ export default function EvosVoiceIntelligence() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
-    router.push(`/ai-danisman?q=${encodeURIComponent(text.trim())}`);
+    router.push(`/ara?q=${encodeURIComponent(text.trim())}`);
   };
 
   return (
@@ -141,7 +141,7 @@ export default function EvosVoiceIntelligence() {
                 type="button"
                 onClick={() => {
                   setText(suggest);
-                  router.push(`/ai-danisman?q=${encodeURIComponent(suggest)}`);
+                  router.push(`/ara?q=${encodeURIComponent(suggest)}`);
                 }}
                 className="rounded-full border border-neutral-200 bg-white px-3 py-1 text-[10px] font-bold text-neutral-500 transition hover:border-indigo-600 hover:text-indigo-600"
               >
