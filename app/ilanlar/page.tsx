@@ -7,8 +7,6 @@ import ListingRowCard from "@/components/listings/ListingRowCard";
 import CategorySelectModal from "@/components/listings/CategorySelectModal";
 import { listingCardSelect } from "@/lib/listings";
 import { IconCar, IconChevronRight } from "@/components/ui/Icons";
-import { LISTING_CATEGORIES } from "@/lib/listingCategories";
-import { CategoryIcon } from "@/components/listings/CategoryIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -111,37 +109,6 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
 
       {/* BİRLEŞTİRİLMİŞ ARAMA VE TAM SAYFA FİLTRELER BUTONU */}
       <CategorySelectModal />
-
-      {/* 8 KATEGORİ HIZLI SEÇİM KARTLARI (Mobilde filtrelere taşındığı için gizlendi) */}
-      <section className="hidden sm:flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-black uppercase tracking-wider text-neutral-800 flex items-center gap-2">
-            <span>⚡</span>
-            <span>ARAÇ KATEGORİSİ SEÇİN</span>
-          </h2>
-          <span className="text-xs font-bold text-neutral-400">8 Kategori</span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-4">
-          {LISTING_CATEGORIES.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/ilanlar/${cat.slug}`}
-              className="group flex flex-col items-center justify-center gap-2.5 rounded-2xl border border-neutral-200 bg-white p-4 text-center shadow-sm transition hover:border-sky-400 hover:bg-sky-50/50 hover:shadow-md"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-100 text-neutral-600 transition group-hover:bg-sky-100 group-hover:text-sky-600">
-                <CategoryIcon slug={cat.slug} className="h-6 w-6" />
-              </div>
-              <span className="text-xs sm:text-sm font-black text-neutral-900 group-hover:text-sky-700 transition leading-tight">
-                {cat.name}
-              </span>
-              <span className="text-[10px] font-bold text-neutral-400 group-hover:text-sky-600">
-                İlanları Gör →
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
 
       {/* TÜM İLANLAR LİSTESİ (YENİ SÜTUN KARTLARI) */}
       <section className="flex flex-col gap-4">
