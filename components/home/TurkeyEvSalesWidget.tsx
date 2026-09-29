@@ -7,6 +7,9 @@ interface SalesItem {
   rank: number;
   model: string;
   brand: string;
+  brandBadgeBg: string;
+  brandBadgeColor: string;
+  modelImage: string;
   salesCount: number;
   marketShare: number;
   change: string;
@@ -14,16 +17,126 @@ interface SalesItem {
 }
 
 const SALES_DATA: SalesItem[] = [
-  { rank: 1, brand: "TOGG", model: "T10X", salesCount: 30088, marketShare: 32.5, change: "+14.2%", slug: "togg-t10x-v2-2026" },
-  { rank: 2, brand: "Tesla", model: "Model Y", salesCount: 14285, marketShare: 15.5, change: "+8.6%", slug: "tesla-model-y-juniper-2026" },
-  { rank: 3, brand: "KGM", model: "Torres EVX", salesCount: 5860, marketShare: 6.3, change: "+24.1%", slug: "dolubatarya-kgm-torres-evx-fed9a6a2" },
-  { rank: 4, brand: "BMW", model: "i4 / iX1", salesCount: 4120, marketShare: 4.5, change: "+11.4%", slug: "bmw-i4-edrive40-gran-coupe" },
-  { rank: 5, brand: "BYD", model: "Seal / Atto 3", salesCount: 3840, marketShare: 4.2, change: "+38.5%", slug: "byd-seal-160-kw" },
-  { rank: 6, brand: "Mercedes", model: "EQE / EQB", salesCount: 3650, marketShare: 3.9, change: "+6.8%", slug: "mercedes-eqe-300" },
-  { rank: 7, brand: "Hyundai", model: "Inster / Ioniq 5", salesCount: 3110, marketShare: 3.4, change: "+19.0%", slug: "hyundai-inster" },
-  { rank: 8, brand: "Renault", model: "5 / Megane E-Tech", salesCount: 2940, marketShare: 3.2, change: "+15.3%", slug: "renault-5" },
-  { rank: 9, brand: "Kia", model: "EV3 / EV6", salesCount: 2450, marketShare: 2.6, change: "+42.0%", slug: "kia-ev3-long-range-2026" },
-  { rank: 10, brand: "Volvo", model: "EX30 / EC40", salesCount: 2180, marketShare: 2.4, change: "+18.2%", slug: "volvo-ex30-extended-range-2026" },
+  {
+    rank: 1,
+    brand: "TOGG",
+    brandBadgeBg: "bg-[#00A3E0]",
+    brandBadgeColor: "text-white",
+    model: "T10X V2",
+    modelImage: "https://dolubatarya.com/uploads/2021/12/2023-togg-t10x-ozellikler-teknik.jpg",
+    salesCount: 30088,
+    marketShare: 32.5,
+    change: "+14.2%",
+    slug: "togg-t10x-v2-2026",
+  },
+  {
+    rank: 2,
+    brand: "TESLA",
+    brandBadgeBg: "bg-[#E82127]",
+    brandBadgeColor: "text-white",
+    model: "Model Y",
+    modelImage: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&auto=format&fit=crop",
+    salesCount: 14285,
+    marketShare: 15.5,
+    change: "+8.6%",
+    slug: "tesla-model-y-juniper-2026",
+  },
+  {
+    rank: 3,
+    brand: "KGM",
+    brandBadgeBg: "bg-[#002C6C]",
+    brandBadgeColor: "text-white",
+    model: "Torres EVX",
+    modelImage: "https://dolubatarya.com/uploads/2023/11/kgm-torres-evx-turkiye-fiyati-3819.jpg",
+    salesCount: 5860,
+    marketShare: 6.3,
+    change: "+24.1%",
+    slug: "dolubatarya-kgm-torres-evx-fed9a6a2",
+  },
+  {
+    rank: 4,
+    brand: "BMW",
+    brandBadgeBg: "bg-[#0066B1]",
+    brandBadgeColor: "text-white",
+    model: "i4 / iX1",
+    modelImage: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&auto=format&fit=crop",
+    salesCount: 4120,
+    marketShare: 4.5,
+    change: "+11.4%",
+    slug: "bmw-i4-edrive40-gran-coupe",
+  },
+  {
+    rank: 5,
+    brand: "BYD",
+    brandBadgeBg: "bg-[#1B365D]",
+    brandBadgeColor: "text-white",
+    model: "Seal / Atto 3",
+    modelImage: "https://dolubatarya.com/uploads/2025/07/byd-seal-160-kw-2792.webp",
+    salesCount: 3840,
+    marketShare: 4.2,
+    change: "+38.5%",
+    slug: "byd-seal-160-kw",
+  },
+  {
+    rank: 6,
+    brand: "MERCEDES",
+    brandBadgeBg: "bg-neutral-950",
+    brandBadgeColor: "text-white",
+    model: "EQE / EQB",
+    modelImage: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&auto=format&fit=crop",
+    salesCount: 3650,
+    marketShare: 3.9,
+    change: "+6.8%",
+    slug: "mercedes-eqe-300",
+  },
+  {
+    rank: 7,
+    brand: "HYUNDAI",
+    brandBadgeBg: "bg-[#002C6C]",
+    brandBadgeColor: "text-white",
+    model: "Inster / Ioniq 5",
+    modelImage: "https://dolubatarya.com/uploads/2024/12/hyundai-inster-6192.jpg",
+    salesCount: 3110,
+    marketShare: 3.4,
+    change: "+19.0%",
+    slug: "hyundai-inster",
+  },
+  {
+    rank: 8,
+    brand: "RENAULT",
+    brandBadgeBg: "bg-[#FFCC00]",
+    brandBadgeColor: "text-neutral-950",
+    model: "5 / Megane",
+    modelImage: "https://cdn.group.renault.com/ren/master/renault-new-cars/product-plans/megane-e-tech-electrique/megane-bcb-my24/new-editorial/megane-bcb-overview-001-desktop.jpg.ximg.large.webp/faac0803d5.webp",
+    salesCount: 2940,
+    marketShare: 3.2,
+    change: "+15.3%",
+    slug: "renault-5",
+  },
+  {
+    rank: 9,
+    brand: "KIA",
+    brandBadgeBg: "bg-black",
+    brandBadgeColor: "text-white",
+    model: "EV3 / EV6",
+    modelImage: "https://dolubatarya.com/uploads/2025/02/kia-ev4-saloon-standard-range-3182.jpeg",
+    salesCount: 2450,
+    marketShare: 2.6,
+    change: "+42.0%",
+    slug: "kia-ev3-long-range-2026",
+  },
+  {
+    rank: 10,
+    brand: "VOLVO",
+    brandBadgeBg: "bg-[#003057]",
+    brandBadgeColor: "text-white",
+    model: "EX30 / EC40",
+    modelImage: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&auto=format&fit=crop",
+    salesCount: 2180,
+    marketShare: 2.4,
+    change: "+18.2%",
+    slug: "volvo-ex30-extended-range-2026",
+  },
 ];
 
 export default function TurkeyEvSalesWidget() {
@@ -125,28 +238,44 @@ export default function TurkeyEvSalesWidget() {
                 key={item.rank}
                 className="group flex flex-col py-2.5 transition hover:bg-neutral-50/80 rounded-xl px-1.5"
               >
-                {/* Üst Satır: Rozet + Marka/Model ve Satış Rakamı */}
+                {/* Üst Satır: Sıra + Marka Logosu + Araç Resmi + Model Adı ve Satış */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {/* Sıra Numarası */}
                     <span
                       className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs shadow-2xs ${rankStyle}`}
                     >
                       {item.rank}
                     </span>
-                    <div className="flex items-baseline gap-1.5 min-w-0">
-                      <span className="text-xs font-black text-red-600 uppercase tracking-wider shrink-0">
-                        {item.brand}
-                      </span>
+
+                    {/* Marka Logosu Rozeti */}
+                    <span
+                      className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shrink-0 shadow-2xs ${item.brandBadgeBg} ${item.brandBadgeColor}`}
+                    >
+                      {item.brand}
+                    </span>
+
+                    {/* Küçük Model Görseli */}
+                    <div className="relative h-7 w-10 sm:h-8 sm:w-12 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 shadow-2xs group-hover:border-neutral-400 transition">
+                      <img
+                        src={item.modelImage}
+                        alt={`${item.brand} ${item.model}`}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+
+                    {/* Model İsmi */}
+                    <div className="flex items-baseline min-w-0">
                       {item.slug ? (
                         <Link
                           href={`/araclar/${item.slug}`}
-                          className="text-[13px] sm:text-sm font-black text-neutral-950 group-hover:text-red-600 transition truncate"
+                          className="text-[12px] sm:text-[13px] font-black text-neutral-950 group-hover:text-red-600 transition truncate"
                           title={`${item.brand} ${item.model} detay sayfasını incele`}
                         >
                           {item.model}
                         </Link>
                       ) : (
-                        <span className="text-[13px] sm:text-sm font-black text-neutral-950 truncate">
+                        <span className="text-[12px] sm:text-[13px] font-black text-neutral-950 truncate">
                           {item.model}
                         </span>
                       )}
@@ -168,7 +297,7 @@ export default function TurkeyEvSalesWidget() {
                 </div>
 
                 {/* Alt Satır: Modern Pazar Payı İlerleme Çubuğu */}
-                <div className="mt-2 flex items-center gap-2 pl-8.5">
+                <div className="mt-2 flex items-center gap-2 pl-8">
                   <div className="h-1.5 flex-1 rounded-full bg-neutral-150 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${

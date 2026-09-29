@@ -314,7 +314,9 @@ body {
   .evos-service-icon,
   .evos-service-icon > svg,
   .animate-ev-bolt,
-  .animate-ev-spark {
+  .animate-ev-spark,
+  .animate-ev-charge-bolt,
+  .animate-ev-charge-flow {
     animation: none !important;
     transition: none !important;
   }
@@ -324,44 +326,41 @@ body {
   }
 }
 
-/* Logo EV Enerji ve Şimşek Animasyonu */
-@keyframes ev-energy-pulse {
+/* Logo EV Elektrik & Mavi Şarj Dolum Animasyonu */
+@keyframes ev-charge-glow {
   0%, 100% {
-    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4));
-    opacity: 0.95;
+    filter: drop-shadow(0 0 2px rgba(56, 189, 248, 0.4)) drop-shadow(0 0 6px rgba(14, 165, 233, 0.2));
+    opacity: 0.92;
   }
   50% {
-    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.95)) drop-shadow(0 0 14px rgba(220, 38, 38, 0.6));
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.95)) drop-shadow(0 0 16px rgba(2, 132, 199, 0.75));
     opacity: 1;
   }
 }
 
-@keyframes ev-spark-flicker {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scale(1);
+@keyframes ev-charge-flow {
+  0% {
+    opacity: 0.3;
+    transform: translateY(2px) scale(0.97);
   }
-  30% {
-    opacity: 0.85;
-    transform: scale(1.03);
-  }
-  60% {
-    opacity: 0.45;
-    transform: scale(0.98);
-  }
-  80% {
+  50% {
     opacity: 0.95;
-    transform: scale(1.02);
+    transform: translateY(0px) scale(1.03);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateY(-2px) scale(0.97);
   }
 }
 
-.animate-ev-bolt {
-  animation: ev-energy-pulse 2.2s ease-in-out infinite;
+.animate-ev-charge-bolt {
+  animation: ev-charge-glow 2s ease-in-out infinite;
   transform-origin: center;
 }
 
-.animate-ev-spark {
-  animation: ev-spark-flicker 1.8s ease-in-out infinite;
+.animate-ev-charge-flow {
+  animation: ev-charge-flow 1.6s ease-in-out infinite;
   transform-origin: center;
 }
+
 

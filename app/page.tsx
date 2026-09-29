@@ -104,8 +104,21 @@ export default async function HomePage() {
   const safeTech = tech || [];
   const safeAuthorArticles = authorArticles || [];
 
+  // Batarya ömrü analizi haberini doğrudan 'EVOtoPilot Özel Analiz'in başına al
+  const batteryArticle = await prisma.article.findFirst({
+    where: {
+      status: "PUBLISHED",
+      OR: [
+        { id: "6aba3fbb0df27b2854bb7a88" },
+        { title: { contains: "Batarya Ömrü" } }
+      ]
+    },
+    include: { author: true, category: true }
+  }).catch(() => null);
+
   const heroIds = new Set(safeHeadlines.map((h) => h.id));
-  const feed = safeLatest.filter((a) => !heroIds.has(a.id));
+  const rawFeed = safeLatest.filter((a) => !heroIds.has(a.id) && a.id !== batteryArticle?.id);
+  const feed = batteryArticle ? [batteryArticle, ...rawFeed] : rawFeed;
   // Slider'daki haberlerle Editörün Kaleminden çakışmasın:
   const safeEditorArticles = (editorArticles || []).filter((a) => !heroIds.has(a.id)).slice(0, 4);
 
@@ -210,23 +223,6 @@ export default async function HomePage() {
             </section>
           )}
 
-          {/* TEKNOLOJİ -> EVOtoPilot Teknoloji Analiz */}
-          {safeTech.length > 0 && (
-            <section className="px-3 sm:px-0">
-              <SectionTitle
-                title="EVOtoPilot Teknoloji Analiz"
-                href="/kategori/teknoloji"
-                color="#9333ea"
-                subtitle="Batarya mimarisi, otonom yazılımlar ve şarj teknolojileri"
-              />
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-                {safeTech.map((a) => (
-                  <NewsCard key={a.id} article={a} />
-                ))}
-              </div>
-            </section>
-          )}
-
           {/* TOPLULUK */}
           {safeCommunity.length > 0 && (
             <section className="px-3 sm:px-0">
@@ -287,13 +283,13 @@ export default async function HomePage() {
           {/* EVOTOPİLOT ŞARJ ASİSTANI (VoltHaber Stili Yolculuk & Batarya Dolum Maliyeti) */}
           <EvotopilotChargingAssistant />
 
-          {/* ÖTV REHBERİ SÜTUNU (Executive Kurumsal Siyah & Kırmızı - Büyük Kalın Yazılar) */}
-          <div className="overflow-hidden rounded-2xl border border-neutral-300/80 bg-white shadow-sm ring-1 ring-black/5">
+          {/* ÖTV REHBERİ SÜTUNU (Modern, Kurumsal ve Resmî Finansal Matris Görünümü) */}
+          <div className="overflow-hidden rounded-2xl border border-neutral-300/90 bg-white shadow-sm ring-1 ring-black/5">
             {/* Header */}
             <div className="relative bg-gradient-to-r from-neutral-950 via-neutral-900 to-black px-4 py-3.5 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-neutral-800 text-red-500 ring-1 ring-white/10 shadow-xs">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-neutral-800 text-sky-400 ring-1 ring-white/10 shadow-xs">
                     <IconTag className="h-4.5 w-4.5" />
                   </span>
                   <div>
@@ -306,30 +302,30 @@ export default async function HomePage() {
                     <p className="text-[11px] text-neutral-400 font-bold">2026 Resmî Vergi Baremleri</p>
                   </div>
                 </div>
-                <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-xs">
-                  GÜNCEL MATRAH
+                <span className="rounded-md bg-neutral-800 border border-neutral-700 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-neutral-300">
+                  RESMÎ GAZETE
                 </span>
               </div>
             </div>
 
-            {/* Tax Brackets (Büyük & Kalın Tipografi) */}
+            {/* Tax Brackets - Kurumsal Modern Finansal Matris */}
             <div className="flex flex-col divide-y divide-neutral-150 p-2.5">
-              {/* Dilim 1: %25 (Taban Dilim - Avantajlı) */}
-              <div className="relative rounded-xl border border-red-500/40 bg-red-50/30 p-3.5 transition hover:bg-red-50/50">
+              {/* Dilim 1: %10 (En Avantajlı Resmî Baremi) */}
+              <div className="relative rounded-xl border border-emerald-500/40 bg-emerald-50/40 p-3.5 transition hover:bg-emerald-50/60">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-black text-neutral-950">Motor ≤ 160 kW</span>
-                      <span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black text-white uppercase tracking-wider">
-                        AVANTAJLI
+                      <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white uppercase tracking-wider">
+                        EN AVANTAJLI
                       </span>
                     </div>
-                    <span className="text-xs font-black text-neutral-800 mt-0.5">Matrah ≤ 1.450.000 ₺</span>
-                    <span className="text-[11px] text-neutral-500 font-semibold mt-0.5">Togg T10X, Tesla Model Y SR, Atto 3</span>
+                    <span className="text-xs font-black text-emerald-900 mt-0.5">Matrah ≤ 1.450.000 ₺</span>
+                    <span className="text-[11px] text-neutral-600 font-bold mt-0.5">Togg T10X, Tesla Model Y SR, Atto 3</span>
                   </div>
-                  <div className="flex flex-col items-end">
-                    <span className="rounded-xl bg-red-600 px-3 py-1.5 text-sm font-black text-white shadow-xs">
-                      %25 ÖTV
+                  <div className="flex flex-col items-end shrink-0 pl-2">
+                    <span className="rounded-xl bg-emerald-600 px-3 py-1.5 text-sm font-black text-white shadow-xs">
+                      %10 ÖTV
                     </span>
                   </div>
                 </div>
@@ -340,9 +336,9 @@ export default async function HomePage() {
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor ≤ 160 kW</span>
                   <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.450.000 ₺</span>
-                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Yüksek donanımlı tek motor modeller</span>
+                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Yüksek donanımlı tek motorlu modeller</span>
                 </div>
-                <div className="flex flex-col items-end">
+                <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-100 border border-neutral-300 px-3 py-1.5 text-sm font-black text-neutral-950">
                     %40 ÖTV
                   </span>
@@ -354,9 +350,9 @@ export default async function HomePage() {
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor &gt; 160 kW</span>
                   <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah ≤ 1.350.000 ₺</span>
-                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Çift motor AWD baz versiyonlar</span>
+                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Çift motor AWD giriş versiyonları</span>
                 </div>
-                <div className="flex flex-col items-end">
+                <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-100 border border-neutral-300 px-3 py-1.5 text-sm font-black text-neutral-950">
                     %50 ÖTV
                   </span>
@@ -368,9 +364,9 @@ export default async function HomePage() {
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor &gt; 160 kW</span>
                   <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.350.000 ₺</span>
-                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Lüks &amp; Yüksek Performans AWD</span>
+                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Premium &amp; Yüksek Performans AWD</span>
                 </div>
-                <div className="flex flex-col items-end">
+                <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-950 text-white px-3 py-1.5 text-sm font-black">
                     %60 ÖTV
                   </span>
@@ -378,18 +374,11 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Footer note & Finansman Link */}
-            <div className="bg-neutral-950 px-4 py-3 border-t border-neutral-800 flex items-center justify-between text-xs text-neutral-400 font-semibold">
-              <span className="leading-snug">
-                ÖTV sonrası <strong>%20 KDV</strong> eklenir.
-              </span>
-              <Link
-                href="/finansman"
-                className="text-red-500 font-black hover:text-red-400 flex items-center gap-1 shrink-0"
-              >
-                <span>Vergi Hesapla</span>
-                <span>→</span>
-              </Link>
+            {/* Footer Bilgilendirme Notu (Finansman Butonu Kaldırıldı) */}
+            <div className="bg-neutral-950 px-4 py-3 border-t border-neutral-800 text-xs text-neutral-400 font-medium">
+              <p className="leading-relaxed">
+                Tüm dilimlerde ÖTV hesaplaması sonrası nihai fiyata <strong className="text-white font-bold">%20 KDV</strong> ilave edilir.
+              </p>
             </div>
           </div>
 

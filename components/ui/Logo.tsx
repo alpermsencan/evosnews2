@@ -32,7 +32,7 @@ export default function Logo({
     lg: "text-xl sm:text-[26px]",
   };
 
-  // Yüksek Performanslı Elektrikli Araç & Şimşek Amblemi
+  // Yüksek Performanslı Elektrikli Araç & Mavi Şarj Amblemi
   const emblem = (
     <div className={`relative shrink-0 flex items-center justify-center ${emblemSizes[size]}`}>
       <svg
@@ -42,9 +42,14 @@ export default function Logo({
         className="w-full h-full transition-transform duration-200 group-hover:scale-105"
       >
         <defs>
-          <linearGradient id="evRedGrad" x1="8" y1="4" x2="32" y2="36" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#EF4444" />
-            <stop offset="100%" stopColor="#B91C1C" />
+          <linearGradient id="evElectricBlueGrad" x1="10" y1="4" x2="30" y2="36" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#38BDF8" />
+            <stop offset="50%" stopColor="#0EA5E9" />
+            <stop offset="100%" stopColor="#0284C7" />
+          </linearGradient>
+          <linearGradient id="evChargeGlowGrad" x1="14" y1="8" x2="26" y2="30" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#E0F2FE" />
+            <stop offset="100%" stopColor="#38BDF8" />
           </linearGradient>
           <linearGradient id="evDarkGrad" x1="4" y1="4" x2="36" y2="36" gradientUnits="userSpaceOnUse">
             <stop offset="0%" stopColor={isDark ? "#1F2937" : "#0A0D14"} />
@@ -71,23 +76,23 @@ export default function Logo({
           fillOpacity="0.4"
         />
 
-        {/* 3. Ana Elektrikli Şimşek & Şarj Bıçağı (High-Voltage EV Lightning) */}
+        {/* 3. Ana Elektrikli Şimşek & Şarj Bıçağı (High-Voltage Electric Blue) */}
         <path
           d="M22 6L11 21H19L16 34L29 17H21L24 6H22Z"
-          fill="url(#evRedGrad)"
-          className="animate-ev-bolt"
+          fill="url(#evElectricBlueGrad)"
+          className="animate-ev-charge-bolt"
         />
 
-        {/* 4. Şimşek İç Enerji Parlaması */}
+        {/* 4. Şimşek İç Şarj Enerji Akışı (Charging Energy Wave) */}
         <path
           d="M21 9L14 20H20L18 28L25 18H20L22 9H21Z"
-          fill="#FFFFFF"
-          className="animate-ev-spark"
+          fill="url(#evChargeGlowGrad)"
+          className="animate-ev-charge-flow"
         />
 
-        {/* 5. Aktif Güç / Şarj Diyotu */}
-        <circle cx="31" cy="9" r="2.5" className="animate-ping fill-red-400 opacity-75 origin-[31px_9px]" />
-        <circle cx="31" cy="9" r="2" fill="#EF4444" />
+        {/* 5. Aktif Güç / Şarj Dolum Diyotu (Charging Status Pulse) */}
+        <circle cx="31" cy="9" r="3" className="animate-ping fill-sky-400 opacity-75 origin-[31px_9px]" />
+        <circle cx="31" cy="9" r="2" fill="#0284C7" />
       </svg>
     </div>
   );
@@ -110,9 +115,9 @@ export default function Logo({
       <div className="flex flex-col leading-none">
         {/* Üst Satır: ⚡ EV Rozeti + OTOPİLOT */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* EV (Electric Vehicle) Rozeti: Türkçe 'Ev' ile karışmayı %100 önleyen elektrik şimşekli kapsül */}
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-[11px] sm:text-xs tracking-wider ring-1 ring-red-500/40 select-none shadow-[0_0_10px_rgba(239,68,68,0.35)]">
-            <svg className="w-3 h-3 fill-current shrink-0 animate-pulse text-amber-300 drop-shadow-[0_0_4px_rgba(252,211,77,0.8)]" viewBox="0 0 24 24">
+          {/* EV (Electric Vehicle) Rozeti: Mavi Şarj Rozeti */}
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 text-white font-black text-[11px] sm:text-xs tracking-wider ring-1 ring-sky-400/50 select-none shadow-[0_0_12px_rgba(14,165,233,0.4)]">
+            <svg className="w-3 h-3 fill-current shrink-0 animate-pulse text-cyan-200 drop-shadow-[0_0_5px_rgba(56,189,248,0.9)]" viewBox="0 0 24 24">
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
             </svg>
             <span className="tracking-wide">EV</span>
@@ -132,7 +137,7 @@ export default function Logo({
         {/* Alt Satır: Elektrikli Araç Danışmanı Belirteci */}
         {showTagline !== false && (
           <div className="flex items-center gap-1.5 mt-1">
-            <span className="h-1 w-1 rounded-full bg-red-600 animate-pulse shrink-0" />
+            <span className="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse shrink-0" />
             <span
               className={`text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] select-none ${
                 isDark ? "text-neutral-400" : "text-neutral-500"
