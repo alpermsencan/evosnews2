@@ -15,6 +15,7 @@ import ListingStickyHeader from "@/components/listings/ListingStickyHeader";
 import ListingTouchGallery from "@/components/listings/ListingTouchGallery";
 import VoltScoreWidget from "@/components/listings/VoltScoreWidget";
 import ListingContactBox from "@/components/listings/ListingContactBox";
+import CarDamageReport from "@/components/listings/CarDamageReport";
 
 export const dynamic = "force-dynamic";
 
@@ -82,11 +83,6 @@ export default async function ListingDetail({
           {/* PARMAKLA GEZİLEN TOUCH SWIPE RESİM GALERİSİ */}
           <div className="relative">
             <ListingTouchGallery defaultImage={listing.image} images={listing.images} alt={listing.title} />
-            {verified && (
-              <span className="absolute left-3 top-3 rounded-full bg-emerald-600 px-3 py-1 text-[11px] font-black text-white z-10 shadow-md">
-                ✓ EVOS DOĞRULAMALI BATARYA RAPORU
-              </span>
-            )}
           </div>
 
           <div className="flex flex-col gap-3 rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-sm">
@@ -139,77 +135,77 @@ export default async function ListingDetail({
             </div>
           </div>
 
-          {/* BATARYA RAPORU */}
-          <section className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-5">
-            <div className="flex items-center gap-2">
-              <IconBattery className="h-5 w-5 text-volt-dark" />
-              <h2 className="text-base font-black text-neutral-900">Batarya Raporu</h2>
+          {/* TEKNİK BİLGİLER TABLOSU */}
+          <section className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-sm">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <h2 className="text-base sm:text-lg font-black tracking-tight text-neutral-900">
+                Teknik Bilgiler &amp; Donanım
+              </h2>
+              <span className="text-[11px] font-bold text-neutral-400">
+                İlan No: #{listing.id.slice(-6).toUpperCase()}
+              </span>
             </div>
 
-            {report ? (
-              <>
-                {!verified && (
-                  <p className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-[12px] font-bold text-amber-800">
-                    Bu rapor henüz Evos tarafından doğrulanmadı; değerler
-                    VoltScore hesabına KATILMAZ.
-                  </p>
-                )}
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <Metric label="Ölçülen SOH" value={`%${report.sohPercent}`} strong />
-                  <Metric
-                    label="Tahmini kalan ömür"
-                    value={
-                      report.estimatedYearsLeft != null
-                        ? `${report.estimatedYearsLeft} yıl`
-                        : "—"
-                    }
-                  />
-                  <Metric
-                    label="Çevrim sayısı"
-                    value={report.cycleCount?.toLocaleString("tr-TR") ?? "—"}
-                  />
-                  <Metric
-                    label="DC hızlı şarj oranı"
-                    value={report.fastChargeRatio != null ? `%${report.fastChargeRatio}` : "—"}
-                  />
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`rounded px-2.5 py-1 text-[11px] font-black ${riskTone(report.riskLevel)}`}
-                  >
-                    {RISK_LABEL[report.riskLevel ?? ""] ?? "Risk hesaplanamadı"}
-                  </span>
-                  <span className="text-[11px] text-neutral-500">
-                    {report.measuredBy} · {report.measuredAt.toLocaleDateString("tr-TR")}
-                    {verified &&
-                      ` · Evos doğruladı: ${report.verifiedAt!.toLocaleDateString("tr-TR")}`}
-                  </span>
-                </div>
-
-                <p className="text-[11px] leading-relaxed text-neutral-400">
-                  Kalan ömür, ölçülen kapasite kaybı hızından %{EOL_SOH} sınırına
-                  kalan süre olarak SUNUCUDA hesaplanır; satıcı veya ekspertiz
-                  bu değeri elle giremez. Tahmindir, garanti değildir.
-                </p>
-              </>
-            ) : (
-              <p className="text-[13px] leading-relaxed text-neutral-500">
-                Bu ilanda doğrulanmış batarya raporu yok. Satıcının beyanı:{" "}
-                <strong className="font-black text-neutral-800">
-                  %{listing.batteryHealth} batarya sağlığı
-                </strong>
-                . Beyan, ölçülmüş değerin yerini tutmaz —{" "}
-                <Link href="/batarya-raporu" className="font-bold text-volt-dark hover:underline">
-                  batarya raporu nedir?
-                </Link>
-              </p>
-            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-[13px]">
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">Marka &amp; Model</span>
+                <span className="font-bold text-neutral-900">{listing.brand} {listing.model}</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">Model Yılı</span>
+                <span className="font-bold text-neutral-900">{listing.year}</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">Kilometre</span>
+                <span className="font-bold text-neutral-900">{listing.km.toLocaleString("tr-TR")} km</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">Batarya Kapasitesi</span>
+                <span className="font-bold text-blue-700">
+                  {listing.vehicle?.batteryKwh ? `${listing.vehicle.batteryKwh} kWh` : "Belirtilmemiş"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">Menzil (WLTP)</span>
+                <span className="font-bold text-emerald-700">
+                  {listing.vehicle?.rangeKm ? `${listing.vehicle.rangeKm} km` : "Belirtilmemiş"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">DC Hızlı Şarj</span>
+                <span className="font-bold text-neutral-900">
+                  {listing.vehicle?.dcChargeKw ? `${listing.vehicle.dcChargeKw} kW Max` : "Standart DC"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">Motor Gücü</span>
+                <span className="font-bold text-neutral-900">
+                  {listing.vehicle?.powerHp ? `${listing.vehicle.powerHp} HP` : "Elektrik Motoru"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">0-100 Hızlanma</span>
+                <span className="font-bold text-neutral-900">
+                  {listing.vehicle?.accelSec ? `${listing.vehicle.accelSec} sn` : "—"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">Vites / Aktarma</span>
+                <span className="font-bold text-neutral-900">Otomatik (1 İleri EV)</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
+                <span className="font-medium text-neutral-500">Boya / Değişen Beyanı</span>
+                <span className="font-bold text-neutral-900">{listing.damage || "Aşağıdaki Ekspertiz Şemasında"}</span>
+              </div>
+            </div>
           </section>
 
+          {/* EKSPERTİZ & HASAR DURUMU ŞEMASI (13 PARÇA) */}
+          <CarDamageReport value={(listing as any).expertise} editable={false} />
+
           {listing.description && (
-            <section className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5">
-              <h2 className="text-base font-black text-neutral-900">Satıcı açıklaması</h2>
+            <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-sm">
+              <h2 className="text-base font-black text-neutral-900">Satıcı Açıklaması</h2>
               <p className="whitespace-pre-line text-[14px] leading-relaxed text-neutral-700">
                 {listing.description}
               </p>
@@ -233,7 +229,7 @@ export default async function ListingDetail({
           />
 
           {listing.vehicle && (
-            <section className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5">
+            <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
               <div className="flex items-center gap-2">
                 <IconCheck className="h-4 w-4 text-volt-dark" />
                 <h2 className="text-sm font-black tracking-wide text-neutral-800">
@@ -250,23 +246,22 @@ export default async function ListingDetail({
                 href={`/araclar/${listing.vehicle.slug}`}
                 className="mt-1 text-[12px] font-bold text-evos hover:underline"
               >
-                Model sayfasına git
+                Model sayfasına git →
               </Link>
             </section>
           )}
 
-          <Link
-            href="/batarya-raporu"
-            className="flex flex-col gap-2 rounded-lg bg-blue-700 p-5 text-white transition hover:bg-blue-800"
-          >
-            <IconShield className="h-6 w-6" />
-            <span className="text-[15px] font-black leading-tight">
-              Doğrulanmış Batarya Raporu &amp; Güvence
+          <div className="flex flex-col gap-2 rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50/50 p-5 shadow-sm">
+            <div className="flex items-center gap-2">
+              <IconShield className="h-5 w-5 text-blue-700" />
+              <span className="text-[14px] font-black text-blue-900">
+                EVOtoPilot Güvenli İlan
+              </span>
+            </div>
+            <span className="text-[12px] leading-relaxed text-blue-800/80">
+              Bu ilandaki araç bilgileri, ekspertiz şeması ve teknik özellikler satıcı beyanı ve doğrulanmış katalog verileriyle eşleştirilmiştir.
             </span>
-            <span className="text-[12px] text-white/80">
-              Batarya sağlık endeksi (SOH) ve VoltScore güvence kriterlerini inceleyin.
-            </span>
-          </Link>
+          </div>
         </aside>
       </div>
 

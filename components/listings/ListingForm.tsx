@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ListingImageUpload from "./ListingImageUpload";
+import CarDamageReport, { ExpertiseState } from "./CarDamageReport";
 
 /**
  * İlan verme formu.
@@ -27,6 +28,7 @@ export default function ListingForm({ vehicles }: { vehicles: VehicleOption[] })
   const [error, setError] = useState("");
   const [image, setImage] = useState("");
   const [condition, setCondition] = useState("IKINCI_EL");
+  const [expertise, setExpertise] = useState<ExpertiseState>({});
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -36,6 +38,7 @@ export default function ListingForm({ vehicles }: { vehicles: VehicleOption[] })
     const fd = new FormData(e.currentTarget);
     const body: Record<string, unknown> = Object.fromEntries(fd.entries());
     body.image = image || undefined;
+    body.expertise = expertise;
 
     try {
       const res = await fetch("/api/listings", {
@@ -132,6 +135,9 @@ export default function ListingForm({ vehicles }: { vehicles: VehicleOption[] })
             placeholder="Aracın bakım geçmişi, kullanım şekli, öne çıkan donanımları…" />
         </Field>
       </fieldset>
+
+      {/* 13 PARÇA EKSPERTİZ & HASAR ŞEMASI */}
+      <CarDamageReport value={expertise} onChange={setExpertise} editable={true} />
 
       <fieldset className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-5">
         <legend className="px-2 text-sm font-black text-neutral-900">

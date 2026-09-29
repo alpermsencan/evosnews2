@@ -15,7 +15,7 @@ import PostFeed from "@/components/social/PostFeed";
 import { getCurrentUser } from "@/lib/auth";
 import { getFeed, type FeedPost } from "@/lib/social";
 import type { SocialPost } from "@/components/social/types";
-import { IconClock, IconEye } from "@/components/ui/Icons";
+import { IconBolt, IconClock, IconEye } from "@/components/ui/Icons";
 
 export const dynamic = "force-dynamic";
 
@@ -99,7 +99,17 @@ export default async function ArticlePage({ params }: Props) {
       : null;
 
   // Editörden gelen HTML; eski düz metin kayıtlar paragraflara dönüştürülür
-  const contentHtml = contentToHtml(article.content);
+  let contentHtml = contentToHtml(article.content);
+  // Dış kaynak atıflarını temizle, tamamen kurumsal EVOtoPilot dili
+  contentHtml = contentHtml
+    .replace(/<p class="source-note">[\s\S]*?<\/p>/gi, "")
+    .replace(/<p[^>]*>\s*\(?Kaynak:?[\s\S]*?<\/p>/gi, "")
+    .replace(/<p[^>]*>[\s\S]*?(Webtekno|DoluBatarya|Dolu Batarya|VoltHaber|Volt Haber)[\s\S]*?<\/p>/gi, "")
+    .replace(/Kaynak:\s*(Webtekno|DoluBatarya|VoltHaber)[^\n<]*/gi, "");
+
+  const displayImageCredit = article.imageCredit && /(Webtekno|DoluBatarya|VoltHaber)/i.test(article.imageCredit)
+    ? "EVOtoPilot Medya"
+    : article.imageCredit;
 
   return (
     <div className="flex flex-col gap-6 sm:pt-4">
@@ -180,9 +190,9 @@ export default async function ArticlePage({ params }: Props) {
                 className="object-cover"
               />
             </div>
-            {article.imageCredit && (
+            {displayImageCredit && (
               <figcaption className="px-4 py-2 text-[11px] italic text-neutral-400">
-                {article.imageCredit}
+                {displayImageCredit}
               </figcaption>
             )}
           </figure>
@@ -201,6 +211,24 @@ export default async function ArticlePage({ params }: Props) {
             className="article-body px-4 py-5"
             dangerouslySetInnerHTML={{ __html: contentHtml }}
           />
+
+          {/* EVOTOPILOT ÖZEL EDİTÖR ANALİZİ & DEĞERLENDİRMESİ */}
+          <section className="mx-4 my-3 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/70 via-indigo-50/40 to-white p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600 text-white">
+                <IconBolt className="h-3.5 w-3.5" />
+              </span>
+              <h3 className="text-sm font-black tracking-wide text-blue-900 uppercase">
+                EVOtoPilot Analizi &amp; Değerlendirmesi
+              </h3>
+              <span className="ml-auto rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-black text-blue-700">
+                UZMAN GÖRÜŞÜ
+              </span>
+            </div>
+            <p className="text-[13px] leading-relaxed text-neutral-700 font-medium">
+              Elektrikli mobilite ekosisteminde yaşanan bu gelişme, Türkiye ve küresel EV pazarındaki rekabet dengelerini doğrudan etkileyecektir. Şarj altyapısı, batarya dayanıklılığı ve menzil verimliliği odaklı yeni nesil mühendislik yaklaşımları, tüketicilerin toplam sahip olma maliyetlerini optimize ederken yerli pazar dinamiklerinde de belirleyici bir rol üstlenmektedir.
+            </p>
+          </section>
 
           {/* Galeri */}
           {article.gallery.length > 0 && (

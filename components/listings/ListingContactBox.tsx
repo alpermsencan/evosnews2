@@ -174,10 +174,10 @@ export default function ListingContactBox({
             </p>
             <div className="flex items-center gap-2 pt-1">
               <Link
-                href="/hesabim/mesajlar"
+                href={`/bana-ozel?sekme=mesajlar${sellerUserId ? `&user=${sellerUserId}` : ""}`}
                 className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-black text-white hover:bg-emerald-700 transition text-center"
               >
-                Mesajlarıma Git →
+                Mesajlarıma Git (Bana Özel) →
               </Link>
               <button
                 type="button"

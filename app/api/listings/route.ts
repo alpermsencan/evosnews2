@@ -161,6 +161,7 @@ export async function POST(req: NextRequest) {
         color: b.color || "Belirtilmemiş",
         damage: b.damage || "Hasarsız",
         description: String(b.description ?? "").slice(0, 4000),
+        expertise: b.expertise || null,
         vehicleId: b.vehicleId || null,
         warrantyMonthsLeft: optionalInt(b.warrantyMonthsLeft),
         serviceHistory: b.serviceHistory || null,

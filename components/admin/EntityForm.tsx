@@ -6,6 +6,7 @@ import { contentToHtml } from "@/lib/utils";
 import ImageUpload from "./ImageUpload";
 import MultiImageUpload from "./MultiImageUpload";
 import RichEditor from "./RichEditor";
+import CarDamageReport from "@/components/listings/CarDamageReport";
 
 export type Field = {
   name: string;
@@ -22,7 +23,8 @@ export type Field = {
     | "date"
     | "url"
     | "image"
-    | "images";
+    | "images"
+    | "expertise";
   options?: { value: string; label: string }[];
   placeholder?: string;
   help?: string;
@@ -33,7 +35,7 @@ export type Field = {
   folder?: string;
 };
 
-type Value = string | number | boolean | string[] | null | undefined;
+type Value = string | number | boolean | string[] | Record<string, any> | null | undefined;
 
 /** Quill boş içerikte "<p><br></p>" döndürür */
 function isEmptyHtml(html: string) {
@@ -218,6 +220,15 @@ export default function EntityForm({
         </span>
       );
 
+    if (f.type === "expertise")
+      return (
+        <CarDamageReport
+          value={(values[f.name] as any) || {}}
+          onChange={(val) => set(f.name, val as any)}
+          editable={true}
+        />
+      );
+
     return (
       <input
         required={f.required}
@@ -248,7 +259,10 @@ export default function EntityForm({
         {fields.map((f) => {
           // Karmaşık alanlarda label sarmalamak tıklamaları bozar
           const complex =
-            f.type === "image" || f.type === "images" || f.type === "richtext";
+            f.type === "image" ||
+            f.type === "images" ||
+            f.type === "richtext" ||
+            f.type === "expertise";
           const Wrapper = complex ? "div" : "label";
           const wide = f.full || complex;
 

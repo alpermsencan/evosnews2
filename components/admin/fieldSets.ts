@@ -240,6 +240,12 @@ export const listingFields: Field[] = [
       { value: "Ağır hasar kayıtlı", label: "Ağır hasar kayıtlı" },
     ],
   },
+  {
+    name: "expertise",
+    label: "13 PARÇA EKSPERTİZ VE KAPORTA DURUMU (ŞEMA)",
+    type: "expertise",
+    full: true,
+  },
   { name: "batteryHealth", label: "BATARYA SAĞLIĞI (%)", type: "number" },
   { name: "rangeKm", label: "MENZİL (km)", type: "number" },
   { name: "image", label: "KAPAK GÖRSELİ", type: "image", folder: "evos/ilanlar" },

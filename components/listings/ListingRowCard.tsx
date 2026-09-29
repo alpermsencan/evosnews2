@@ -22,18 +22,13 @@ export default function ListingRowCard({ listing }: { listing: ListingLite }) {
           className="object-cover transition duration-500 group-hover:scale-105"
         />
         {/* Rozetler */}
-        <div className="absolute left-2 top-2 flex flex-col gap-1">
-          {listing.isSponsored && (
+        {listing.isSponsored && (
+          <div className="absolute left-2 top-2 flex flex-col gap-1">
             <span className="rounded bg-amber-500 px-1.5 py-0.5 text-[9px] font-black text-white shadow">
               VİTRİN
             </span>
-          )}
-          {verified && (
-            <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-black text-white shadow">
-              ✓ RAPORLU
-            </span>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Sağ Taraf: İlan Bilgileri */}

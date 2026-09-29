@@ -27,7 +27,6 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
   if (sp.marka) where.brand = sp.marka;
   if (sp.sehir) where.city = sp.sehir;
   if (sp.durum === "SIFIR" || sp.durum === "IKINCI_EL") where.condition = sp.durum;
-  if (sp.rapor === "1") where.batteryReport = { is: { verifiedAt: { not: null } } };
 
   const maxPrice = Number(sp.maxFiyat);
   if (Number.isFinite(maxPrice) && maxPrice > 0) where.price = { lte: maxPrice };
@@ -81,9 +80,6 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
               <span className="text-[11px] font-black uppercase tracking-widest text-sky-400">
                 TÜRKİYE&apos;NİN RESMÎ ELEKTRİKLİ ARAÇ PAZARYERİ
               </span>
-              <span className="rounded bg-sky-500/20 border border-sky-400/30 px-2 py-0.5 text-[9px] font-black text-sky-300">
-                VOLTSCORE™ DOĞRULANMIŞ
-              </span>
             </div>
 
             {/* Dikkat Çekici & Kurumsal Başlık */}
@@ -107,7 +103,7 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
             </Link>
 
             <span className="text-xs font-bold text-neutral-400">
-              Toplam <strong className="text-white font-black">{total}</strong> doğrulanmış ilan yayında
+              Toplam <strong className="text-white font-black">{total}</strong> ilan yayında
             </span>
           </div>
         </div>
@@ -116,8 +112,8 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
       {/* BİRLEŞTİRİLMİŞ ARAMA VE TAM SAYFA FİLTRELER BUTONU */}
       <CategorySelectModal />
 
-      {/* 8 KATEGORİ HIZLI SEÇİM KARTLARI (MODERN SVG SİMGELERLE) */}
-      <section className="flex flex-col gap-3">
+      {/* 8 KATEGORİ HIZLI SEÇİM KARTLARI (Mobilde filtrelere taşındığı için gizlendi) */}
+      <section className="hidden sm:flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-black uppercase tracking-wider text-neutral-800 flex items-center gap-2">
             <span>⚡</span>
@@ -151,7 +147,7 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
       <section className="flex flex-col gap-4">
         <SectionTitle
           title={`GÜNCEL İLANLAR (${listings.length})`}
-          subtitle="En son eklenen ve bataryası kontrol edilmiş 2. el elektrikli araçlar"
+          subtitle="En son eklenen güncel 2. el elektrikli araçlar"
           color="#0284c7"
         />
 

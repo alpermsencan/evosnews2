@@ -58,6 +58,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     }
     if (b.images !== undefined) data.images = b.images;
     if (b.vehicleId !== undefined) data.vehicleId = b.vehicleId || null;
+    if (b.expertise !== undefined) data.expertise = b.expertise;
 
     // Yayın durumu ve sponsorlu vitrin ticari/moderasyon kararlarıdır;
     // ilan sahibi kendi ilanını yayına alamaz veya öne çıkaramaz.

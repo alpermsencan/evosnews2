@@ -281,8 +281,8 @@ export default function EvCampaignsSection() {
                   <Link href={`/araclar/${item.vehicleSlug}`}>{item.model}</Link>
                 </h3>
 
-                {/* Araç Fotoğrafı */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 mb-4">
+                {/* Araç Fotoğrafı (Kompakt & Kurumsal) */}
+                <div className="relative h-28 sm:h-32 w-full overflow-hidden rounded-xl border border-neutral-150 bg-neutral-100 mb-3">
                   <img
                     src={item.vehicleImage}
                     alt={`${item.brand} ${item.model}`}

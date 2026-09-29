@@ -152,13 +152,13 @@ export default function HeroCarousel({
           </>
         )}
 
-        {/* Modern & Sade Çizgisel Sayfa Göstergeleri */}
+        {/* Modern & Sade Çizgisel Sayfa Göstergeleri (Mobilde başlığı kapatmaması için üstte) */}
         {count > 1 && (
-          <div className="absolute bottom-5 right-5 sm:bottom-8 sm:right-8 z-30 flex items-center gap-3 bg-neutral-950/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg">
-            <span className="text-[11px] font-bold text-white/70 tracking-widest tabular-nums">
+          <div className="absolute top-4 right-4 sm:top-auto sm:bottom-8 sm:right-8 z-30 flex items-center gap-2.5 sm:gap-3 bg-neutral-950/75 backdrop-blur-md px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-white/15 shadow-xl">
+            <span className="text-[10px] sm:text-[11px] font-black text-white/80 tracking-widest tabular-nums">
               {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
             </span>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 sm:gap-1.5">
               {slides.map((s, i) => (
                 <button
                   key={s.id}

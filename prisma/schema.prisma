@@ -528,6 +528,7 @@ model Listing {
   damage        String   @default("Hasarsız")
   isSponsored   Boolean  @default(false)
   description   String   @default("")
+  expertise     Json?    // Araç ekspertiz şeması (parça durumları: orijinal, boyalı, değişen, söktak, lokal)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   posts         Post[]
