@@ -146,181 +146,197 @@ export default function TurkeyEvSalesWidget() {
   const displayedList = showAll ? SALES_DATA : SALES_DATA.slice(0, 6);
 
   return (
-    <div className="flex flex-col rounded-2xl border border-neutral-300/80 bg-white p-4 sm:p-5 shadow-sm overflow-hidden ring-1 ring-black/5">
-      {/* 1. ÜST BAŞLIK & ODMD ROZETİ */}
-      <div className="flex flex-col gap-2.5 border-b border-neutral-200 pb-3.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-neutral-950 text-white shadow-xs">
+    <div className="flex flex-col rounded-2xl border border-neutral-300/80 bg-white p-4 sm:p-5 shadow-sm ring-1 ring-black/5">
+      {/* 1. ÜST BAŞLIK VE RAPOR KİMLİĞİ (Geniş & Taşmasız Tasarım) */}
+      <div className="flex flex-col gap-3 border-b border-neutral-200 pb-3.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-neutral-950 text-white shadow-xs">
               <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
             </div>
-            <div>
-              <h3 className="text-sm font-black text-neutral-950 tracking-tight flex items-center gap-2 uppercase">
-                <span>TÜRKİYE EV SATIŞLARI</span>
-                <span className="text-[10px] bg-red-600 text-white px-2 py-0.5 rounded-md font-black shadow-2xs">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-black text-neutral-950 uppercase tracking-tight truncate">
+                  TÜRKİYE EV SATIŞLARI
+                </h3>
+                <span className="shrink-0 rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black uppercase text-white shadow-2xs">
                   ODMD
                 </span>
-              </h3>
-              <p className="text-[11px] text-neutral-500 font-bold mt-0.5">
+              </div>
+              <p className="text-[11px] font-bold text-neutral-500 truncate mt-0.5">
                 2026 Resmî Kümülatif Satış Raporu
               </p>
             </div>
           </div>
+        </div>
 
-          {/* Tab Seçici */}
-          <div className="flex items-center bg-neutral-100 p-1 rounded-xl text-xs font-bold border border-neutral-200/80">
-            <button
-              type="button"
-              onClick={() => setActiveTab("ranking")}
-              className={`px-3 py-1 rounded-lg transition text-xs ${
-                activeTab === "ranking"
-                  ? "bg-neutral-950 text-white shadow-xs font-black"
-                  : "text-neutral-600 hover:text-neutral-950"
-              }`}
-            >
-              Sıralama
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("stats")}
-              className={`px-3 py-1 rounded-lg transition text-xs ${
-                activeTab === "stats"
-                  ? "bg-neutral-950 text-white shadow-xs font-black"
-                  : "text-neutral-600 hover:text-neutral-950"
-              }`}
-            >
-              Pazar Payı
-            </button>
-          </div>
+        {/* Tab Seçici: Başlığı Sıkıştırmayan Ayrı Tam Genişlik Kontrol Şeridi */}
+        <div className="grid grid-cols-2 gap-1 rounded-xl bg-neutral-100 p-1 border border-neutral-200/80">
+          <button
+            type="button"
+            onClick={() => setActiveTab("ranking")}
+            className={`py-1.5 text-center text-xs transition rounded-lg font-black ${
+              activeTab === "ranking"
+                ? "bg-neutral-950 text-white shadow-xs"
+                : "text-neutral-600 hover:text-neutral-950"
+            }`}
+          >
+            Model Sıralaması
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("stats")}
+            className={`py-1.5 text-center text-xs transition rounded-lg font-black ${
+              activeTab === "stats"
+                ? "bg-neutral-950 text-white shadow-xs"
+                : "text-neutral-600 hover:text-neutral-950"
+            }`}
+          >
+            Segment Dağılımı
+          </button>
         </div>
       </div>
 
-      {/* 2. BÜYÜK & KALIN ÖZET METRİK KARTLARI */}
-      <div className="grid grid-cols-2 gap-2.5 py-3.5 border-b border-neutral-200">
-        <div className="flex flex-col p-3 rounded-xl bg-neutral-50 border border-neutral-200">
-          <span className="text-[10px] font-black text-neutral-500 uppercase tracking-wider">Toplam EV Satışı</span>
-          <span className="text-base sm:text-lg font-black text-neutral-950 tracking-tight mt-0.5">92.420 adet</span>
-          <span className="text-xs text-red-600 font-black mt-0.5">+%64.2 Yıllık</span>
+      {/* 2. TEMEL ÖZET METRİK KARTLARI (2 Sütun, Net ve Okunaklı) */}
+      <div className="grid grid-cols-2 gap-2.5 py-3 border-b border-neutral-200">
+        <div className="flex flex-col p-2.5 rounded-xl bg-neutral-50 border border-neutral-200/80">
+          <span className="text-[10px] font-black text-neutral-500 uppercase tracking-wider">
+            Toplam EV Satışı
+          </span>
+          <span className="text-base font-black text-neutral-950 tracking-tight mt-0.5">
+            92.420 adet
+          </span>
+          <span className="text-[11px] text-red-600 font-black mt-0.5">
+            +%64.2 Yıllık Artış
+          </span>
         </div>
-        <div className="flex flex-col p-3 rounded-xl bg-neutral-50 border border-neutral-200">
-          <span className="text-[10px] font-black text-neutral-500 uppercase tracking-wider">EV Pazar Payı</span>
-          <span className="text-base sm:text-lg font-black text-neutral-950 tracking-tight mt-0.5">%10.4</span>
-          <span className="text-xs text-neutral-600 font-bold mt-0.5">Tüm Otomobillerde</span>
-        </div>
-        <div className="flex flex-col p-3 rounded-xl bg-neutral-50 border border-neutral-200">
-          <span className="text-[10px] font-black text-neutral-500 uppercase tracking-wider">Pazar Lideri</span>
-          <span className="text-base sm:text-lg font-black text-neutral-950 tracking-tight mt-0.5 truncate">TOGG T10X</span>
-          <span className="text-xs text-red-600 font-black mt-0.5">%32.5 Pay</span>
-        </div>
-        <div className="flex flex-col p-3 rounded-xl bg-neutral-50 border border-neutral-200">
-          <span className="text-[10px] font-black text-neutral-500 uppercase tracking-wider">Hızlı Yükselen</span>
-          <span className="text-base sm:text-lg font-black text-neutral-950 tracking-tight mt-0.5 truncate">Kia EV3</span>
-          <span className="text-xs text-emerald-600 font-black mt-0.5">+%42.0 Büyüme</span>
+        <div className="flex flex-col p-2.5 rounded-xl bg-neutral-50 border border-neutral-200/80">
+          <span className="text-[10px] font-black text-neutral-500 uppercase tracking-wider">
+            Pazar Payı
+          </span>
+          <span className="text-base font-black text-neutral-950 tracking-tight mt-0.5">
+            %10.4
+          </span>
+          <span className="text-[11px] text-neutral-700 font-black mt-0.5">
+            Lider: TOGG T10X
+          </span>
         </div>
       </div>
 
-      {/* 3. İÇERİK: SIRALAMA LİSTESİ VEYA PAZAR PAYI ANALİZİ */}
+      {/* 3. İÇERİK BÖLÜMÜ */}
       {activeTab === "ranking" ? (
-        <div className="flex flex-col divide-y divide-neutral-150 py-1">
-          {displayedList.map((item) => {
-            const isTop3 = item.rank <= 3;
-            const rankStyle =
-              item.rank === 1
-                ? "bg-neutral-950 text-white font-black ring-1 ring-neutral-800"
-                : item.rank === 2
-                ? "bg-neutral-800 text-white font-black"
-                : item.rank === 3
-                ? "bg-neutral-700 text-white font-black"
-                : "bg-neutral-100 text-neutral-700 font-bold border border-neutral-200";
+        <div className="flex flex-col py-1">
+          {/* Kolon Başlık Şeridi */}
+          <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-neutral-600 px-2 py-2 border-b border-neutral-150">
+            <span>SIRA · MARKA &amp; MODEL</span>
+            <span>SATIŞ ADEDİ</span>
+          </div>
 
-            return (
-              <div
-                key={item.rank}
-                className="group flex flex-col py-2.5 transition hover:bg-neutral-50/90 rounded-xl px-2"
-              >
-                {/* 1. Satır: Sıra + Marka Rozeti + Model Görseli + Model Tam Adı + Satış Rakamı */}
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    {/* Sıra Numarası */}
-                    <span
-                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs shadow-2xs ${rankStyle}`}
-                    >
-                      {item.rank}
-                    </span>
+          {/* Model Sıralama Listesi */}
+          <div className="flex flex-col divide-y divide-neutral-150">
+            {displayedList.map((item) => {
+              const isTop3 = item.rank <= 3;
+              const rankBadgeClass =
+                item.rank === 1
+                  ? "bg-neutral-950 text-white font-black ring-1 ring-neutral-800"
+                  : item.rank === 2
+                  ? "bg-neutral-800 text-white font-black"
+                  : item.rank === 3
+                  ? "bg-neutral-700 text-white font-black"
+                  : "bg-neutral-100 text-neutral-700 font-bold border border-neutral-200";
 
-                    {/* Marka Logosu Rozeti */}
-                    <span
-                      className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shrink-0 shadow-2xs ${item.brandBadgeBg} ${item.brandBadgeColor}`}
-                    >
-                      {item.brand}
-                    </span>
+              return (
+                <div
+                  key={item.rank}
+                  className="group flex flex-col py-2.5 px-2 rounded-xl transition hover:bg-neutral-50"
+                >
+                  {/* Satır Üst Kısım: Sıra, Marka, Görsel, Model ve Adet */}
+                  <div className="flex items-center justify-between gap-2">
+                    {/* Sol: Sıra + Marka Rozeti + Araç Görseli + Model İsmi */}
+                    <div className="flex items-center gap-2 min-w-0">
+                      {/* Sıra Numarası */}
+                      <span
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[11px] shadow-2xs ${rankBadgeClass}`}
+                      >
+                        {item.rank}
+                      </span>
 
-                    {/* Küçük Model Görseli */}
-                    <div className="relative h-6 w-9 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 shadow-2xs group-hover:border-neutral-400 transition">
-                      <img
-                        src={item.modelImage}
-                        alt={`${item.brand} ${item.model}`}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      {/* Marka Rozeti */}
+                      <span
+                        className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider shrink-0 shadow-2xs ${item.brandBadgeBg} ${item.brandBadgeColor}`}
+                      >
+                        {item.brand}
+                      </span>
+
+                      {/* Araç Küçük Görseli */}
+                      <div className="relative h-6 w-8 shrink-0 overflow-hidden rounded border border-neutral-200 bg-neutral-100 shadow-2xs">
+                        <img
+                          src={item.modelImage}
+                          alt={`${item.brand} ${item.model}`}
+                          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                        />
+                      </div>
+
+                      {/* Model Tam Adı (Asla Kesilmez) */}
+                      <div className="min-w-0 pr-1">
+                        {item.slug ? (
+                          <Link
+                            href={`/araclar/${item.slug}`}
+                            className="text-xs font-black text-neutral-950 hover:text-red-600 transition block truncate"
+                            title={`${item.brand} ${item.model}`}
+                          >
+                            {item.model}
+                          </Link>
+                        ) : (
+                          <span className="text-xs font-black text-neutral-950 block truncate">
+                            {item.model}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Sağ: Satış Sayısı */}
+                    <div className="shrink-0 text-right pl-1">
+                      <span className="text-xs sm:text-[13px] font-black text-neutral-950 tracking-tight">
+                        {item.salesCount.toLocaleString("tr-TR")}
+                      </span>
+                      <span className="text-[10px] text-neutral-500 font-bold ml-1">
+                        ad.
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Satır Alt Kısım: Pazar Payı Çubuğu ve Yüzde Bilgisi */}
+                  <div className="mt-1.5 flex items-center justify-between gap-2.5">
+                    <div className="h-1.5 flex-1 rounded-full bg-neutral-150 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          isTop3
+                            ? "bg-gradient-to-r from-red-600 to-red-500"
+                            : "bg-neutral-800"
+                        }`}
+                        style={{ width: `${Math.min(100, item.marketShare * 3)}%` }}
                       />
                     </div>
-
-                    {/* Model İsmi (Kısaltmasız ve Tam Ölçüsünde) */}
-                    <div className="min-w-0">
-                      {item.slug ? (
-                        <Link
-                          href={`/araclar/${item.slug}`}
-                          className="text-xs sm:text-[13px] font-black text-neutral-950 group-hover:text-red-600 transition"
-                          title={`${item.brand} ${item.model} detay sayfasını incele`}
-                        >
-                          {item.model}
-                        </Link>
-                      ) : (
-                        <span className="text-xs sm:text-[13px] font-black text-neutral-950">
-                          {item.model}
-                        </span>
-                      )}
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold shrink-0">
+                      <span className="text-neutral-600">%{item.marketShare} pay</span>
+                      <span className="text-neutral-300">·</span>
+                      <span className="text-red-600 font-black">{item.change}</span>
                     </div>
                   </div>
-
-                  {/* Sağ Taraf: Satış Rakamı */}
-                  <div className="shrink-0 text-right">
-                    <span className="text-xs sm:text-sm font-black text-neutral-950 tracking-tight">
-                      {item.salesCount.toLocaleString("tr-TR")}{" "}
-                      <span className="text-[10px] font-bold text-neutral-500">adet</span>
-                    </span>
-                  </div>
                 </div>
-
-                {/* 2. Satır: Modern Pazar Payı İlerleme Çubuğu & Oranlar */}
-                <div className="mt-2 flex items-center justify-between gap-3 pl-8">
-                  <div className="h-1.5 flex-1 rounded-full bg-neutral-150 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        isTop3
-                          ? "bg-gradient-to-r from-red-600 to-red-500"
-                          : "bg-neutral-800"
-                      }`}
-                      style={{ width: `${Math.min(100, item.marketShare * 3)}%` }}
-                    />
-                  </div>
-                  <div className="flex items-center gap-1.5 text-[11px] font-bold shrink-0">
-                    <span className="text-neutral-500">%{item.marketShare} pay</span>
-                    <span className="text-neutral-300">·</span>
-                    <span className="text-red-600 font-black">{item.change}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       ) : (
-        /* PAZAR ANALİZİ SEKMESİ */
+        /* PAZAR ANALİZİ VE SEGMENT DAĞILIMI */
         <div className="flex flex-col gap-3 py-3">
-          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3.5 flex flex-col gap-2">
+          <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3.5 flex flex-col gap-2.5">
             <h4 className="text-xs font-black text-neutral-950 uppercase tracking-wider">
-              Segment Dağılımı (2026)
+              Segment Dağılımı (ODMD 2026)
             </h4>
-            <div className="flex flex-col gap-2 pt-1">
+            <div className="flex flex-col gap-2.5 pt-1">
               <div>
                 <div className="flex justify-between text-xs font-black text-neutral-800 mb-1">
                   <span>C-SUV Segmenti</span>
@@ -352,12 +368,12 @@ export default function TurkeyEvSalesWidget() {
           </div>
 
           <div className="rounded-xl border border-neutral-200 bg-white p-3 text-xs leading-relaxed text-neutral-700">
-            <strong className="text-neutral-950 font-black">Önemli Trend:</strong> Yerli üretici TOGG pazarın yaklaşık üçte birini domine ederken, Tesla Model Y ve KGM Torres EVX güçlü yükselişini sürdürüyor.
+            <strong className="text-neutral-950 font-black">Resmî Eğilim:</strong> Yerli üretici TOGG pazarın yaklaşık üçte birini domine ederken, Tesla Model Y ve KGM Torres EVX güçlü yükselişini sürdürüyor.
           </div>
         </div>
       )}
 
-      {/* 4. TÜMÜNÜ GÖSTER / GİZLE BUTONU */}
+      {/* 4. TÜMÜNÜ GÖSTER BUTONU */}
       {activeTab === "ranking" && (
         <button
           type="button"
@@ -368,7 +384,7 @@ export default function TurkeyEvSalesWidget() {
         </button>
       )}
 
-      {/* Dipnot */}
+      {/* Dipnot Bilgisi */}
       <div className="mt-3 pt-2.5 border-t border-neutral-150 flex items-center justify-between text-[11px] text-neutral-500 font-semibold">
         <span>Kaynak: ODMD Resmî Kayıtları</span>
         <Link href="/araclar" className="text-red-600 font-black hover:underline">

@@ -33,7 +33,8 @@ export default function HeroCarousel({
 }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const touchStart = useRef<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   const count = slides.length;
 
   const go = useCallback(
@@ -52,18 +53,25 @@ export default function HeroCarousel({
   if (!count) return null;
 
   const onTouchStart = (e: React.TouchEvent) => {
-    touchStart.current = e.touches[0].clientX;
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
   };
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (touchStart.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStart.current;
-    if (Math.abs(delta) > 45) (delta < 0 ? next : prev)();
-    touchStart.current = null;
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+
+    // Yalnızca yatay kaydırma belirginse ve dikey kaydırmayı engellemiyorsa geçiş yap
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
+      (deltaX < 0 ? next : prev)();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
   };
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-neutral-950 rounded-2xl sm:rounded-3xl border border-neutral-200/60 shadow-lg group select-none"
+      className="relative w-full overflow-hidden bg-neutral-950 rounded-2xl sm:rounded-3xl border border-neutral-200/60 shadow-lg group select-none touch-pan-y"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={onTouchStart}

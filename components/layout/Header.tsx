@@ -136,7 +136,7 @@ export default function Header() {
       >
         <div className="mx-auto flex max-w-[1280px] items-center justify-between px-2 sm:px-4">
           {/* Yatay Navigasyon Linkleri */}
-          <ul className="no-scrollbar flex items-center gap-1 overflow-x-auto whitespace-nowrap py-1 w-full lg:w-auto">
+          <ul className="no-scrollbar flex items-center gap-1 overflow-x-auto whitespace-nowrap py-1 w-full lg:w-auto overscroll-x-contain touch-pan-x">
             {TOP_NAV.map((item) => {
               const active = isActive(item.href);
               return (

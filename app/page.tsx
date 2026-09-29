@@ -236,8 +236,8 @@ export default async function HomePage() {
           )}
         </div>
 
-        {/* SAĞ SÜTUN */}
-        <aside className="flex w-full shrink-0 flex-col gap-5 px-3 sm:px-0 lg:w-[330px]">
+        {/* SAĞ SÜTUN (Masaüstünde Geniş & Taşmasız 370-390px) */}
+        <aside className="flex w-full shrink-0 flex-col gap-5 px-3 sm:px-0 lg:w-[370px] xl:w-[390px]">
           {/* TÜRKİYE RESMÎ EV SATIŞ TABLOSU (ODMD) */}
           <TurkeyEvSalesWidget />
 

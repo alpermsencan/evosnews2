@@ -49,7 +49,7 @@ export default function CardRail({
     >
       <div
         ref={ref}
-        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1"
+        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-1 overscroll-x-contain touch-pan-x"
       >
         {children.map((child, i) => (
           <div key={i} className={`shrink-0 snap-start ${itemClass}`}>
