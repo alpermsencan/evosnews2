@@ -67,22 +67,65 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      {/* HEADER: 2.EL İLANLAR (Sadeleştirilmiş: yalnızca başlık ve Ücretsiz İlan Ver butonu) */}
-      <header className="flex flex-col gap-3 rounded-2xl bg-gradient-to-br from-evos-ink via-slate-900 to-slate-800 p-6 sm:p-7 text-white shadow-md">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-400">
-              <IconCar className="h-6 w-6" />
-            </span>
-            <h1 className="text-2xl font-black sm:text-3xl text-white tracking-tight">2.EL İLANLAR</h1>
+      {/* HEADER: 2. EL ELEKTRİKLİ ARAÇLAR (Kurumsal, Dikkat Çekici & Lüks Tasarım) */}
+      <header className="relative flex flex-col gap-4 rounded-3xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 p-6 sm:p-8 text-white shadow-xl border border-neutral-800 ring-1 ring-white/10 overflow-hidden">
+        {/* Arka Plan Dekoratif Mavi & Cam Göbeği Enerji Işıması */}
+        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 -mb-16 w-80 h-80 rounded-full bg-blue-600/10 blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div className="flex flex-col gap-2 max-w-2xl">
+            {/* Üst Kurumsal Belirteç */}
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-sky-400 animate-ping" />
+              <span className="text-[11px] font-black uppercase tracking-widest text-sky-400">
+                TÜRKİYE&apos;NİN RESMÎ ELEKTRİKLİ ARAÇ PAZARYERİ
+              </span>
+              <span className="rounded bg-sky-500/20 border border-sky-400/30 px-2 py-0.5 text-[9px] font-black text-sky-300">
+                VOLTSCORE™ DOĞRULANMIŞ
+              </span>
+            </div>
+
+            {/* Dikkat Çekici & Kurumsal Başlık */}
+            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight uppercase leading-tight drop-shadow-sm">
+              2. El Elektrikli Araçlar
+            </h1>
+
+            <p className="text-xs sm:text-sm text-neutral-300 font-semibold leading-relaxed">
+              Doğrulanmış batarya sağlık raporlu (SOH), gerçek menzil testli ve ekspertiz güvenceli Türkiye&apos;nin en zengin elektrikli araç ilanları.
+            </p>
+
+            {/* Güven Rozetleri */}
+            <div className="flex flex-wrap items-center gap-2.5 pt-2 text-[11px] font-bold text-neutral-300">
+              <span className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1">
+                <span className="text-sky-400">✓</span>
+                <span>Batarya Sağlık Raporu</span>
+              </span>
+              <span className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1">
+                <span className="text-emerald-400">✓</span>
+                <span>Sıfır Komisyon</span>
+              </span>
+              <span className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1">
+                <span className="text-amber-400">✓</span>
+                <span>Ekspertiz Güvencesi</span>
+              </span>
+            </div>
           </div>
 
-          <Link
-            href="/ilanlar/yeni"
-            className="rounded-xl bg-sky-500 px-6 py-2.5 text-xs font-black text-white shadow transition hover:bg-sky-400"
-          >
-            + ÜCRETSİZ İLAN VER
-          </Link>
+          {/* Sağ Kolon: İlan Ver Butonu & İlan Sayacı */}
+          <div className="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-3 shrink-0">
+            <Link
+              href="/ilanlar/yeni"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-blue-700 px-7 py-3.5 text-xs sm:text-sm font-black text-white shadow-lg shadow-sky-500/25 transition-all duration-300 hover:from-sky-400 hover:to-blue-600 hover:scale-[1.02] active:scale-95 border border-sky-400/40"
+            >
+              <span className="text-base leading-none">+</span>
+              <span className="tracking-wide">ÜCRETSİZ İLAN VER</span>
+            </Link>
+
+            <span className="text-xs font-bold text-neutral-400">
+              Toplam <strong className="text-white font-black">{total}</strong> doğrulanmış ilan yayında
+            </span>
+          </div>
         </div>
       </header>
 

@@ -1,22 +1,23 @@
 import React from "react";
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { formatTL } from "@/lib/utils";
-import SafeImage from "@/components/ui/SafeImage";
+import FeaturedVehiclesSlider, {
+  ShowcaseVehicle,
+} from "@/components/vehicles/FeaturedVehiclesSlider";
 
 // Öne çıkan vitrin modellerinin hedef slug ve özellikleri
 const SHOWCASE_CONFIGS = [
   {
     brand: "TOGG",
-    model: "T10X",
+    model: "T10X V2 Uzun Menzil",
     slug: "togg-t10x-v2-2026",
     tag: "Yerli Gurur & %0 Faiz",
-    tagColor: "bg-emerald-500 text-black",
+    tagColor: "bg-emerald-600 text-white",
     fallbackPrice: 1823000,
     range: 523,
     power: "218 HP",
     dcSpeed: "180 kW",
     body: "C-SUV",
+    acceleration: "7.4 sn",
     image: "https://dolubatarya.com/uploads/2021/12/2023-togg-t10x-ozellikler-teknik.jpg",
   },
   {
@@ -24,25 +25,27 @@ const SHOWCASE_CONFIGS = [
     model: "T10F Fastback",
     slug: "togg-t10f-fastback-2026",
     tag: "Yakında Yollarda",
-    tagColor: "bg-sky-500 text-white",
+    tagColor: "bg-sky-600 text-white",
     fallbackPrice: 1750000,
     range: 600,
     power: "218 HP",
     dcSpeed: "180 kW",
     body: "Fastback Sedan",
+    acceleration: "7.2 sn",
     image: "https://www.togg.com.tr/assets/img/68cd40855cc5b3b63d149fb2_t10f-version-features-section.webp",
   },
   {
     brand: "Tesla",
-    model: "Model Y 'Juniper'",
+    model: "Model Y 'Juniper' RWD",
     slug: "tesla-model-y-juniper-2026",
     tag: "%25 ÖTV Diliminde",
-    tagColor: "bg-rose-500 text-white",
+    tagColor: "bg-rose-600 text-white",
     fallbackPrice: 1865000,
     range: 455,
     power: "299 HP",
     dcSpeed: "250 kW",
     body: "D-SUV",
+    acceleration: "6.9 sn",
     image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=1200",
   },
   {
@@ -50,51 +53,27 @@ const SHOWCASE_CONFIGS = [
     model: "EV3 Long Range",
     slug: "kia-ev3-long-range-2026",
     tag: "Yılın Elektrikli Aracı",
-    tagColor: "bg-amber-500 text-black",
+    tagColor: "bg-amber-500 text-neutral-950",
     fallbackPrice: 1780000,
     range: 605,
     power: "204 HP",
     dcSpeed: "128 kW",
     body: "B-SUV",
+    acceleration: "7.5 sn",
     image: "https://www.kia.com/content/dam/kwcms/tr/tr/images/showroom/ev3/ozellikler/360/abp-gtl/kia-ev3-my25-gtl-abp-aurorablackpearl-19_0000.png",
-  },
-  {
-    brand: "Kia",
-    model: "EV6 GT-Line",
-    slug: "kia-ev6-gtline-2026",
-    tag: "800V Ultra Hızlı Şarj",
-    tagColor: "bg-purple-600 text-white",
-    fallbackPrice: 3250000,
-    range: 528,
-    power: "229 HP",
-    dcSpeed: "239 kW",
-    body: "Crossover",
-    image: "https://www.kia.com/content/dam/kwcms/tr/tr/images/showroom/YeniEV6/ev6-my25.png",
-  },
-  {
-    brand: "Kia",
-    model: "EV9 Earth (7 Koltuk)",
-    slug: "kia-ev9-earth-2026",
-    tag: "Lüks 7 Kişilik Amiral",
-    tagColor: "bg-neutral-900 text-white",
-    fallbackPrice: 4950000,
-    range: 505,
-    power: "384 HP",
-    dcSpeed: "210 kW",
-    body: "E-SUV",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200",
   },
   {
     brand: "Hyundai",
     model: "Inster",
     slug: "hyundai-inster",
-    tag: "1.527.623 ₺ En Erişilebilir",
+    tag: "En Erişilebilir EV",
     tagColor: "bg-emerald-600 text-white",
     fallbackPrice: 1527623,
     range: 360,
     power: "97 HP",
     dcSpeed: "73 kW",
     body: "Kompakt SUV",
+    acceleration: "10.6 sn",
     image: "https://dolubatarya.com/uploads/2024/12/hyundai-inster-6192.jpg",
   },
   {
@@ -108,25 +87,12 @@ const SHOWCASE_CONFIGS = [
     power: "229 HP",
     dcSpeed: "233 kW",
     body: "Crossover",
+    acceleration: "7.3 sn",
     image: "https://dmassets.hyundai.com/is/image/hyundaiautoever/01_IONIQ5N_Exterior_Driving_Circuit_Front_01_crop",
-  },
-  {
-    brand: "Hyundai",
-    model: "Ioniq 6 Progressive",
-    slug: "hyundai-ioniq-6-2026",
-    tag: "614 km Uzun Menzil",
-    tagColor: "bg-indigo-600 text-white",
-    fallbackPrice: 2450000,
-    range: 614,
-    power: "229 HP",
-    dcSpeed: "233 kW",
-    body: "Sedan Streamliner",
-    image: "https://dmassets.hyundai.com/is/image/hyundaiautoever/Hyundai_IONIQ6_Exterior-Side_v006",
   },
 ];
 
 export default async function FeaturedVehiclesShowcase() {
-  // Veritabanından güncel verileri çekmeye çalışalım
   const slugs = SHOWCASE_CONFIGS.map((c) => c.slug);
   const dbVehicles = await prisma.vehicle.findMany({
     where: { slug: { in: slugs } },
@@ -139,6 +105,7 @@ export default async function FeaturedVehiclesShowcase() {
       rangeKm: true,
       motorPowerHp: true,
       dcChargeKw: true,
+      acceleration: true,
       image: true,
       bodyType: true,
     },
@@ -146,111 +113,23 @@ export default async function FeaturedVehiclesShowcase() {
 
   const dbMap = new Map(dbVehicles.map((v) => [v.slug, v]));
 
-  return (
-    <section className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
-      {/* Vitrin Başlığı */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-neutral-100 pb-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-neutral-900 text-sky-400 border border-neutral-800 shadow-xs">
-            <svg viewBox="0 0 24 24" fill="none" className="w-4.5 h-4.5" stroke="currentColor" strokeWidth="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" fill="currentColor" strokeLinejoin="round" />
-            </svg>
-          </div>
-          <h2 className="text-base sm:text-lg font-black tracking-tight text-neutral-900">
-            ÖNE ÇIKAN VİTRİN MODELLERİ
-          </h2>
-        </div>
+  const vehicles: ShowcaseVehicle[] = SHOWCASE_CONFIGS.map((conf) => {
+    const dbItem = dbMap.get(conf.slug);
+    return {
+      brand: conf.brand,
+      model: conf.model,
+      slug: conf.slug,
+      tag: conf.tag,
+      tagColor: conf.tagColor,
+      price: dbItem?.price || conf.fallbackPrice,
+      range: dbItem?.rangeKm || conf.range,
+      power: dbItem?.motorPowerHp ? `${dbItem.motorPowerHp} HP` : conf.power,
+      dcSpeed: dbItem?.dcChargeKw ? `${dbItem.dcChargeKw} kW` : conf.dcSpeed,
+      body: dbItem?.bodyType || conf.body,
+      acceleration: dbItem?.acceleration ? `${dbItem.acceleration} sn` : conf.acceleration,
+      image: dbItem?.image || conf.image,
+    };
+  });
 
-        <Link
-          href="/araclar"
-          className="text-xs font-bold text-neutral-600 hover:text-red-600 flex items-center gap-1 self-start sm:self-auto transition"
-        >
-          Tüm 79 Modeli Gör →
-        </Link>
-      </div>
-
-      {/* Vitrin Kartları Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {SHOWCASE_CONFIGS.map((conf) => {
-          const dbItem = dbMap.get(conf.slug);
-          const price = dbItem?.price || conf.fallbackPrice;
-          const range = dbItem?.rangeKm || conf.range;
-          const power = dbItem?.motorPowerHp ? `${dbItem.motorPowerHp} HP` : conf.power;
-          const dcSpeed = dbItem?.dcChargeKw ? `${dbItem.dcChargeKw} kW` : conf.dcSpeed;
-          const displayImage = dbItem?.image || conf.image;
-
-          return (
-            <Link
-              key={conf.slug}
-              href={`/araclar/${conf.slug}`}
-              className="group flex flex-col justify-between overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50/40 p-3.5 transition-all hover:-translate-y-1 hover:border-red-600/50 hover:bg-white hover:shadow-lg"
-            >
-              <div>
-                {/* Rozet & Kasa */}
-                <div className="flex items-center justify-between gap-1.5 mb-2">
-                  <span className="text-[11px] font-black uppercase text-neutral-800 tracking-wider">
-                    {conf.brand}
-                  </span>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-[9px] font-black tracking-wide ${conf.tagColor}`}
-                  >
-                    {conf.tag}
-                  </span>
-                </div>
-
-                {/* Model Görseli */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-neutral-100 flex items-center justify-center">
-                  <SafeImage
-                    src={displayImage}
-                    alt={`${conf.brand} ${conf.model}`}
-                    fill
-                    sizes="(max-width:640px) 100vw, 340px"
-                    className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                    fallbackSrc="/arac-placeholder.svg"
-                  />
-                  <div className="absolute bottom-1.5 left-1.5 rounded bg-black/70 backdrop-blur-xs px-1.5 py-0.5 text-[10px] font-bold text-white z-10">
-                    {conf.body}
-                  </div>
-                </div>
-
-                {/* Model İsmi */}
-                <h3 className="mt-2.5 text-sm font-black text-neutral-900 group-hover:text-red-600 transition leading-snug">
-                  {conf.brand} {conf.model}
-                </h3>
-
-                {/* Teknik Özellikler Rozetleri */}
-                <div className="mt-2 grid grid-cols-3 gap-1 text-center">
-                  <div className="rounded-md bg-white border border-neutral-200/80 p-1.5">
-                    <span className="block text-[8px] font-bold text-neutral-400 uppercase">Menzil</span>
-                    <span className="text-[11px] font-black text-neutral-900">{range} km</span>
-                  </div>
-                  <div className="rounded-md bg-white border border-neutral-200/80 p-1.5">
-                    <span className="block text-[8px] font-bold text-neutral-400 uppercase">Güç</span>
-                    <span className="text-[11px] font-black text-neutral-900">{power}</span>
-                  </div>
-                  <div className="rounded-md bg-white border border-neutral-200/80 p-1.5">
-                    <span className="block text-[8px] font-bold text-neutral-400 uppercase">Hızlı DC</span>
-                    <span className="text-[11px] font-black text-neutral-900">{dcSpeed}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Fiyat & İncele */}
-              <div className="mt-3 pt-2.5 border-t border-neutral-150 flex items-center justify-between">
-                <div>
-                  <span className="block text-[9px] font-bold text-neutral-600 uppercase">Başlangıç</span>
-                  <span className="text-xs sm:text-sm font-black text-neutral-950 tracking-tight">
-                    {formatTL(price)}
-                  </span>
-                </div>
-                <span className="rounded-lg bg-neutral-950 group-hover:bg-red-600 text-white px-2.5 py-1 text-[11px] font-bold transition">
-                  İncele →
-                </span>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
-    </section>
-  );
+  return <FeaturedVehiclesSlider vehicles={vehicles} />;
 }

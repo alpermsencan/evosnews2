@@ -146,54 +146,7 @@ export default async function VehiclesPage({
         )}
       </div>
 
-      {/* KARŞILAŞTIRMA TABLOSU */}
-      <section>
-        <SectionTitle title="TEKNİK KARŞILAŞTIRMA TABLOSU" color="#DC2626" />
-        <div className="overflow-x-auto rounded-lg border border-neutral-200 bg-white">
-          <table className="w-full min-w-[960px] text-left text-sm">
-            <thead className="bg-neutral-50 text-[11px] font-black tracking-wide text-neutral-500">
-              <tr>
-                <th className="px-4 py-3">MODEL</th>
-                <th className="px-4 py-3">SEGMENT</th>
-                <th className="px-4 py-3">MENZİL</th>
-                <th className="px-4 py-3">BATARYA</th>
-                <th className="px-4 py-3">MOTOR</th>
-                <th className="px-4 py-3">DC ŞARJ</th>
-                <th className="px-4 py-3">0-100</th>
-                <th className="px-4 py-3">TÜKETİM</th>
-                <th className="px-4 py-3">ÖTV</th>
-                <th className="px-4 py-3 text-right">FİYAT</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100 text-xs">
-              {vehicles.map((v) => (
-                <tr key={v.id} className="transition hover:bg-neutral-50">
-                  <td className="px-4 py-3 font-bold text-neutral-900">
-                    {v.brand} {v.model}
-                  </td>
-                  <td className="px-4 py-3 text-neutral-500">{v.segment || "-"}</td>
-                  <td className="px-4 py-3 font-semibold text-neutral-900">{v.rangeKm} km</td>
-                  <td className="px-4 py-3 text-neutral-600">{v.batteryKwh} kWh</td>
-                  <td className="px-4 py-3 text-neutral-600">{v.motorPowerHp} HP</td>
-                  <td className="px-4 py-3 text-neutral-600">
-                    {v.dcChargeKw ? `${v.dcChargeKw} kW` : "—"}
-                  </td>
-                  <td className="px-4 py-3 text-neutral-600">{v.acceleration} sn</td>
-                  <td className="px-4 py-3 text-neutral-600">{v.consumption} kWh/100km</td>
-                  <td className="px-4 py-3">
-                    <span className="rounded bg-sky-50 px-2 py-0.5 text-[10px] font-black text-sky-800 border border-sky-100">
-                      %{v.otvRate}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right font-black text-neutral-900">
-                    {formatTL(v.price)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+
 
       {/* İLGİLİ HABERLER */}
       {news.length > 0 && (
