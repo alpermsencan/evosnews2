@@ -63,7 +63,7 @@ export default function HeroCarousel({
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-neutral-900 rounded-2xl border border-neutral-200/80 shadow-sm group"
+      className="relative w-full overflow-hidden bg-neutral-950 rounded-2xl sm:rounded-3xl border border-neutral-200/60 shadow-lg group select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={onTouchStart}
@@ -71,77 +71,95 @@ export default function HeroCarousel({
     >
       <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[21/9]">
         {slides.map((s, i) => {
-          // Asla boş /haber/ linkine gitmesin: slug boşsa id'ye yönlendir
-          const href = s.slug && s.slug.trim().length > 0 ? `/haber/${s.slug}` : `/haber/${s.id}`;
+          const href =
+            s.slug && s.slug.trim().length > 0
+              ? `/haber/${s.slug}`
+              : `/haber/${s.id}`;
+
+          const isActive = i === index;
 
           return (
             <div
               key={s.id}
-              className={`absolute inset-0 transition-opacity duration-700 ${
-                i === index ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                isActive
+                  ? "z-10 opacity-100"
+                  : "z-0 opacity-0 pointer-events-none"
               }`}
-              aria-hidden={i !== index}
+              aria-hidden={!isActive}
             >
-              {/* KAPAK RESMİ: Karartma kaldırıldı! Görsel 100% net ve aydınlık */}
-              <Link href={href} className="block relative w-full h-full">
+              {/* Arka Plan Görseli */}
+              <Link href={href} className="block relative w-full h-full overflow-hidden">
                 <Image
                   src={s.image || "/haber-placeholder.svg"}
                   alt={s.title}
                   fill
                   priority={i === 0}
-                  sizes="(max-width: 1024px) 100vw, 1280px"
-                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 1400px"
+                  className="object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
                 />
+
+                {/* Modern ve Sade Gradyan (Kutu yerine doğal sinematik geçiş) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/45 via-45% to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/40 via-transparent to-transparent pointer-events-none" />
               </Link>
 
-              {/* ÖZEL KURUMSAL MANŞET KARTI: Resmin üzerine zarif, dikkat çekici editoryal plaka */}
-              <div className="absolute bottom-4 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-auto sm:max-w-2xl lg:max-w-3xl z-20 pointer-events-auto">
+              {/* Sade & Modern Editoryal Metin Alanı */}
+              <div className="absolute inset-x-0 bottom-0 z-20 p-5 sm:p-8 lg:p-10 pointer-events-auto">
                 <Link
                   href={href}
-                  className="group/card flex flex-col gap-2.5 p-4 sm:p-5 lg:p-6 rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/15 border-l-4 border-l-red-600 shadow-[0_15px_40px_rgba(0,0,0,0.55)] transition-all hover:bg-neutral-950/95"
+                  className="group/link flex flex-col gap-2.5 sm:gap-3.5 max-w-4xl"
                 >
-                  {/* Meta Bar */}
+                  {/* Üst Bilgi Rozetleri (Minimalist & Net) */}
                   <div className="flex flex-wrap items-center gap-2">
                     {s.isBreaking && (
-                      <span className="rounded bg-neutral-900 border border-red-500 text-red-500 px-2 py-0.5 text-[10px] font-black tracking-wider uppercase">
+                      <span className="rounded-full bg-red-600 text-white px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase shadow-xs">
                         SON DAKİKA
                       </span>
                     )}
-                    <span className="rounded bg-red-600 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-white uppercase shadow-xs">
+
+                    <span className="rounded-full bg-white/20 backdrop-blur-md border border-white/25 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-white uppercase">
                       {(s.category?.name || "HABER").toUpperCase()}
                     </span>
+
                     {s.sourceName && (
-                      <span className="rounded bg-white/20 border border-white/25 px-2 py-0.5 text-[10px] font-bold text-amber-300 tracking-wide">
-                        ⚡ {s.sourceName}
+                      <span className="rounded-full bg-white/15 backdrop-blur-md border border-white/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-300 tracking-wide flex items-center gap-1">
+                        <span>⚡</span>
+                        <span>{s.sourceName}</span>
                       </span>
                     )}
+
                     {s.isVideo && (
-                      <span className="flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
-                        <IconPlay className="h-3 w-3 text-red-400" /> VİDEO
+                      <span className="flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-bold text-white">
+                        <IconPlay className="h-3 w-3 text-red-400" />
+                        VİDEO
                       </span>
                     )}
-                    <span className="flex items-center gap-1 text-[11px] font-medium text-neutral-400">
-                      <IconClock className="h-3 w-3" />
+
+                    <span className="flex items-center gap-1 text-[11px] font-medium text-neutral-300/80 ml-1">
+                      <IconClock className="h-3 w-3 text-neutral-400" />
                       {timeAgo(s.publishedAt)}
                     </span>
                   </div>
 
-                  {/* Manşet Başlığı */}
-                  <h2 className="text-lg sm:text-2xl lg:text-3xl font-black leading-tight text-white tracking-tight group-hover/card:text-red-400 transition-colors drop-shadow-xs">
+                  {/* Başlık */}
+                  <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-[1.2] drop-shadow-md group-hover/link:text-red-400 transition-colors line-clamp-2">
                     {s.title}
                   </h2>
 
-                  {/* Spot / Özet */}
+                  {/* Özet Spot (Ferah ve Sade) */}
                   {s.spot && (
-                    <p className="hidden sm:line-clamp-2 text-xs sm:text-sm text-neutral-300 font-normal leading-relaxed">
+                    <p className="hidden sm:line-clamp-2 text-xs sm:text-sm lg:text-base text-neutral-300 font-normal leading-relaxed max-w-3xl drop-shadow-xs">
                       {s.spot}
                     </p>
                   )}
 
-                  {/* Aksiyon İpucu */}
-                  <div className="flex items-center gap-1.5 text-[11px] font-black tracking-wider text-red-500 uppercase pt-0.5 group-hover/card:translate-x-1 transition-transform">
-                    <span>HABERİ OKU</span>
-                    <span>→</span>
+                  {/* Minimal Okuma İpucu */}
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-red-400 group-hover/link:text-red-300 tracking-wider uppercase pt-1">
+                    <span>Haberin Devamı</span>
+                    <span className="transition-transform duration-200 group-hover/link:translate-x-1">
+                      →
+                    </span>
                   </div>
                 </Link>
               </div>
@@ -149,39 +167,46 @@ export default function HeroCarousel({
           );
         })}
 
-        {/* Oklar - masaüstü */}
+        {/* Minimalist Cam Ok Butonları */}
         {count > 1 && (
           <>
             <button
               onClick={prev}
-              aria-label="Önceki"
-              className="absolute left-3 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-neutral-950/70 text-white backdrop-blur border border-white/10 transition hover:bg-red-600 hover:border-red-600 sm:flex"
+              aria-label="Önceki haber"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-11 w-11 items-center justify-center rounded-full bg-neutral-950/40 hover:bg-neutral-900/80 text-white backdrop-blur-md border border-white/15 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 shadow-md"
             >
-              <IconChevronLeft className="h-6 w-6" />
+              <IconChevronLeft className="h-5 w-5" />
             </button>
             <button
               onClick={next}
-              aria-label="Sonraki"
-              className="absolute right-3 top-1/2 z-30 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-neutral-950/70 text-white backdrop-blur border border-white/10 transition hover:bg-red-600 hover:border-red-600 sm:flex"
+              aria-label="Sonraki haber"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-11 w-11 items-center justify-center rounded-full bg-neutral-950/40 hover:bg-neutral-900/80 text-white backdrop-blur-md border border-white/15 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 shadow-md"
             >
-              <IconChevronRight className="h-6 w-6" />
+              <IconChevronRight className="h-5 w-5" />
             </button>
           </>
         )}
 
-        {/* Sayaç ve Sayfa Noktaları */}
+        {/* Modern & Sade Çizgisel Sayfa Göstergeleri */}
         {count > 1 && (
-          <div className="absolute bottom-4 right-4 z-30 hidden sm:flex items-center gap-1.5 bg-neutral-950/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 shadow-lg">
-            {slides.map((s, i) => (
-              <button
-                key={s.id}
-                onClick={() => go(i)}
-                aria-label={`${i + 1}. haber`}
-                className={`h-2 rounded-full transition-all ${
-                  i === index ? "w-6 bg-red-600" : "w-2 bg-white/40 hover:bg-white"
-                }`}
-              />
-            ))}
+          <div className="absolute bottom-5 right-5 sm:bottom-8 sm:right-8 z-30 flex items-center gap-3 bg-neutral-950/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10 shadow-lg">
+            <span className="text-[11px] font-bold text-white/70 tracking-widest tabular-nums">
+              {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+            </span>
+            <div className="flex items-center gap-1.5">
+              {slides.map((s, i) => (
+                <button
+                  key={s.id}
+                  onClick={() => go(i)}
+                  aria-label={`${i + 1}. haber`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ease-out ${
+                    i === index
+                      ? "w-6 bg-red-600 shadow-sm shadow-red-500/50"
+                      : "w-2 bg-white/35 hover:bg-white/70"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         )}
       </div>
