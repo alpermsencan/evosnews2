@@ -36,91 +36,52 @@ export default async function HomePage() {
     console.error("HomePage user read error:", err);
   }
 
-  const [
-    headlines,
-    latest,
-    vehicles,
-    community,
-    poll,
-    tech,
-    editorArticles,
-    authorArticles,
-  ] = await Promise.all([
-    getHeadlines(6).catch((err) => {
-      console.error("getHeadlines error:", err);
-      return [];
-    }),
-    getLatest(16).catch((err) => {
-      console.error("getLatest error:", err);
-      return [];
-    }),
-    getFeaturedVehicles(8).catch((err) => {
-      console.error("getFeaturedVehicles error:", err);
-      return [];
-    }),
-    getCommunityPosts(5).catch((err) => {
-      console.error("getCommunityPosts error:", err);
-      return [];
-    }),
-    getActivePoll().catch((err) => {
-      console.error("getActivePoll error:", err);
-      return null;
-    }),
-    getByCategory("teknoloji", 4).catch((err) => {
-      console.error("getByCategory error:", err);
-      return [];
-    }),
-    prisma.article.findMany({
-      where: {
-        status: "PUBLISHED",
-        sourceName: { in: [...ALLOWED_EV_SOURCES] },
-      },
-      take: 12,
-      orderBy: { publishedAt: "desc" },
-      include: { author: true, category: true }
-    }).catch((err) => {
-      console.error("editorArticles error:", err);
-      return [];
-    }),
-    prisma.article.findMany({
-      where: {
-        status: "PUBLISHED",
-        sourceName: { in: [...ALLOWED_EV_SOURCES] },
-      },
-      skip: 4,
-      take: 4,
-      orderBy: { publishedAt: "desc" },
-      include: { author: true, category: true }
-    }).catch((err) => {
-      console.error("authorArticles error:", err);
-      return [];
-    })
-  ]);
+  // 1. SLIDER (Tam olarak belirlenen 5 öne çıkan Webtekno haberi)
+  const safeHeadlines = await prisma.article.findMany({
+    where: { status: "PUBLISHED", isFeatured: true },
+    orderBy: { publishedAt: "desc" },
+    take: 5,
+    include: { category: true }
+  }).catch(() => []);
+  const heroIds = new Set(safeHeadlines.map((h) => h.id));
 
-  const safeHeadlines = headlines || [];
-  const safeLatest = latest || [];
-  const safeVehicles = vehicles || [];
-  const safeCommunity = community || [];
-  const safeTech = tech || [];
-  const safeAuthorArticles = authorArticles || [];
-
-  // Batarya ömrü analizi haberini doğrudan 'EVOtoPilot Özel Analiz'in başına al
-  const batteryArticle = await prisma.article.findFirst({
+  // 2. EDİTÖRÜN KALEMİNDEN (Kullanıcının talep ettiği 4 editoryal inceleme - Slider ile çakışmaz)
+  const editorSlugs = [
+    "elektrikli-araba-alacaklarin-dikkat-etmesi-gerekenler-h223693",
+    "suudi-arabistanin-toggu-resmen-tanitildi-ceer-exobot-c8c6e2",
+    "renault-5-e-tech-incelemesi-ve-surus-notlari",
+    "ev-tipi-elektrikli-arac-sarj-istasyonu-kurulum-maliyeti-kalemleri-4b331b"
+  ];
+  const safeEditorArticles = await prisma.article.findMany({
     where: {
       status: "PUBLISHED",
-      OR: [
-        { id: "6aba3fbb0df27b2854bb7a88" },
-        { title: { contains: "Batarya Ömrü" } }
-      ]
+      slug: { in: editorSlugs },
+      id: { notIn: Array.from(heroIds) }
     },
+    take: 4,
     include: { author: true, category: true }
-  }).catch(() => null);
+  }).catch(() => []);
+  const editorIds = new Set(safeEditorArticles.map((e) => e.id));
 
-  const heroIds = new Set(safeHeadlines.map((h) => h.id));
-  const rawFeed = safeLatest.filter((a) => !heroIds.has(a.id) && a.id !== batteryArticle?.id);
-  const feed = batteryArticle ? [batteryArticle, ...rawFeed] : rawFeed;
-  // Slider'daki haberlerle Editörün Kaleminden çakışmasın:
-  const safeEditorArticles = (editorArticles || []).filter((a) => !heroIds.has(a.id)).slice(0, 4);
+  // 3. EVOTOPİLOT ÖZEL ANALİZ (Slider ve Editör haberleri kesinlikle filtrelenir - SIFIR ÇAKIŞMA)
+  const feed = await prisma.article.findMany({
+    where: {
+      status: "PUBLISHED",
+      id: { notIn: [...Array.from(heroIds), ...Array.from(editorIds)] }
+    },
+    orderBy: { publishedAt: "desc" },
+    take: 10,
+    include: { author: true, category: true }
+  }).catch(() => []);
+
+  const [vehicles, community, poll] = await Promise.all([
+    getFeaturedVehicles(8).catch(() => []),
+    getCommunityPosts(5).catch(() => []),
+    getActivePoll().catch(() => null),
+  ]);
+
+  const safeVehicles = vehicles || [];
+  const safeCommunity = community || [];
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 sm:pt-4">
@@ -308,9 +269,9 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Tax Brackets - Kurumsal Modern Finansal Matris */}
+            {/* Tax Brackets - Kurumsal Modern Finansal Matris (Resmî Gazete 2026) */}
             <div className="flex flex-col divide-y divide-neutral-150 p-2.5">
-              {/* Dilim 1: %10 (En Avantajlı Resmî Baremi) */}
+              {/* Dilim 1: %25 (En Avantajlı Resmî Baremi) */}
               <div className="relative rounded-xl border border-emerald-500/40 bg-emerald-50/40 p-3.5 transition hover:bg-emerald-50/60">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
@@ -320,55 +281,55 @@ export default async function HomePage() {
                         EN AVANTAJLI
                       </span>
                     </div>
-                    <span className="text-xs font-black text-emerald-900 mt-0.5">Matrah ≤ 1.450.000 ₺</span>
-                    <span className="text-[11px] text-neutral-600 font-bold mt-0.5">Togg T10X, Tesla Model Y SR, Atto 3</span>
+                    <span className="text-xs font-black text-emerald-900 mt-0.5">Matrah ≤ 1.650.000 ₺</span>
+                    <span className="text-[11px] text-neutral-600 font-bold mt-0.5">Togg T10X, Tesla Model Y RWD, Atto 3</span>
                   </div>
                   <div className="flex flex-col items-end shrink-0 pl-2">
                     <span className="rounded-xl bg-emerald-600 px-3 py-1.5 text-sm font-black text-white shadow-xs">
-                      %10 ÖTV
+                      %25 ÖTV
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Dilim 2: %40 */}
+              {/* Dilim 2: %55 */}
               <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor ≤ 160 kW</span>
-                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.450.000 ₺</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.650.000 ₺</span>
                   <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Yüksek donanımlı tek motorlu modeller</span>
                 </div>
                 <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-100 border border-neutral-300 px-3 py-1.5 text-sm font-black text-neutral-950">
-                    %40 ÖTV
+                    %55 ÖTV
                   </span>
                 </div>
               </div>
 
-              {/* Dilim 3: %50 */}
+              {/* Dilim 3: %65 */}
               <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor &gt; 160 kW</span>
-                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah ≤ 1.350.000 ₺</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah ≤ 1.650.000 ₺</span>
                   <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Çift motor AWD giriş versiyonları</span>
                 </div>
                 <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-100 border border-neutral-300 px-3 py-1.5 text-sm font-black text-neutral-950">
-                    %50 ÖTV
+                    %65 ÖTV
                   </span>
                 </div>
               </div>
 
-              {/* Dilim 4: %60 */}
+              {/* Dilim 4: %75 */}
               <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor &gt; 160 kW</span>
-                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.350.000 ₺</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.650.000 ₺</span>
                   <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Premium &amp; Yüksek Performans AWD</span>
                 </div>
                 <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-950 text-white px-3 py-1.5 text-sm font-black">
-                    %60 ÖTV
+                    %75 ÖTV
                   </span>
                 </div>
               </div>
@@ -377,7 +338,7 @@ export default async function HomePage() {
             {/* Footer Bilgilendirme Notu (Finansman Butonu Kaldırıldı) */}
             <div className="bg-neutral-950 px-4 py-3 border-t border-neutral-800 text-xs text-neutral-400 font-medium">
               <p className="leading-relaxed">
-                Tüm dilimlerde ÖTV hesaplaması sonrası nihai fiyata <strong className="text-white font-bold">%20 KDV</strong> ilave edilir.
+                Resmî Gazete 2026 baremleri. Tüm dilimlerde ÖTV hesaplaması sonrası nihai fiyata <strong className="text-white font-bold">%20 KDV</strong> ilave edilir.
               </p>
             </div>
           </div>

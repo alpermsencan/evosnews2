@@ -88,7 +88,7 @@ export default function HeroCarousel({
               }`}
               aria-hidden={!isActive}
             >
-              {/* Arka Plan Görseli */}
+              {/* Arka Plan Görseli (Karartmasız, Doğal ve Canlı) */}
               <Link href={href} className="block relative w-full h-full overflow-hidden">
                 <Image
                   src={s.image || "/haber-placeholder.svg"}
@@ -99,68 +99,25 @@ export default function HeroCarousel({
                   className="object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
                 />
 
-                {/* Modern ve Sade Gradyan (Kutu yerine doğal sinematik geçiş) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/45 via-45% to-transparent pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/40 via-transparent to-transparent pointer-events-none" />
+                {/* Sadece Alttan Çok Hafif Okunabilirlik Gölgesi (Görseli Asla Karartmaz) */}
+                <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
               </Link>
 
-              {/* Sade & Modern Editoryal Metin Alanı */}
-              <div className="absolute inset-x-0 bottom-0 z-20 p-5 sm:p-8 lg:p-10 pointer-events-auto">
+              {/* Slider'da SADECE BAŞLIK: Belirgin, Renkli, Kurumsal Modern */}
+              <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-6 lg:p-8 pointer-events-auto">
                 <Link
                   href={href}
-                  className="group/link flex flex-col gap-2.5 sm:gap-3.5 max-w-4xl"
+                  className="group/link block max-w-3xl rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/20 p-4 sm:p-5 lg:p-6 shadow-2xl transition hover:border-red-500 hover:bg-neutral-950/95"
                 >
-                  {/* Üst Bilgi Rozetleri (Minimalist & Net) */}
-                  <div className="flex flex-wrap items-center gap-2">
-                    {s.isBreaking && (
-                      <span className="rounded-full bg-red-600 text-white px-2.5 py-0.5 text-[10px] font-black tracking-wider uppercase shadow-xs">
-                        SON DAKİKA
-                      </span>
-                    )}
-
-                    <span className="rounded-full bg-white/20 backdrop-blur-md border border-white/25 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-white uppercase">
-                      {(s.category?.name || "HABER").toUpperCase()}
-                    </span>
-
-                    {s.sourceName && (
-                      <span className="rounded-full bg-white/15 backdrop-blur-md border border-white/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-300 tracking-wide flex items-center gap-1">
-                        <span>⚡</span>
-                        <span>{s.sourceName}</span>
-                      </span>
-                    )}
-
-                    {s.isVideo && (
-                      <span className="flex items-center gap-1 rounded-full bg-white/15 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-bold text-white">
-                        <IconPlay className="h-3 w-3 text-red-400" />
-                        VİDEO
-                      </span>
-                    )}
-
-                    <span className="flex items-center gap-1 text-[11px] font-medium text-neutral-300/80 ml-1">
-                      <IconClock className="h-3 w-3 text-neutral-400" />
-                      {timeAgo(s.publishedAt)}
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-red-500">
+                      ÖNE ÇIKAN HABER
                     </span>
                   </div>
-
-                  {/* Başlık */}
-                  <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-[1.2] drop-shadow-md group-hover/link:text-red-400 transition-colors line-clamp-2">
+                  <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-snug group-hover/link:text-red-400 transition-colors drop-shadow-sm line-clamp-2">
                     {s.title}
                   </h2>
-
-                  {/* Özet Spot (Ferah ve Sade) */}
-                  {s.spot && (
-                    <p className="hidden sm:line-clamp-2 text-xs sm:text-sm lg:text-base text-neutral-300 font-normal leading-relaxed max-w-3xl drop-shadow-xs">
-                      {s.spot}
-                    </p>
-                  )}
-
-                  {/* Minimal Okuma İpucu */}
-                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-red-400 group-hover/link:text-red-300 tracking-wider uppercase pt-1">
-                    <span>Haberin Devamı</span>
-                    <span className="transition-transform duration-200 group-hover/link:translate-x-1">
-                      →
-                    </span>
-                  </div>
                 </Link>
               </div>
             </div>

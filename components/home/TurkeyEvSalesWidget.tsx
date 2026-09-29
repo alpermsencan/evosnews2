@@ -22,7 +22,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "TOGG",
     brandBadgeBg: "bg-[#00A3E0]",
     brandBadgeColor: "text-white",
-    model: "T10X V2",
+    model: "Togg T10X",
     modelImage: "https://dolubatarya.com/uploads/2021/12/2023-togg-t10x-ozellikler-teknik.jpg",
     salesCount: 30088,
     marketShare: 32.5,
@@ -34,7 +34,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "TESLA",
     brandBadgeBg: "bg-[#E82127]",
     brandBadgeColor: "text-white",
-    model: "Model Y",
+    model: "Tesla Model Y",
     modelImage: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&auto=format&fit=crop",
     salesCount: 14285,
     marketShare: 15.5,
@@ -46,7 +46,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "KGM",
     brandBadgeBg: "bg-[#002C6C]",
     brandBadgeColor: "text-white",
-    model: "Torres EVX",
+    model: "KGM Torres EVX",
     modelImage: "https://dolubatarya.com/uploads/2023/11/kgm-torres-evx-turkiye-fiyati-3819.jpg",
     salesCount: 5860,
     marketShare: 6.3,
@@ -58,7 +58,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "BMW",
     brandBadgeBg: "bg-[#0066B1]",
     brandBadgeColor: "text-white",
-    model: "i4 / iX1",
+    model: "BMW i4 / iX1",
     modelImage: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&auto=format&fit=crop",
     salesCount: 4120,
     marketShare: 4.5,
@@ -70,7 +70,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "BYD",
     brandBadgeBg: "bg-[#1B365D]",
     brandBadgeColor: "text-white",
-    model: "Seal / Atto 3",
+    model: "BYD Seal / Atto 3",
     modelImage: "https://dolubatarya.com/uploads/2025/07/byd-seal-160-kw-2792.webp",
     salesCount: 3840,
     marketShare: 4.2,
@@ -82,7 +82,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "MERCEDES",
     brandBadgeBg: "bg-neutral-950",
     brandBadgeColor: "text-white",
-    model: "EQE / EQB",
+    model: "Mercedes EQE / EQB",
     modelImage: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&auto=format&fit=crop",
     salesCount: 3650,
     marketShare: 3.9,
@@ -94,7 +94,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "HYUNDAI",
     brandBadgeBg: "bg-[#002C6C]",
     brandBadgeColor: "text-white",
-    model: "Inster / Ioniq 5",
+    model: "Hyundai Inster / Ioniq 5",
     modelImage: "https://dolubatarya.com/uploads/2024/12/hyundai-inster-6192.jpg",
     salesCount: 3110,
     marketShare: 3.4,
@@ -106,7 +106,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "RENAULT",
     brandBadgeBg: "bg-[#FFCC00]",
     brandBadgeColor: "text-neutral-950",
-    model: "5 / Megane",
+    model: "Renault 5 / Megane E-Tech",
     modelImage: "https://cdn.group.renault.com/ren/master/renault-new-cars/product-plans/megane-e-tech-electrique/megane-bcb-my24/new-editorial/megane-bcb-overview-001-desktop.jpg.ximg.large.webp/faac0803d5.webp",
     salesCount: 2940,
     marketShare: 3.2,
@@ -118,7 +118,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "KIA",
     brandBadgeBg: "bg-black",
     brandBadgeColor: "text-white",
-    model: "EV3 / EV6",
+    model: "Kia EV3 / EV6",
     modelImage: "https://dolubatarya.com/uploads/2025/02/kia-ev4-saloon-standard-range-3182.jpeg",
     salesCount: 2450,
     marketShare: 2.6,
@@ -130,7 +130,7 @@ const SALES_DATA: SalesItem[] = [
     brand: "VOLVO",
     brandBadgeBg: "bg-[#003057]",
     brandBadgeColor: "text-white",
-    model: "EX30 / EC40",
+    model: "Volvo EX30 / EC40",
     modelImage: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&auto=format&fit=crop",
     salesCount: 2180,
     marketShare: 2.4,
@@ -236,9 +236,9 @@ export default function TurkeyEvSalesWidget() {
             return (
               <div
                 key={item.rank}
-                className="group flex flex-col py-2.5 transition hover:bg-neutral-50/80 rounded-xl px-1.5"
+                className="group flex flex-col py-2.5 transition hover:bg-neutral-50/90 rounded-xl px-2"
               >
-                {/* Üst Satır: Sıra + Marka Logosu + Araç Resmi + Model Adı ve Satış */}
+                {/* 1. Satır: Sıra + Marka Rozeti + Model Görseli + Model Tam Adı + Satış Rakamı */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
                     {/* Sıra Numarası */}
@@ -256,7 +256,7 @@ export default function TurkeyEvSalesWidget() {
                     </span>
 
                     {/* Küçük Model Görseli */}
-                    <div className="relative h-7 w-10 sm:h-8 sm:w-12 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 shadow-2xs group-hover:border-neutral-400 transition">
+                    <div className="relative h-6 w-9 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 shadow-2xs group-hover:border-neutral-400 transition">
                       <img
                         src={item.modelImage}
                         alt={`${item.brand} ${item.model}`}
@@ -264,40 +264,35 @@ export default function TurkeyEvSalesWidget() {
                       />
                     </div>
 
-                    {/* Model İsmi */}
-                    <div className="flex items-baseline min-w-0">
+                    {/* Model İsmi (Kısaltmasız ve Tam Ölçüsünde) */}
+                    <div className="min-w-0">
                       {item.slug ? (
                         <Link
                           href={`/araclar/${item.slug}`}
-                          className="text-[12px] sm:text-[13px] font-black text-neutral-950 group-hover:text-red-600 transition truncate"
+                          className="text-xs sm:text-[13px] font-black text-neutral-950 group-hover:text-red-600 transition"
                           title={`${item.brand} ${item.model} detay sayfasını incele`}
                         >
                           {item.model}
                         </Link>
                       ) : (
-                        <span className="text-[12px] sm:text-[13px] font-black text-neutral-950 truncate">
+                        <span className="text-xs sm:text-[13px] font-black text-neutral-950">
                           {item.model}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Sağ Taraf: Büyük Satış Rakamı & Büyüme Oranı */}
-                  <div className="flex flex-col items-end shrink-0 pl-2">
+                  {/* Sağ Taraf: Satış Rakamı */}
+                  <div className="shrink-0 text-right">
                     <span className="text-xs sm:text-sm font-black text-neutral-950 tracking-tight">
                       {item.salesCount.toLocaleString("tr-TR")}{" "}
                       <span className="text-[10px] font-bold text-neutral-500">adet</span>
                     </span>
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold">
-                      <span className="text-neutral-500">%{item.marketShare}</span>
-                      <span className="text-neutral-300">·</span>
-                      <span className="text-red-600 font-black">{item.change}</span>
-                    </div>
                   </div>
                 </div>
 
-                {/* Alt Satır: Modern Pazar Payı İlerleme Çubuğu */}
-                <div className="mt-2 flex items-center gap-2 pl-8">
+                {/* 2. Satır: Modern Pazar Payı İlerleme Çubuğu & Oranlar */}
+                <div className="mt-2 flex items-center justify-between gap-3 pl-8">
                   <div className="h-1.5 flex-1 rounded-full bg-neutral-150 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
@@ -307,6 +302,11 @@ export default function TurkeyEvSalesWidget() {
                       }`}
                       style={{ width: `${Math.min(100, item.marketShare * 3)}%` }}
                     />
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold shrink-0">
+                    <span className="text-neutral-500">%{item.marketShare} pay</span>
+                    <span className="text-neutral-300">·</span>
+                    <span className="text-red-600 font-black">{item.change}</span>
                   </div>
                 </div>
               </div>
