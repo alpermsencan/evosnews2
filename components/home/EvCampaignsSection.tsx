@@ -8,6 +8,7 @@ interface CampaignItem {
   brand: string;
   model: string;
   bankPartner: string;
+  bankUrl: string;
   loanAmount: string;
   maturity: string;
   interestRate: string;
@@ -24,7 +25,8 @@ const CAMPAIGNS: CampaignItem[] = [
     id: "togg-kamu",
     brand: "TOGG",
     model: "T10X V2 Uzun Menzil",
-    bankPartner: "Kamu Bankaları (Ziraat, Vakıfbank, Halkbank)",
+    bankPartner: "Kamu Bankaları (Ziraat, Vakıf, Halk)",
+    bankUrl: "https://www.ziraatbank.com.tr/tr/bireysel/krediler/tasit-kredisi",
     loanAmount: "800.000 TL",
     maturity: "12 Ay",
     interestRate: "%0 FAİZ",
@@ -44,6 +46,7 @@ const CAMPAIGNS: CampaignItem[] = [
     brand: "Tesla",
     model: "Model Y RWD 'Juniper'",
     bankPartner: "Garanti BBVA & Akbank",
+    bankUrl: "https://www.garantibbva.com.tr/krediler/tasit-kredisi/elektrikli-arac-kredisi",
     loanAmount: "400.000 TL",
     maturity: "12 Ay",
     interestRate: "%1.49 FAİZ",
@@ -63,6 +66,7 @@ const CAMPAIGNS: CampaignItem[] = [
     brand: "Hyundai",
     model: "Inster & Ioniq 5",
     bankPartner: "Yapı Kredi",
+    bankUrl: "https://www.yapikredi.com.tr/bireysel-bankacilik/krediler/tasit-kredileri/doga-dostu-tasit-kredisi",
     loanAmount: "300.000 TL",
     maturity: "12 Ay",
     interestRate: "%0.99 FAİZ",
@@ -82,6 +86,7 @@ const CAMPAIGNS: CampaignItem[] = [
     brand: "Kia",
     model: "EV3 & EV6 GT-Line",
     bankPartner: "Kuveyt Türk & Garanti BBVA",
+    bankUrl: "https://www.kuveytturk.com.tr/bireysel/finansmanlar/arac-finansmani/yesil-arac-finansmani",
     loanAmount: "250.000 TL",
     maturity: "12 Ay",
     interestRate: "%0.99 FAİZ",
@@ -100,7 +105,8 @@ const CAMPAIGNS: CampaignItem[] = [
     id: "renault-qnb",
     brand: "Renault",
     model: "5 E-Tech & Megane E-Tech",
-    bankPartner: "QNB Finansbank & TEB",
+    bankPartner: "QNB & TEB",
+    bankUrl: "https://www.qnb.com.tr/bireysel/krediler/tasit-kredisi",
     loanAmount: "200.000 TL",
     maturity: "12 Ay",
     interestRate: "%0 FAİZ",
@@ -111,7 +117,7 @@ const CAMPAIGNS: CampaignItem[] = [
       "Bireysel alımlarda dosya masrafı muafiyeti",
       "Ev tipi şarj ünitesi (Wallbox) kurulum indirimi",
     ],
-    vehicleSlug: "renault-5-e-tech-2026",
+    vehicleSlug: "renault-5",
     expiryDate: "Stoklarla Sınırlı",
     type: "zero-interest",
   },
@@ -120,6 +126,7 @@ const CAMPAIGNS: CampaignItem[] = [
     brand: "BYD",
     model: "Atto 3 & Seal",
     bankPartner: "Türkiye İş Bankası",
+    bankUrl: "https://www.isbank.com.tr/cevreye-duyarli-tasit-kredisi",
     loanAmount: "350.000 TL",
     maturity: "12 Ay",
     interestRate: "%1.29 FAİZ",
@@ -160,52 +167,63 @@ export default function EvCampaignsSection() {
           </p>
         </div>
 
-        {/* Filtre Butonları */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-neutral-100 p-1 rounded-xl text-xs font-bold">
-          <button
-            type="button"
-            onClick={() => setFilter("all")}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              filter === "all"
-                ? "bg-neutral-950 text-white shadow-xs"
-                : "text-neutral-600 hover:text-neutral-950"
-            }`}
+        {/* Sağ: Finansman Hesaplayıcı Linki & Filtreler */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/finansman"
+            className="text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-xl transition flex items-center gap-1"
           >
-            Tümü ({CAMPAIGNS.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilter("zero-interest")}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              filter === "zero-interest"
-                ? "bg-neutral-950 text-white shadow-xs"
-                : "text-neutral-600 hover:text-red-600"
-            }`}
-          >
-            %0 Faiz Fırsatları
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilter("green-loan")}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              filter === "green-loan"
-                ? "bg-neutral-950 text-white shadow-xs"
-                : "text-neutral-600 hover:text-neutral-950"
-            }`}
-          >
-            Yeşil Taşıt Kredileri
-          </button>
-          <button
-            type="button"
-            onClick={() => setFilter("trade-in")}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              filter === "trade-in"
-                ? "bg-neutral-950 text-white shadow-xs"
-                : "text-neutral-600 hover:text-neutral-950"
-            }`}
-          >
-            Takas & İndirim
-          </button>
+            <span>Kredi & Vergi Hesapla</span>
+            <span>→</span>
+          </Link>
+
+          {/* Filtre Butonları */}
+          <div className="flex flex-wrap items-center gap-1 bg-neutral-100 p-1 rounded-xl text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setFilter("all")}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                filter === "all"
+                  ? "bg-neutral-950 text-white shadow-xs"
+                  : "text-neutral-600 hover:text-neutral-950"
+              }`}
+            >
+              Tümü ({CAMPAIGNS.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter("zero-interest")}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                filter === "zero-interest"
+                  ? "bg-neutral-950 text-white shadow-xs"
+                  : "text-neutral-600 hover:text-red-600"
+              }`}
+            >
+              %0 Faiz
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter("green-loan")}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                filter === "green-loan"
+                  ? "bg-neutral-950 text-white shadow-xs"
+                  : "text-neutral-600 hover:text-neutral-950"
+              }`}
+            >
+              Yeşil Taşıt Kredisi
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter("trade-in")}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                filter === "trade-in"
+                  ? "bg-neutral-950 text-white shadow-xs"
+                  : "text-neutral-600 hover:text-neutral-950"
+              }`}
+            >
+              Takas & İndirim
+            </button>
+          </div>
         </div>
       </div>
 
@@ -214,16 +232,23 @@ export default function EvCampaignsSection() {
         {filtered.map((item) => (
           <div
             key={item.id}
-            className="group flex flex-col justify-between rounded-xl border border-neutral-200/90 bg-neutral-50/40 p-4 transition-all hover:border-red-600/50 hover:bg-white hover:shadow-md"
+            className="group flex flex-col justify-between rounded-xl border border-neutral-200/90 bg-neutral-50/40 p-4 transition-all hover:border-red-600/40 hover:bg-white hover:shadow-md"
           >
             <div>
-              {/* Üst Rozetler */}
+              {/* Üst Rozetler (Banka Linki & Faiz Oranı) */}
               <div className="flex items-center justify-between gap-2 border-b border-neutral-150 pb-2.5 mb-3">
-                <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
-                  {item.bankPartner}
-                </span>
+                <a
+                  href={item.bankUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-neutral-600 hover:text-red-600 transition truncate max-w-[65%]"
+                  title={`${item.bankPartner} resmi kredi detay sayfasına git`}
+                >
+                  <span className="truncate">{item.bankPartner}</span>
+                  <span className="text-[10px] text-neutral-400 group-hover:text-red-500">↗</span>
+                </a>
                 <span
-                  className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${
+                  className={`rounded-md px-2 py-0.5 text-[10px] font-black uppercase tracking-wider shrink-0 ${
                     item.interestRate.includes("%0")
                       ? "bg-red-600 text-white shadow-xs"
                       : "bg-neutral-900 text-white"
@@ -233,15 +258,18 @@ export default function EvCampaignsSection() {
                 </span>
               </div>
 
-              {/* Model & Marka Başlığı */}
-              <div className="flex items-baseline gap-1.5">
+              {/* Model & Marka Başlığı (Doğrudan Model Sayfasına Linkli) */}
+              <Link
+                href={`/araclar/${item.vehicleSlug}`}
+                className="group/title flex items-baseline gap-1.5 hover:opacity-90 transition"
+              >
                 <span className="text-xs font-black text-red-600 uppercase tracking-wider">
                   {item.brand}
                 </span>
-                <h3 className="text-sm font-black text-neutral-950 tracking-tight">
+                <h3 className="text-sm font-black text-neutral-950 tracking-tight group-hover/title:text-red-600 transition">
                   {item.model}
                 </h3>
-              </div>
+              </Link>
 
               {/* Finansal Metrik Kutuları */}
               <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
@@ -276,18 +304,32 @@ export default function EvCampaignsSection() {
               </ul>
             </div>
 
-            {/* Alt Buton & Son Tarih */}
+            {/* Alt Butonlar & Bağlantılar */}
             <div className="mt-4 pt-3 border-t border-neutral-150 flex items-center justify-between gap-2">
-              <span className="text-[10px] font-medium text-neutral-400">
+              <span className="text-[10px] font-medium text-neutral-400 shrink-0">
                 ⏳ {item.expiryDate}
               </span>
-              <Link
-                href={`/araclar/${item.vehicleSlug}`}
-                className="inline-flex items-center gap-1 text-[11px] font-black text-neutral-900 group-hover:text-red-600 transition"
-              >
-                <span>Modeli İncele</span>
-                <span>→</span>
-              </Link>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href={item.bankUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 bg-white px-2.5 py-1 text-[11px] font-bold text-neutral-700 hover:bg-neutral-50 hover:text-neutral-900 transition shadow-2xs"
+                  title="Resmî banka kredi sayfasına git"
+                >
+                  <span>Banka Detayı</span>
+                  <span className="text-[10px]">↗</span>
+                </a>
+
+                <Link
+                  href={`/araclar/${item.vehicleSlug}`}
+                  className="inline-flex items-center gap-1 rounded-lg bg-neutral-950 px-2.5 py-1 text-[11px] font-black text-white hover:bg-red-600 transition shadow-xs"
+                >
+                  <span>Modeli Gör</span>
+                  <span>→</span>
+                </Link>
+              </div>
             </div>
           </div>
         ))}
