@@ -45,7 +45,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     const b = await req.json();
     const data: Record<string, unknown> = {};
 
-    for (const key of ["title", "brand", "model", "city", "color", "damage", "description", "image", "sellerName", "sellerType"]) {
+    for (const key of ["title", "brand", "model", "city", "color", "damage", "description", "image", "sellerName", "sellerType", "sellerPhone"]) {
       if (b[key] !== undefined) data[key] = b[key];
     }
     for (const key of ["price", "km", "year", "rangeKm", "batteryHealth", "warrantyMonthsLeft", "realRangeKm"]) {

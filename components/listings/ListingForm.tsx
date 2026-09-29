@@ -115,6 +115,9 @@ export default function ListingForm({ vehicles }: { vehicles: VehicleOption[] })
               <option>Yetkili Bayi</option>
             </select>
           </Field>
+          <Field label="İLETİŞİM TELEFONU" help="İlanda alıcıların göreceği telefon numarası">
+            <input name="sellerPhone" type="tel" placeholder="05XX XXX XX XX" className={inputClass} />
+          </Field>
           <Field label="İLAN MENZİLİ (km)" help="Üreticinin ilan ettiği WLTP değeri">
             <input name="rangeKm" type="number" min={0} className={inputClass} />
           </Field>

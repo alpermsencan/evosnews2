@@ -13,6 +13,6 @@ export function siteUrl(): string {
   return "http://localhost:3000";
 }
 
-export const SITE_NAME = "Evos Gazete";
+export const SITE_NAME = "EVOtoPilot";
 export const SITE_DESCRIPTION =
-  "Elektrikli araç haberleri, şarj ağı, ÖTV rehberi, fiyat analizi ve ikinci el pazarı.";
+  "Elektrikli araç rehberi, şarj asistanı, ÖTV rehberi, fiyat analizleri ve ikinci el pazaryeri.";

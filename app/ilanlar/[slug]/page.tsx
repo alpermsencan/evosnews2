@@ -14,6 +14,7 @@ import ListingGallery from "@/components/listings/ListingGallery";
 import ListingStickyHeader from "@/components/listings/ListingStickyHeader";
 import ListingTouchGallery from "@/components/listings/ListingTouchGallery";
 import VoltScoreWidget from "@/components/listings/VoltScoreWidget";
+import ListingContactBox from "@/components/listings/ListingContactBox";
 
 export const dynamic = "force-dynamic";
 
@@ -220,25 +221,16 @@ export default async function ListingDetail({
         {/* SAĞ SÜTUN — DETAYLAR & SATICI */}
         <aside className="flex w-full shrink-0 flex-col gap-5 lg:w-[340px]">
 
-          <section className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5">
-            <h2 className="text-sm font-black tracking-wide text-neutral-800">SATICI</h2>
-            <span className="text-[15px] font-black text-neutral-900">
-              {listing.sellerName}
-            </span>
-            <span className="text-[12px] text-neutral-500">{listing.sellerType}</span>
-            {listing.user && (
-              <Link
-                href={`/profil/${listing.user.username}`}
-                className="text-[12px] font-bold text-evos hover:underline"
-              >
-                Profili gör
-              </Link>
-            )}
-            <p className="mt-1 rounded bg-neutral-50 p-2 text-[11px] leading-relaxed text-neutral-500">
-              Evos ilanı yayımlar, satışa aracılık etmez. Ödeme ve devir
-              işlemlerini satıcıyla doğrudan yürütün.
-            </p>
-          </section>
+          {/* SATICI BİLGİSİ, TELEFON, WHATSAPP & DİREKT MESAJ GÖNDERME */}
+          <ListingContactBox
+            listingId={listing.id}
+            listingSlug={listing.slug}
+            sellerName={listing.sellerName}
+            sellerType={listing.sellerType}
+            sellerPhone={listing.sellerPhone}
+            sellerUserId={listing.userId}
+            viewerId={viewer?.id}
+          />
 
           {listing.vehicle && (
             <section className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5">

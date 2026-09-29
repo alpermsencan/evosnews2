@@ -119,14 +119,14 @@ export default async function HomePage() {
                     <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-105 transition duration-300" />
                   )}
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-black uppercase text-red-600 tracking-wider">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[11px] font-black uppercase text-red-600 tracking-wider">
                     {a.category?.name || "Editör İncelemesi"}
                   </span>
-                  <h4 className="text-xs sm:text-sm font-black text-neutral-900 group-hover:text-red-600 transition leading-snug line-clamp-2">
+                  <h4 className="text-base sm:text-lg font-black text-neutral-950 group-hover:text-red-600 transition-colors leading-snug line-clamp-2">
                     {a.title}
                   </h4>
-                  <div className="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-neutral-400">
+                  <div className="flex items-center gap-2 mt-1 text-[11px] font-bold text-neutral-500">
                     <span className="truncate">{a.author?.name || "Editör"}</span>
                     <span>·</span>
                     <span>{timeAgo(a.publishedAt || new Date())}</span>

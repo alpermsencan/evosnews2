@@ -13,9 +13,9 @@ import { CategoryIcon } from "@/components/listings/CategoryIcon";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "2.EL İLANLAR — Elektrikli Araç Pazaryeri",
+  title: "İkinci El Elektrikli Araçlar — EVOtoPilot",
   description:
-    "Doğrulanmış batarya raporlu, güven endeksli ve garantili 2. el elektrikli araç ilanları.",
+    "Türkiye'nin en zengin, güncel ve güvenilir elektrikli araç ilan platformu.",
 };
 
 type SP = Promise<Record<string, string | undefined>>;
@@ -88,28 +88,12 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
 
             {/* Dikkat Çekici & Kurumsal Başlık */}
             <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight uppercase leading-tight drop-shadow-sm">
-              2. El Elektrikli Araçlar
+              İkinci El Elektrikli Araçlar
             </h1>
 
             <p className="text-xs sm:text-sm text-neutral-300 font-semibold leading-relaxed">
-              Doğrulanmış batarya sağlık raporlu (SOH), gerçek menzil testli ve ekspertiz güvenceli Türkiye&apos;nin en zengin elektrikli araç ilanları.
+              Türkiye&apos;nin en zengin, güncel ve güvenilir elektrikli araç ilan platformu.
             </p>
-
-            {/* Güven Rozetleri */}
-            <div className="flex flex-wrap items-center gap-2.5 pt-2 text-[11px] font-bold text-neutral-300">
-              <span className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1">
-                <span className="text-sky-400">✓</span>
-                <span>Batarya Sağlık Raporu</span>
-              </span>
-              <span className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1">
-                <span className="text-emerald-400">✓</span>
-                <span>Sıfır Komisyon</span>
-              </span>
-              <span className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg px-2.5 py-1">
-                <span className="text-amber-400">✓</span>
-                <span>Ekspertiz Güvencesi</span>
-              </span>
-            </div>
           </div>
 
           {/* Sağ Kolon: İlan Ver Butonu & İlan Sayacı */}

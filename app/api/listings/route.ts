@@ -153,6 +153,7 @@ export async function POST(req: NextRequest) {
         condition,
         sellerType,
         sellerName: b.sellerName || viewer?.name || "Evos üyesi",
+        sellerPhone: b.sellerPhone ? String(b.sellerPhone).slice(0, 30) : null,
         // Beyan edilen batarya sağlığı; doğrulanmış rapor geldiğinde onun
         // ölçümü öncelik kazanır (bkz. lib/listings.ts).
         batteryHealth: optionalInt(b.batteryHealth) ?? 100,

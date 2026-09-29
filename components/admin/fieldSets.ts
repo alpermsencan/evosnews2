@@ -197,3 +197,65 @@ export const tickerFields: Field[] = [
   { name: "changePct", label: "DEĞİŞİM (%)", type: "number" },
   { name: "order", label: "SIRA", type: "number" },
 ];
+
+export const listingFields: Field[] = [
+  { name: "title", label: "İLAN BAŞLIĞI", type: "text", required: true, full: true },
+  { name: "brand", label: "MARKA", type: "text", required: true },
+  { name: "model", label: "MODEL", type: "text", required: true },
+  { name: "year", label: "MODEL YILI", type: "number", required: true },
+  { name: "price", label: "FİYAT (₺)", type: "number", required: true },
+  { name: "km", label: "KİLOMETRE", type: "number" },
+  { name: "city", label: "ŞEHİR", type: "text", required: true },
+  { name: "color", label: "RENK", type: "text" },
+  {
+    name: "condition",
+    label: "DURUM",
+    type: "select",
+    options: [
+      { value: "IKINCI_EL", label: "İkinci El" },
+      { value: "SIFIR", label: "Sıfır" },
+    ],
+  },
+  { name: "sellerName", label: "SATICI AD SOYAD", type: "text", required: true },
+  { name: "sellerPhone", label: "SATICI TELEFON", type: "text", placeholder: "05XX XXX XX XX" },
+  {
+    name: "sellerType",
+    label: "SATICI TİPİ",
+    type: "select",
+    options: [
+      { value: "Sahibinden", label: "Sahibinden" },
+      { value: "Galeri", label: "Galeri" },
+      { value: "Yetkili Bayi", label: "Yetkili Bayi" },
+    ],
+  },
+  {
+    name: "damage",
+    label: "HASAR DURUMU",
+    type: "select",
+    options: [
+      { value: "Hasarsız", label: "Hasarsız" },
+      { value: "Boyalı", label: "Boyalı" },
+      { value: "Lokal boyalı", label: "Lokal boyalı" },
+      { value: "Değişen var", label: "Değişen var" },
+      { value: "Ağır hasar kayıtlı", label: "Ağır hasar kayıtlı" },
+    ],
+  },
+  { name: "batteryHealth", label: "BATARYA SAĞLIĞI (%)", type: "number" },
+  { name: "rangeKm", label: "MENZİL (km)", type: "number" },
+  { name: "image", label: "KAPAK GÖRSELİ", type: "image", folder: "evos/ilanlar" },
+  { name: "images", label: "GALERİ GÖRSELLERİ (ÇOKLU)", type: "images", folder: "evos/ilanlar" },
+  {
+    name: "status",
+    label: "YAYIN DURUMU",
+    type: "select",
+    options: [
+      { value: "PUBLISHED", label: "Yayında" },
+      { value: "PENDING", label: "Onay Bekliyor" },
+      { value: "REJECTED", label: "Reddedildi" },
+      { value: "SOLD", label: "Satıldı" },
+    ],
+  },
+  { name: "isSponsored", label: "SPONSORLU / ÖNE ÇIKAN", type: "checkbox" },
+  { name: "description", label: "İLAN AÇIKLAMASI", type: "textarea", rows: 6, full: true },
+];
+

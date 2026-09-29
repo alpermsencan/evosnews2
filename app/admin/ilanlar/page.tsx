@@ -37,9 +37,17 @@ export default async function AdminListings({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-black text-neutral-900">
-          İlanlar ({listings.length})
-        </h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-black text-neutral-900">
+            İlanlar ({listings.length})
+          </h2>
+          <Link
+            href="/admin/ilanlar/yeni"
+            className="rounded-lg bg-evos px-3 py-1.5 text-xs font-black text-white hover:bg-evos-dark transition shadow-xs"
+          >
+            + YENİ İLAN EKLE
+          </Link>
+        </div>
         <div className="flex flex-wrap gap-1.5">
           <Filter active={!filter} href="/admin/ilanlar" label={`Tümü`} />
           {["PENDING", "PUBLISHED", "REJECTED", "SOLD"].map((s) => (

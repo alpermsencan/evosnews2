@@ -164,7 +164,7 @@ export default function Logo({
                 isDark ? "text-neutral-400" : "text-neutral-500"
               }`}
             >
-              {size === "sm" ? "ELEKTRİKLİ ARAÇ DANIŞMANI" : "ŞARJLI ELEKTRİKLİ ARAÇ REHBERİ"}
+              {size === "sm" ? "ELEKTRİKLİ ARAÇ DANIŞMANI" : "ELEKTRİKLİ ARAÇ REHBERİ"}
             </span>
           </div>
         )}

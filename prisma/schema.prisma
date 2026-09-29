@@ -160,6 +160,10 @@ model User {
   listings         Listing[]         @relation("ListingSeller")
   listingFavorites ListingFavorite[]
 
+  // Doğrudan Mesajlaşma
+  messagesSent     DirectMessage[]   @relation("SentDirectMessages")
+  messagesReceived DirectMessage[]   @relation("ReceivedDirectMessages")
+
   @@index([createdAt])
 }
 
@@ -517,6 +521,7 @@ model Listing {
   images        String[] @default([])
   sellerType    String   @default("Galeri")
   sellerName    String
+  sellerPhone   String?
   batteryHealth Int      @default(95)
   rangeKm       Int
   color         String
@@ -563,6 +568,7 @@ model Listing {
 
   batteryReport BatteryReport?
   favorites     ListingFavorite[]
+  messages      DirectMessage[]
 
   @@index([brand])
   @@index([price])
@@ -915,4 +921,21 @@ model OcpiToken {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model DirectMessage {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId   String   @db.ObjectId
+  sender     User     @relation("SentDirectMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String   @db.ObjectId
+  receiver   User     @relation("ReceivedDirectMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  listingId  String?  @db.ObjectId
+  listing    Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  content    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([receiverId, isRead, createdAt])
+  @@index([senderId, createdAt])
+  @@index([listingId])
 }

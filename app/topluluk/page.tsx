@@ -1,19 +1,23 @@
 import { prisma } from "@/lib/prisma";
-import FacebookCommunity from "@/components/community/FacebookCommunity";
+import { getCurrentUser } from "@/lib/auth";
+import RedditCommunity from "@/components/community/RedditCommunity";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+
 export const metadata = {
-  title: "Topluluk — Elektrikli Araç Sosyal Ağı",
+  title: "r/evotopilot — Elektrikli Araç Topluluğu",
   description:
-    "Elektrikli araç sahiplerinin deneyim paylaştığı, soru sorduğu ve yardımlaştığı Facebook tarzı sosyal topluluk.",
+    "Elektrikli araç sahiplerinin deneyim paylaştığı, soru sorduğu, menzil ve şarj verilerini tartıştığı r/evotopilot topluluğu.",
 };
 
 export default async function CommunityPage() {
+  let viewer = null;
   let posts: any[] = [];
   let topics: string[] = [];
 
   try {
-    const [fetchedPosts, fetchedTopics] = await Promise.all([
+    const [user, fetchedPosts, fetchedTopics] = await Promise.all([
+      getCurrentUser(),
       prisma.communityPost.findMany({
         orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
       }),
@@ -23,6 +27,7 @@ export default async function CommunityPage() {
         orderBy: { topic: "asc" },
       }),
     ]);
+    viewer = user;
     posts = fetchedPosts;
     topics = fetchedTopics.map((t) => t.topic).filter(Boolean);
   } catch {
@@ -31,16 +36,19 @@ export default async function CommunityPage() {
 
   // Varsayılan konular
   if (topics.length === 0) {
-    topics = ["Genel", "Togg", "Tesla", "Şarj Deneyimi", "Uzun Yol", "Kış Menzili"];
+    topics = ["Genel", "Togg", "Tesla", "Şarj Deneyimi", "Uzun Yol", "Kış Menzili", "Batarya & Sağlık"];
   }
 
   return (
-    <FacebookCommunity
-      initialPosts={posts.map((p) => ({
-        ...p,
-        createdAt: p.createdAt ? p.createdAt.toISOString() : new Date().toISOString(),
-      }))}
-      topics={topics}
-    />
+    <div className="py-4 sm:py-6">
+      <RedditCommunity
+        initialPosts={posts.map((p) => ({
+          ...p,
+          createdAt: p.createdAt ? p.createdAt.toISOString() : new Date().toISOString(),
+        }))}
+        topics={topics}
+        viewer={viewer}
+      />
+    </div>
   );
 }

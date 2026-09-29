@@ -15,7 +15,13 @@ export default async function AccountPage() {
     <div className="flex flex-col gap-4 px-3 py-4 sm:px-0 sm:pt-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-lg font-black text-neutral-900">Hesap Ayarları</h1>
-        <div className="flex gap-3 text-xs font-bold">
+        <div className="flex flex-wrap gap-3 text-xs font-bold">
+          <Link
+            href="/hesabim/mesajlar"
+            className="text-blue-600 hover:text-blue-800"
+          >
+            MESAJLARIM →
+          </Link>
           <Link
             href={`/profil/${user.username}`}
             className="text-neutral-500 hover:text-evos"

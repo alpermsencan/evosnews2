@@ -6,6 +6,8 @@ import { readBreakdown } from "@/lib/listings";
 import BatteryReportForm from "@/components/admin/BatteryReportForm";
 import ListingRowActions from "@/components/admin/ListingRowActions";
 import VoltScoreBadge from "@/components/listings/VoltScoreBadge";
+import EntityForm from "@/components/admin/EntityForm";
+import { listingFields } from "@/components/admin/fieldSets";
 
 export const dynamic = "force-dynamic";
 
@@ -25,13 +27,13 @@ export default async function AdminListingDetail({
   const r = listing.batteryReport;
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-neutral-200 pb-3">
         <div>
           <Link href="/admin/ilanlar" className="text-[11px] font-bold text-neutral-400 hover:text-evos">
             ← İLANLAR
           </Link>
-          <h2 className="text-lg font-black text-neutral-900">{listing.title}</h2>
+          <h2 className="text-xl font-black text-neutral-900">{listing.title}</h2>
           <p className="text-[13px] text-neutral-500">
             {listing.brand} {listing.model} · {listing.year} ·{" "}
             {listing.km.toLocaleString("tr-TR")} km · {listing.city} ·{" "}
@@ -42,6 +44,7 @@ export default async function AdminListingDetail({
         <div className="flex flex-col items-end gap-2">
           <Link
             href={`/ilanlar/${listing.slug}`}
+            target="_blank"
             className="text-[11px] font-bold text-evos hover:underline"
           >
             SİTEDE GÖR →
@@ -49,6 +52,43 @@ export default async function AdminListingDetail({
           <ListingRowActions id={listing.id} status={listing.status} isSponsored={listing.isSponsored} />
         </div>
       </div>
+
+      {/* İlan Düzenleme Formu (Tüm Bilgiler & Fotoğraflar) */}
+      <section className="rounded-xl border border-neutral-200 bg-white p-5 shadow-xs">
+        <h3 className="text-base font-black text-neutral-900 mb-1">İlan Bilgilerini Düzenle</h3>
+        <p className="text-xs text-neutral-500 mb-4">
+          Fiyat, satıcı bilgisi, telefon numarası, teknik özellikler ve fotoğrafları buradan doğrudan güncelleyebilirsiniz.
+        </p>
+        <EntityForm
+          fields={listingFields}
+          initial={{
+            title: listing.title,
+            brand: listing.brand,
+            model: listing.model,
+            year: listing.year,
+            price: listing.price,
+            km: listing.km,
+            city: listing.city,
+            color: listing.color,
+            condition: listing.condition,
+            sellerName: listing.sellerName,
+            sellerPhone: listing.sellerPhone,
+            sellerType: listing.sellerType,
+            damage: listing.damage,
+            batteryHealth: listing.batteryHealth,
+            rangeKm: listing.rangeKm,
+            image: listing.image,
+            images: listing.images,
+            status: listing.status,
+            isSponsored: listing.isSponsored,
+            description: listing.description,
+          }}
+          endpoint={`/api/listings/${listing.id}`}
+          method="PUT"
+          redirectTo="/admin/ilanlar"
+          submitLabel="İLAN BİLGİLERİNİ GÜNCELLE"
+        />
+      </section>
 
       <div className="flex flex-col gap-5 lg:flex-row">
         <section className="flex min-w-0 flex-1 flex-col gap-3 rounded-lg border border-neutral-200 bg-white p-5">

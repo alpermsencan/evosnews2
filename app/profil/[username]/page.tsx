@@ -16,7 +16,6 @@ import FollowButton from "@/components/user/FollowButton";
 import FriendButton from "@/components/social/FriendButton";
 import PostComposer from "@/components/social/PostComposer";
 import PostFeed from "@/components/social/PostFeed";
-import { IconPlay } from "@/components/ui/Icons";
 import type { SocialPost } from "@/components/social/types";
 
 export const dynamic = "force-dynamic";
@@ -37,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!user) return { title: "Profil bulunamadı" };
   return {
     title: `${user.name} (@${user.username})`,
-    description: user.bio ?? `${user.name} kullanıcısının Evos Gazete profili.`,
+    description: user.bio ?? `${user.name} kullanıcısının EVOtoPilot profili.`,
   };
 }
 
@@ -104,12 +103,11 @@ export default async function ProfilePage({ params, searchParams }: Props) {
 
   // Sekmeye göre yalnızca gereken veri çekilir
   const posts =
-    tab === "gonderiler" || tab === "reels"
+    tab === "gonderiler"
       ? await getFeed({
           viewerId: viewer?.id ?? null,
           scope: "user",
           authorId: user.id,
-          kind: tab === "reels" ? "reel" : undefined,
           limit: 10,
         })
       : [];
@@ -277,39 +275,26 @@ export default async function ProfilePage({ params, searchParams }: Props) {
         ))}
       </nav>
 
-      {/* GÖNDERİLER / REELS */}
-      {(tab === "gonderiler" || tab === "reels") && (
+      {/* GÖNDERİLER */}
+      {tab === "gonderiler" && (
         <div className="flex flex-col gap-3">
-          {isSelf && tab === "gonderiler" && <PostComposer />}
+          {isSelf && <PostComposer />}
 
           <PostFeed
-            key={tab}
+            key="gonderiler"
             query={{
               scope: "user",
               username: user.username,
-              ...(tab === "reels" ? { kind: "reel" as const } : {}),
             }}
             initialItems={items}
             initialCursor={cursor}
             emptyState={
               <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-neutral-300 bg-white px-4 py-14 text-center">
                 <p className="max-w-md text-sm text-neutral-500">
-                  {tab === "reels"
-                    ? isSelf
-                      ? "Henüz reel paylaşmadın. İlk dikey videonu yükle."
-                      : "Bu kullanıcı henüz reel paylaşmamış."
-                    : isSelf
+                  {isSelf
                     ? "Henüz gönderi paylaşmadın. Yukarıdaki kutudan başlayabilirsin."
                     : "Bu kullanıcının sana açık bir gönderisi yok."}
                 </p>
-                {isSelf && tab === "reels" && (
-                  <Link
-                    href="/reels/yeni"
-                    className="rounded-md bg-evos px-5 py-2 text-[12px] font-black text-white transition hover:bg-evos-dark"
-                  >
-                    REEL YÜKLE
-                  </Link>
-                )}
               </div>
             }
           />
