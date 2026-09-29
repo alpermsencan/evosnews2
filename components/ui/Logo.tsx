@@ -75,17 +75,19 @@ export default function Logo({
         <path
           d="M22 6L11 21H19L16 34L29 17H21L24 6H22Z"
           fill="url(#evRedGrad)"
+          className="animate-ev-bolt"
         />
 
         {/* 4. Şimşek İç Enerji Parlaması */}
         <path
           d="M21 9L14 20H20L18 28L25 18H20L22 9H21Z"
           fill="#FFFFFF"
-          fillOpacity="0.35"
+          className="animate-ev-spark"
         />
 
         {/* 5. Aktif Güç / Şarj Diyotu */}
-        <circle cx="31" cy="9" r="2" fill="#DC2626" />
+        <circle cx="31" cy="9" r="2.5" className="animate-ping fill-red-400 opacity-75 origin-[31px_9px]" />
+        <circle cx="31" cy="9" r="2" fill="#EF4444" />
       </svg>
     </div>
   );
@@ -109,11 +111,11 @@ export default function Logo({
         {/* Üst Satır: ⚡ EV Rozeti + OTOPİLOT */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           {/* EV (Electric Vehicle) Rozeti: Türkçe 'Ev' ile karışmayı %100 önleyen elektrik şimşekli kapsül */}
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-[11px] sm:text-xs tracking-wider shadow-xs ring-1 ring-red-500/40 select-none">
-            <svg className="w-3 h-3 fill-current shrink-0 animate-pulse" viewBox="0 0 24 24">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-gradient-to-r from-red-600 to-red-700 text-white font-black text-[11px] sm:text-xs tracking-wider ring-1 ring-red-500/40 select-none shadow-[0_0_10px_rgba(239,68,68,0.35)]">
+            <svg className="w-3 h-3 fill-current shrink-0 animate-pulse text-amber-300 drop-shadow-[0_0_4px_rgba(252,211,77,0.8)]" viewBox="0 0 24 24">
               <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
             </svg>
-            <span>EV</span>
+            <span className="tracking-wide">EV</span>
           </span>
 
           {/* OTOPİLOT Kelimesi */}

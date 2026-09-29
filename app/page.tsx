@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/Icons";
 import TurkeyEvSalesWidget from "@/components/home/TurkeyEvSalesWidget";
 import EvCampaignsSection from "@/components/home/EvCampaignsSection";
+import EvotopilotChargingAssistant from "@/components/home/EvotopilotChargingAssistant";
 import {
   getHeadlines,
   getLatest,
@@ -283,46 +284,51 @@ export default async function HomePage() {
           {/* TÜRKİYE RESMÎ EV SATIŞ TABLOSU (ODMD) */}
           <TurkeyEvSalesWidget />
 
-          {/* ÖTV REHBERİ SÜTUNU (Executive Premium Siyah & Kırmızı) */}
-          <div className="overflow-hidden rounded-2xl border border-neutral-800/10 bg-white shadow-sm ring-1 ring-black/5">
+          {/* EVOTOPİLOT ŞARJ ASİSTANI (VoltHaber Stili Yolculuk & Batarya Dolum Maliyeti) */}
+          <EvotopilotChargingAssistant />
+
+          {/* ÖTV REHBERİ SÜTUNU (Executive Kurumsal Siyah & Kırmızı - Büyük Kalın Yazılar) */}
+          <div className="overflow-hidden rounded-2xl border border-neutral-300/80 bg-white shadow-sm ring-1 ring-black/5">
             {/* Header */}
             <div className="relative bg-gradient-to-r from-neutral-950 via-neutral-900 to-black px-4 py-3.5 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-neutral-800/80 text-red-500 ring-1 ring-white/10">
-                    <IconTag className="h-4 w-4" />
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-neutral-800 text-red-500 ring-1 ring-white/10 shadow-xs">
+                    <IconTag className="h-4.5 w-4.5" />
                   </span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-xs font-black tracking-wider text-white uppercase">ÖTV REHBERİ</h3>
-                      <span className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" />
+                      <h3 className="text-sm font-black tracking-wider text-white uppercase">
+                        ÖTV REHBERİ
+                      </h3>
+                      <span className="h-2 w-2 rounded-full bg-red-600 animate-pulse" />
                     </div>
-                    <p className="text-[10px] text-neutral-400 font-medium">2026 Resmî Vergi Dilimleri</p>
+                    <p className="text-[11px] text-neutral-400 font-bold">2026 Resmî Vergi Baremleri</p>
                   </div>
                 </div>
-                <span className="rounded-full bg-red-600/20 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-red-400 border border-red-500/30">
+                <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-xs">
                   GÜNCEL MATRAH
                 </span>
               </div>
             </div>
 
-            {/* Tax Brackets */}
-            <div className="flex flex-col divide-y divide-neutral-100 p-2">
-              {/* Dilim 1: %25 (Taban Dilim - Öne Çıkan) */}
-              <div className="relative rounded-xl border border-red-500/30 bg-red-50/20 p-3 transition hover:bg-red-50/40">
+            {/* Tax Brackets (Büyük & Kalın Tipografi) */}
+            <div className="flex flex-col divide-y divide-neutral-150 p-2.5">
+              {/* Dilim 1: %25 (Taban Dilim - Avantajlı) */}
+              <div className="relative rounded-xl border border-red-500/40 bg-red-50/30 p-3.5 transition hover:bg-red-50/50">
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-black text-neutral-950">Motor ≤ 160 kW</span>
-                      <span className="rounded bg-red-600 px-1.5 py-0.2 text-[8px] font-black text-white uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-black text-neutral-950">Motor ≤ 160 kW</span>
+                      <span className="rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-black text-white uppercase tracking-wider">
                         AVANTAJLI
                       </span>
                     </div>
-                    <span className="text-[11px] font-semibold text-neutral-600">Matrah ≤ 1.450.000 ₺</span>
-                    <span className="text-[10px] text-neutral-500 font-medium mt-0.5">Togg T10X, Tesla Model Y SR, Atto 3</span>
+                    <span className="text-xs font-black text-neutral-800 mt-0.5">Matrah ≤ 1.450.000 ₺</span>
+                    <span className="text-[11px] text-neutral-500 font-semibold mt-0.5">Togg T10X, Tesla Model Y SR, Atto 3</span>
                   </div>
                   <div className="flex flex-col items-end">
-                    <span className="rounded-lg bg-red-600 px-2.5 py-1 text-xs font-black text-white shadow-xs">
+                    <span className="rounded-xl bg-red-600 px-3 py-1.5 text-sm font-black text-white shadow-xs">
                       %25 ÖTV
                     </span>
                   </div>
@@ -330,52 +336,60 @@ export default async function HomePage() {
               </div>
 
               {/* Dilim 2: %40 */}
-              <div className="flex items-center justify-between p-3 hover:bg-neutral-50 transition rounded-xl">
+              <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
-                  <span className="text-xs font-black text-neutral-900">Motor ≤ 160 kW</span>
-                  <span className="text-[11px] text-neutral-600 font-semibold">Matrah &gt; 1.450.000 ₺</span>
-                  <span className="text-[10px] text-neutral-400 font-medium mt-0.5">Yüksek donanımlı tek motor modeller</span>
+                  <span className="text-sm font-black text-neutral-950">Motor ≤ 160 kW</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.450.000 ₺</span>
+                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Yüksek donanımlı tek motor modeller</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="rounded-lg bg-neutral-100 border border-neutral-200 px-2.5 py-1 text-xs font-black text-neutral-900">
+                  <span className="rounded-xl bg-neutral-100 border border-neutral-300 px-3 py-1.5 text-sm font-black text-neutral-950">
                     %40 ÖTV
                   </span>
                 </div>
               </div>
 
               {/* Dilim 3: %50 */}
-              <div className="flex items-center justify-between p-3 hover:bg-neutral-50 transition rounded-xl">
+              <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
-                  <span className="text-xs font-black text-neutral-900">Motor &gt; 160 kW</span>
-                  <span className="text-[11px] text-neutral-600 font-semibold">Matrah ≤ 1.350.000 ₺</span>
-                  <span className="text-[10px] text-neutral-400 font-medium mt-0.5">Çift motor AWD baz versiyonlar</span>
+                  <span className="text-sm font-black text-neutral-950">Motor &gt; 160 kW</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah ≤ 1.350.000 ₺</span>
+                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Çift motor AWD baz versiyonlar</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="rounded-lg bg-neutral-100 border border-neutral-200 px-2.5 py-1 text-xs font-black text-neutral-900">
+                  <span className="rounded-xl bg-neutral-100 border border-neutral-300 px-3 py-1.5 text-sm font-black text-neutral-950">
                     %50 ÖTV
                   </span>
                 </div>
               </div>
 
               {/* Dilim 4: %60 */}
-              <div className="flex items-center justify-between p-3 hover:bg-neutral-50 transition rounded-xl">
+              <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
-                  <span className="text-xs font-black text-neutral-900">Motor &gt; 160 kW</span>
-                  <span className="text-[11px] text-neutral-600 font-semibold">Matrah &gt; 1.350.000 ₺</span>
-                  <span className="text-[10px] text-neutral-400 font-medium mt-0.5">Lüks & Yüksek Performans AWD</span>
+                  <span className="text-sm font-black text-neutral-950">Motor &gt; 160 kW</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.350.000 ₺</span>
+                  <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Lüks &amp; Yüksek Performans AWD</span>
                 </div>
                 <div className="flex flex-col items-end">
-                  <span className="rounded-lg bg-neutral-900 text-white px-2.5 py-1 text-xs font-black">
+                  <span className="rounded-xl bg-neutral-950 text-white px-3 py-1.5 text-sm font-black">
                     %60 ÖTV
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Footer note */}
-            <div className="bg-neutral-950 px-3.5 py-3 border-t border-neutral-800 text-[11px] leading-relaxed text-neutral-400">
-              <span className="text-red-500 font-black mr-1">●</span>
-              Nihai satış fiyatına ÖTV sonrası <strong>%20 KDV</strong> eklenir. Elektrikli araçlarda taban vergi baremi <strong>%25</strong>&apos;tir.
+            {/* Footer note & Finansman Link */}
+            <div className="bg-neutral-950 px-4 py-3 border-t border-neutral-800 flex items-center justify-between text-xs text-neutral-400 font-semibold">
+              <span className="leading-snug">
+                ÖTV sonrası <strong>%20 KDV</strong> eklenir.
+              </span>
+              <Link
+                href="/finansman"
+                className="text-red-500 font-black hover:text-red-400 flex items-center gap-1 shrink-0"
+              >
+                <span>Vergi Hesapla</span>
+                <span>→</span>
+              </Link>
             </div>
           </div>
 

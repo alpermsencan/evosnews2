@@ -312,7 +312,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .evos-service,
   .evos-service-icon,
-  .evos-service-icon > svg {
+  .evos-service-icon > svg,
+  .animate-ev-bolt,
+  .animate-ev-spark {
     animation: none !important;
     transition: none !important;
   }
@@ -321,3 +323,45 @@ body {
     transform: none;
   }
 }
+
+/* Logo EV Enerji ve Şimşek Animasyonu */
+@keyframes ev-energy-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4));
+    opacity: 0.95;
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.95)) drop-shadow(0 0 14px rgba(220, 38, 38, 0.6));
+    opacity: 1;
+  }
+}
+
+@keyframes ev-spark-flicker {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  30% {
+    opacity: 0.85;
+    transform: scale(1.03);
+  }
+  60% {
+    opacity: 0.45;
+    transform: scale(0.98);
+  }
+  80% {
+    opacity: 0.95;
+    transform: scale(1.02);
+  }
+}
+
+.animate-ev-bolt {
+  animation: ev-energy-pulse 2.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.animate-ev-spark {
+  animation: ev-spark-flicker 1.8s ease-in-out infinite;
+  transform-origin: center;
+}
+
