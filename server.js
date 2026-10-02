@@ -1,6 +1,25 @@
 /**
  * Hostinger ve Node.js sunucuları için Next.js üretim başlatıcı (entrypoint)
  */
+
+// Hostinger Linux konteynerlerinde /etc/resolv.conf SRV DNS hatasını önlemek için mongodb+srv bağlantısını doğrudan replika setine dönüştür
+if (
+  process.env.DATABASE_URL &&
+  process.env.DATABASE_URL.startsWith("mongodb+srv://") &&
+  process.env.DATABASE_URL.includes("cluster0.mbkkusx.mongodb.net")
+) {
+  process.env.DATABASE_URL = process.env.DATABASE_URL
+    .replace("mongodb+srv://", "mongodb://")
+    .replace(
+      "cluster0.mbkkusx.mongodb.net",
+      "ac-rnu0lc1-shard-00-00.mbkkusx.mongodb.net:27017,ac-rnu0lc1-shard-00-01.mbkkusx.mongodb.net:27017,ac-rnu0lc1-shard-00-02.mbkkusx.mongodb.net:27017"
+    );
+  if (!process.env.DATABASE_URL.includes("replicaSet=")) {
+    const sep = process.env.DATABASE_URL.includes("?") ? "&" : "?";
+    process.env.DATABASE_URL += `${sep}ssl=true&replicaSet=atlas-nzlu18-shard-0&authSource=admin`;
+  }
+}
+
 const { createServer } = require("http");
 const { parse } = require("url");
 const next = require("next");

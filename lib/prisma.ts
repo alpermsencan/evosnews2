@@ -32,6 +32,9 @@ function resolveDatabaseUrl(): string | undefined {
 }
 
 const dbUrl = resolveDatabaseUrl();
+if (dbUrl) {
+  process.env.DATABASE_URL = dbUrl;
+}
 
 export const prisma =
   globalForPrisma.prisma ??
