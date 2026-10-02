@@ -30,6 +30,7 @@ export default function NewsCard({
             alt={article.title}
             fill
             sizes="100px"
+            referrerPolicy="no-referrer"
             className="object-cover transition duration-300 group-hover:scale-105"
           />
         </div>
@@ -65,6 +66,7 @@ export default function NewsCard({
             alt={article.title}
             fill
             sizes="(max-width:640px) 100vw, 280px"
+            referrerPolicy="no-referrer"
             className="object-cover transition duration-500 group-hover:scale-105"
           />
           {article.isVideo && (
@@ -128,6 +130,7 @@ export default function NewsCard({
             fill
             priority={priority}
             sizes="(max-width:1024px) 100vw, 680px"
+            referrerPolicy="no-referrer"
             className="object-cover transition duration-700 group-hover:scale-105"
           />
           {/* Hafif Alttan Karartma (Görseli Asla Boğmaz) */}
@@ -172,6 +175,7 @@ export default function NewsCard({
           fill
           priority={priority}
           sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 340px"
+          referrerPolicy="no-referrer"
           className="object-cover transition duration-500 group-hover:scale-105"
         />
         {/* Kategori Etiketi */}

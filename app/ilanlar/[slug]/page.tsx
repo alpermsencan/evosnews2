@@ -16,6 +16,7 @@ import ListingTouchGallery from "@/components/listings/ListingTouchGallery";
 import VoltScoreWidget from "@/components/listings/VoltScoreWidget";
 import ListingContactBox from "@/components/listings/ListingContactBox";
 import CarDamageReport from "@/components/listings/CarDamageReport";
+import ListingLocationMap from "@/components/listings/ListingLocationMap";
 
 export const dynamic = "force-dynamic";
 
@@ -226,6 +227,12 @@ export default async function ListingDetail({
             sellerPhone={listing.sellerPhone}
             sellerUserId={listing.userId}
             viewerId={viewer?.id}
+          />
+
+          {/* HARİTALI ARAÇ KONUM BİLGİSİ (GOOGLE HARİTALAR ENTEGRASYONU) */}
+          <ListingLocationMap
+            city={listing.city}
+            district={listing.district}
           />
 
           {listing.vehicle && (

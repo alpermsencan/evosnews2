@@ -171,6 +171,15 @@ export function IconMap({ className = base }: P) {
   );
 }
 
+export function IconPin({ className = base }: P) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21s-6-5.333-6-10a6 6 0 0 1 12 0c0 4.667-6 10-6 10z" />
+      <circle cx="12" cy="11" r="2.5" />
+    </svg>
+  );
+}
+
 export function IconArrowUp({ className = base }: P) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">

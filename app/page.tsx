@@ -67,7 +67,7 @@ export default async function HomePage() {
       id: { notIn: [...Array.from(heroIds), ...Array.from(editorIds)] }
     },
     orderBy: { publishedAt: "desc" },
-    take: 12,
+    take: 14,
     include: { author: true, category: true }
   }).catch(() => []);
 
@@ -144,94 +144,40 @@ export default async function HomePage() {
         <EvCampaignsSection />
       </section>
 
-      {/* ANA İÇERİK + SAĞ SÜTUN */}
-      <div className="flex flex-col gap-6 lg:flex-row">
-        <div className="flex min-w-0 flex-1 flex-col gap-8">
-          {/* GÜNDEM -> e-aracım Özel Analiz */}
+      {/* ANA İÇERİK + SAĞ SÜTUN (Masaüstünde Dengeli Yükseklik ve Üstten Hizalama) */}
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+        {/* SOL SÜTUN: ÖZEL ANALİZ VE GÜNCEL HABERLER */}
+        <div className="flex min-w-0 flex-1 flex-col gap-6">
           {feed.length > 0 && (
             <section className="px-3 sm:px-0">
               <SectionTitle
-                title="e-aracım Özel Analiz"
+                title="e-aracım Özel Analiz & Gündem"
                 href="/kategori/haber-merkezi"
-                subtitle="Elektrikli mobilite ve otomotiv endüstrisinden derinlemesine analizler"
+                subtitle="Elektrikli mobilite, batarya inovasyonları ve otomotiv dünyasından en son gelişmeler"
               />
+              {/* 2 Büyük Öne Çıkan Kart */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {feed.slice(0, 2).map((a, i) => (
                   <NewsCard key={a.id} article={a} variant="wide" priority={i === 0} />
                 ))}
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {feed.slice(2, 10).map((a) => (
+
+              {/* 12 Haberden Oluşan 3 Sütunlu Dengeli Kart Izgarası */}
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {feed.slice(2, 14).map((a) => (
                   <NewsCard key={a.id} article={a} />
                 ))}
               </div>
-            </section>
-          )}
 
-          {/* ARAÇLARI KEŞFET */}
-          {safeVehicles.length > 0 && (
-            <section className="px-3 sm:px-0">
-              <SectionTitle
-                title="ARAÇLARI KEŞFET"
-                href="/araclar"
-                color="#0f766e"
-                subtitle="Türkiye'de satışta olan öne çıkan elektrikli modeller"
-              />
-              <CardRail itemClass="w-[62%] sm:w-[38%] lg:w-[32%]" autoPlay={true}>
-                {safeVehicles.map((v) => (
-                  <VehicleCard key={v.id} vehicle={v} />
-                ))}
-              </CardRail>
-            </section>
-          )}
-
-          {/* TOPLULUK */}
-          {safeCommunity.length > 0 && (
-            <section className="px-3 sm:px-0">
-              <SectionTitle
-                title="TOPLULUK"
-                href="/topluluk"
-                color="#c2410c"
-                subtitle="e-aracım topluluğu gerçek kullanıcı deneyimleri ve tartışmaları"
-              />
-              <div className="flex flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white">
-                {safeCommunity.map((p) => (
-                  <Link
-                    key={p.id}
-                    href="/topluluk"
-                    className="group flex items-start gap-3 border-b border-neutral-100 p-4 transition last:border-0 hover:bg-neutral-50"
-                  >
-                    {p.avatar && (
-                      <Image
-                        src={p.avatar}
-                        alt={p.author}
-                        width={40}
-                        height={40}
-                        className="h-10 w-10 shrink-0 rounded-full object-cover"
-                      />
-                    )}
-                    <div className="flex min-w-0 flex-1 flex-col gap-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded bg-orange-100 px-1.5 py-0.5 text-[10px] font-black text-orange-700">
-                          {p.topic.toUpperCase()}
-                        </span>
-                        <span className="text-[11px] font-semibold text-neutral-400">
-                          {p.author} · {timeAgo(p.createdAt)}
-                        </span>
-                      </div>
-                      <h3 className="text-[15px] font-black leading-snug text-neutral-900 group-hover:text-evos">
-                        {p.title}
-                      </h3>
-                      <p className="line-clamp-2 text-[13px] text-neutral-500">
-                        {p.body}
-                      </p>
-                      <div className="flex items-center gap-3 text-[11px] font-bold text-neutral-400">
-                        <span>♥ {p.likes}</span>
-                        <span>{p.replies} yanıt</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+              {/* Tüm Haberleri Gör Butonu */}
+              <div className="mt-6 flex justify-center">
+                <Link
+                  href="/kategori/haber-merkezi"
+                  className="inline-flex items-center gap-2 rounded-xl border border-neutral-300 bg-white px-6 py-3 text-xs font-black uppercase tracking-wider text-neutral-800 transition hover:border-neutral-950 hover:bg-neutral-950 hover:text-white shadow-2xs"
+                >
+                  <span>Tüm Haber &amp; Analizleri İncele</span>
+                  <span>→</span>
+                </Link>
               </div>
             </section>
           )}
@@ -336,7 +282,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Footer Bilgilendirme Notu (Finansman Butonu Kaldırıldı) */}
+            {/* Footer Bilgilendirme Notu */}
             <div className="bg-neutral-950 px-4 py-3 border-t border-neutral-800 text-xs text-neutral-400 font-medium">
               <p className="leading-relaxed">
                 Resmî Gazete 2026 baremleri. Tüm dilimlerde ÖTV hesaplaması sonrası nihai fiyata <strong className="text-white font-bold">%20 KDV</strong> ilave edilir.
@@ -360,6 +306,75 @@ export default async function HomePage() {
           </div>
         </aside>
       </div>
+
+      {/* ARAÇLARI KEŞFET (Tam Genişlik 1280px Lüks Model Vitrini) */}
+      {safeVehicles.length > 0 && (
+        <section className="px-3 sm:px-0 pt-2">
+          <SectionTitle
+            title="ARAÇLARI KEŞFET"
+            href="/araclar"
+            color="#0f766e"
+            subtitle="Türkiye pazarında satışta olan tüm güncel elektrikli otomobiller"
+          />
+          <CardRail itemClass="w-[78%] sm:w-[45%] md:w-[32%] lg:w-[24%]" autoPlay={true}>
+            {safeVehicles.map((v) => (
+              <VehicleCard key={v.id} vehicle={v} />
+            ))}
+          </CardRail>
+        </section>
+      )}
+
+      {/* TOPLULUK & KULLANICI DENEYİMLERİ (Tam Genişlik 2 Sütunlu Kart Tasarımı) */}
+      {safeCommunity.length > 0 && (
+        <section className="px-3 sm:px-0 pt-2">
+          <SectionTitle
+            title="TOPLULUK & KULLANICI DENEYİMLERİ"
+            href="/topluluk"
+            color="#c2410c"
+            subtitle="Gerçek elektrikli araç sahiplerinin tüketim, menzil ve yolculuk tecrübeleri"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {safeCommunity.map((p) => (
+              <Link
+                key={p.id}
+                href="/topluluk"
+                className="group flex items-start gap-4 rounded-2xl border border-neutral-200/90 bg-white p-5 transition duration-200 hover:border-neutral-950 hover:shadow-md"
+              >
+                {p.avatar && (
+                  <Image
+                    src={p.avatar}
+                    alt={p.author}
+                    width={44}
+                    height={44}
+                    className="h-11 w-11 shrink-0 rounded-full object-cover ring-2 ring-neutral-100"
+                  />
+                )}
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-md bg-orange-100 px-2 py-0.5 text-[10px] font-black text-orange-700">
+                      {p.topic.toUpperCase()}
+                    </span>
+                    <span className="text-[11px] font-semibold text-neutral-400">
+                      {p.author} · {timeAgo(p.createdAt)}
+                    </span>
+                  </div>
+                  <h3 className="text-base font-black leading-snug text-neutral-900 group-hover:text-evos transition">
+                    {p.title}
+                  </h3>
+                  <p className="line-clamp-2 text-xs sm:text-sm text-neutral-600 font-medium leading-relaxed">
+                    {p.body}
+                  </p>
+                  <div className="flex items-center gap-3 pt-1 text-[11px] font-bold text-neutral-400">
+                    <span className="text-red-500 font-black">♥ {p.likes}</span>
+                    <span>·</span>
+                    <span>{p.replies} yanıt</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

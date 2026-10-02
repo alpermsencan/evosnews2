@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
+import ImageLightboxModal from "@/components/ui/ImageLightboxModal";
 
 type Props = {
   defaultImage: string;
@@ -10,9 +11,10 @@ type Props = {
 };
 
 export default function ListingTouchGallery({ defaultImage, images = [], alt }: Props) {
-  const allImages = [defaultImage, ...images].filter(Boolean);
+  const allImages = Array.from(new Set([defaultImage, ...images].filter(Boolean)));
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const handleScroll = () => {
     if (!scrollRef.current) return;
@@ -44,17 +46,34 @@ export default function ListingTouchGallery({ defaultImage, images = [], alt }: 
   };
 
   if (allImages.length <= 1) {
+    const singleImg = allImages[0] || defaultImage;
     return (
-      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-neutral-100 shadow-sm border border-neutral-200">
-        <Image
-          src={allImages[0] || defaultImage}
+      <>
+        <div
+          onClick={() => setIsLightboxOpen(true)}
+          className="group relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-neutral-100 shadow-sm border border-neutral-200 cursor-pointer"
+        >
+          <Image
+            src={singleImg}
+            alt={alt}
+            fill
+            priority
+            sizes="(max-width:1024px) 100vw, 760px"
+            className="object-cover transition duration-500 group-hover:scale-[1.02]"
+          />
+          <div className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs font-bold text-white backdrop-blur transition group-hover:bg-black/80">
+            <span>🔍 Büyüt &amp; Yakınlaştır</span>
+          </div>
+        </div>
+
+        <ImageLightboxModal
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+          images={[singleImg]}
+          initialIndex={0}
           alt={alt}
-          fill
-          priority
-          sizes="(max-width:1024px) 100vw, 760px"
-          className="object-cover"
         />
-      </div>
+      </>
     );
   }
 
@@ -71,7 +90,11 @@ export default function ListingTouchGallery({ defaultImage, images = [], alt }: 
           {allImages.map((img, idx) => (
             <div
               key={idx}
-              className="relative h-full w-full shrink-0 snap-center overflow-hidden"
+              onClick={() => {
+                setActiveIdx(idx);
+                setIsLightboxOpen(true);
+              }}
+              className="relative h-full w-full shrink-0 snap-center overflow-hidden cursor-zoom-in"
             >
               <Image
                 src={img}
@@ -79,26 +102,41 @@ export default function ListingTouchGallery({ defaultImage, images = [], alt }: 
                 fill
                 priority={idx === 0}
                 sizes="(max-width:1024px) 100vw, 760px"
-                className="object-cover"
+                className="object-cover transition duration-300 group-hover:scale-[1.01]"
               />
             </div>
           ))}
         </div>
 
+        {/* Büyüt & Yakınlaştır Düğmesi */}
+        <button
+          type="button"
+          onClick={() => setIsLightboxOpen(true)}
+          className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs font-bold text-white backdrop-blur transition hover:bg-black/85 z-10 shadow"
+        >
+          <span>🔍 Büyüt &amp; Yakınlaştır</span>
+        </button>
+
         {/* Masaüstü Gezinme Okları */}
         <button
-          onClick={goPrev}
+          onClick={(e) => {
+            e.stopPropagation();
+            goPrev();
+          }}
           type="button"
           aria-label="Önceki Görsel"
-          className="absolute left-2.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white transition hover:bg-black/70 font-black text-xl z-10 backdrop-blur"
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/80 font-black text-xl z-10 backdrop-blur"
         >
           ‹
         </button>
         <button
-          onClick={goNext}
+          onClick={(e) => {
+            e.stopPropagation();
+            goNext();
+          }}
           type="button"
           aria-label="Sonraki Görsel"
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white transition hover:bg-black/70 font-black text-xl z-10 backdrop-blur"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white transition hover:bg-black/80 font-black text-xl z-10 backdrop-blur"
         >
           ›
         </button>
@@ -146,6 +184,15 @@ export default function ListingTouchGallery({ defaultImage, images = [], alt }: 
           </button>
         ))}
       </div>
+
+      {/* Lightbox Tam Ekran & Yakınlaştırma Modalı */}
+      <ImageLightboxModal
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        images={allImages}
+        initialIndex={activeIdx}
+        alt={alt}
+      />
     </div>
   );
 }

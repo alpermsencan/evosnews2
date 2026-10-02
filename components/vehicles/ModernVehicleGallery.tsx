@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import ImageLightboxModal from "@/components/ui/ImageLightboxModal";
 
 type Props = {
   defaultImage: string;
@@ -141,52 +142,14 @@ export default function ModernVehicleGallery({
         </div>
       )}
 
-      {/* Lightbox Tam Ekran Modal */}
-      {isLightboxOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <button
-            type="button"
-            onClick={() => setIsLightboxOpen(false)}
-            className="absolute top-5 right-5 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/25 text-2xl font-bold z-50"
-            title="Kapat (Esc)"
-          >
-            ✕
-          </button>
-
-          <div className="relative max-h-[88vh] max-w-[92vw] aspect-[16/10] w-full flex items-center justify-center">
-            <Image
-              src={currentSrc}
-              alt={`${alt} büyük görsel`}
-              fill
-              className="object-contain"
-            />
-          </div>
-
-          {allImages.length > 1 && (
-            <>
-              <button
-                onClick={goPrev}
-                type="button"
-                className="absolute left-6 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/25 text-3xl font-black z-50"
-              >
-                ‹
-              </button>
-              <button
-                onClick={goNext}
-                type="button"
-                className="absolute right-6 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/25 text-3xl font-black z-50"
-              >
-                ›
-              </button>
-              <div className="absolute bottom-6 inset-x-0 flex justify-center">
-                <span className="rounded-full bg-black/70 px-4 py-1.5 text-sm font-bold text-white border border-white/10">
-                  {activeIdx + 1} / {allImages.length}
-                </span>
-              </div>
-            </>
-          )}
-        </div>
-      )}
+      {/* Lightbox Tam Ekran & Yakınlaştırılabilir Modal */}
+      <ImageLightboxModal
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        images={allImages.map((img) => getImageSrc(img))}
+        initialIndex={activeIdx}
+        alt={alt}
+      />
     </div>
   );
 }

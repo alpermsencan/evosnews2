@@ -187,6 +187,7 @@ export default async function ArticlePage({ params }: Props) {
                 fill
                 priority
                 sizes="(max-width:1024px) 100vw, 860px"
+                referrerPolicy="no-referrer"
                 className="object-cover"
               />
             </div>
