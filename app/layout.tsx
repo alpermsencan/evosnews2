@@ -44,13 +44,18 @@ export const metadata: Metadata = {
     "ikinci el elektrikli araç",
     "ikinci el elektrikli otomobil",
   ],
+  manifest: "/site.webmanifest",
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon.ico", sizes: "any" },
     ],
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 
@@ -66,6 +71,10 @@ export default async function RootLayout({
   if (pathname.startsWith("/admin")) {
     return (
       <html lang="tr">
+        <head>
+          <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+        </head>
         <body className="min-h-screen bg-neutral-100 antialiased">{children}</body>
       </html>
     );
@@ -86,6 +95,15 @@ export default async function RootLayout({
 
   return (
     <html lang="tr">
+      <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
+        <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#070c18" />
+      </head>
       <body className="flex min-h-screen flex-col antialiased">
         <SessionProvider
           initialUser={
