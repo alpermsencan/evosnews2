@@ -72,15 +72,19 @@ export default function NearbyStations({
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
         }),
-      (err) =>
+      (err) => {
+        let msg = "Konum alınamadı. Lütfen tekrar deneyin.";
+        if (err.code === err.PERMISSION_DENIED) {
+          msg = "Konum izni verilmedi. Tarayıcınızın adres çubuğundaki kilit simgesine tıklayarak Konum iznine izin verebilirsiniz.";
+        } else if (err.code === err.TIMEOUT) {
+          msg = "Konum alma zaman aşımına uğradı. Lütfen GPS bağlantınızı kontrol edin.";
+        }
         setState({
           status: "error",
-          message:
-            err.code === err.PERMISSION_DENIED
-              ? "Konum izni verilmedi. Tarayıcı adres çubuğundaki konum simgesinden izin verebilirsiniz."
-              : "Konum alınamadı. Lütfen tekrar deneyin.",
-        }),
-      { enableHighAccuracy: false, timeout: 12_000, maximumAge: 300_000 },
+          message: msg,
+        });
+      },
+      { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 },
     );
   }
 
