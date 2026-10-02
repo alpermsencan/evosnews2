@@ -45,32 +45,29 @@ export default async function HomePage() {
   }).catch(() => []);
   const heroIds = new Set(safeHeadlines.map((h) => h.id));
 
-  // 2. EDİTÖRÜN KALEMİNDEN (Kullanıcının talep ettiği 4 editoryal inceleme - Slider ile çakışmaz)
-  const editorSlugs = [
-    "elektrikli-araba-alacaklarin-dikkat-etmesi-gerekenler-h223693",
-    "suudi-arabistanin-toggu-resmen-tanitildi-ceer-exobot-c8c6e2",
-    "renault-5-e-tech-incelemesi-ve-surus-notlari",
-    "ev-tipi-elektrikli-arac-sarj-istasyonu-kurulum-maliyeti-kalemleri-4b331b"
-  ];
+  // 2. EDİTÖRÜN KALEMİNDEN (8 adet kapsamlı editoryal rehber, analiz ve inceleme haberi - Slider ile çakışmaz)
   const safeEditorArticles = await prisma.article.findMany({
     where: {
       status: "PUBLISHED",
-      slug: { in: editorSlugs },
       id: { notIn: Array.from(heroIds) }
     },
-    take: 4,
+    orderBy: [
+      { views: "desc" },
+      { publishedAt: "desc" }
+    ],
+    take: 8,
     include: { author: true, category: true }
   }).catch(() => []);
   const editorIds = new Set(safeEditorArticles.map((e) => e.id));
 
-  // 3. EVOTOPİLOT ÖZEL ANALİZ (Slider ve Editör haberleri kesinlikle filtrelenir - SIFIR ÇAKIŞMA)
+  // 3. e-ARACIM ÖZEL ANALİZ (Slider ve Editör haberleri kesinlikle filtrelenir - SIFIR ÇAKIŞMA)
   const feed = await prisma.article.findMany({
     where: {
       status: "PUBLISHED",
       id: { notIn: [...Array.from(heroIds), ...Array.from(editorIds)] }
     },
     orderBy: { publishedAt: "desc" },
-    take: 10,
+    take: 12,
     include: { author: true, category: true }
   }).catch(() => []);
 
@@ -85,7 +82,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8 sm:pt-4">
-      {/* MANŞET CAROUSEL (Akıllı araç eşleştirici kaldırıldı, sade manşet) */}
+      {/* MANŞET CAROUSEL */}
       {safeHeadlines.length > 0 && (
         <HeroCarousel
           slides={safeHeadlines.map((h) => ({
@@ -102,32 +99,36 @@ export default async function HomePage() {
         />
       )}
 
-      {/* EDİTÖRÜN KALEMİNDEN */}
+      {/* EDİTÖRÜN KALEMİNDEN (8 ADET SEÇKİN REHBER VE ANALİZ) */}
       {safeEditorArticles.length > 0 && (
         <section className="px-3 sm:px-0">
           <SectionTitle
             title="EDİTÖRÜN KALEMİNDEN"
             color="#0f172a"
             href="/kategori/haber-merkezi"
-            subtitle="Elektrikli mobilite üzerine editör analiz ve incelemeleri"
+            subtitle="Elektrikli mobilite, batarya teknolojisi ve satın alma rehberleri"
           />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-white border border-neutral-200 rounded-2xl p-5 shadow-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 bg-white border border-neutral-200/80 rounded-2xl p-4 sm:p-6 shadow-xs">
             {safeEditorArticles.map((a) => (
-              <Link key={a.id} href={`/haber/${a.slug}`} className="group flex flex-col gap-2.5">
-                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-neutral-100">
+              <Link key={a.id} href={`/haber/${a.slug}`} className="group flex flex-col gap-2.5 transition">
+                <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-neutral-100 ring-1 ring-black/5">
                   {a.image && (
-                    <img src={a.image} alt={a.title} className="object-cover w-full h-full group-hover:scale-105 transition duration-300" />
+                    <img
+                      src={a.image}
+                      alt={a.title}
+                      className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                    />
                   )}
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-[11px] font-black uppercase text-red-600 tracking-wider">
+                  <span className="absolute top-2.5 left-2.5 rounded-md bg-neutral-950/85 backdrop-blur-xs px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-sky-400 border border-white/10">
                     {a.category?.name || "Editör İncelemesi"}
                   </span>
-                  <h4 className="text-base sm:text-lg font-black text-neutral-950 group-hover:text-red-600 transition-colors leading-snug line-clamp-2">
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <h4 className="text-sm sm:text-base font-black text-neutral-900 group-hover:text-sky-600 transition-colors leading-snug line-clamp-2">
                     {a.title}
                   </h4>
-                  <div className="flex items-center gap-2 mt-1 text-[11px] font-bold text-neutral-500">
-                    <span className="truncate">{a.author?.name || "Editör"}</span>
+                  <div className="flex items-center gap-2 mt-auto text-[11px] font-bold text-neutral-400">
+                    <span className="truncate text-neutral-600 font-semibold">{a.author?.name || "e-aracım Editör"}</span>
                     <span>·</span>
                     <span>{timeAgo(a.publishedAt || new Date())}</span>
                   </div>

@@ -68,13 +68,13 @@ export default function FeaturedVehiclesSlider({
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-neutral-950 rounded-2xl sm:rounded-3xl border border-neutral-200/60 shadow-lg group select-none touch-pan-y"
+      className="relative w-full overflow-hidden bg-neutral-950 rounded-2xl sm:rounded-3xl border border-neutral-800 shadow-xl group select-none touch-pan-y"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[21/9]">
+      <div className="relative h-[340px] sm:h-[400px] lg:h-[440px] w-full">
         {vehicles.map((v, i) => {
           const href = `/araclar/${v.slug}`;
           const isActive = i === index;
@@ -89,73 +89,68 @@ export default function FeaturedVehiclesSlider({
               }`}
               aria-hidden={!isActive}
             >
-              {/* Arka Plan & Araç Görseli */}
-              <Link href={href} className="block relative w-full h-full overflow-hidden bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900">
-                <SafeImage
-                  src={v.image}
-                  alt={`${v.brand} ${v.model}`}
-                  fill
-                  priority={i === 0}
-                  sizes="(max-width: 1024px) 100vw, 1400px"
-                  className="object-contain p-6 sm:p-10 lg:p-14 transition-transform duration-1000 ease-out group-hover:scale-105"
-                  fallbackSrc="/arac-placeholder.svg"
-                />
+              {/* Arka Plan & Araç Görseli (Mobilde Araç Üst Kısımda Tamamen Net Görünür) */}
+              <Link
+                href={href}
+                className="block relative w-full h-full overflow-hidden bg-radial from-neutral-900 via-neutral-950 to-black"
+              >
+                {/* Üst Rozet (Mobilde sol üstte zarif durur) */}
+                <div className="absolute top-3.5 left-3.5 sm:top-5 sm:left-5 z-20 flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900/90 backdrop-blur-md px-3 py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider text-sky-400 border border-white/10">
+                    <span className="h-1.5 w-1.5 rounded-full bg-sky-400 animate-pulse" />
+                    {v.tag || "ÖNE ÇIKAN MODEL"}
+                  </span>
+                  {v.body && (
+                    <span className="hidden sm:inline-flex rounded-full bg-white/10 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-neutral-300 uppercase">
+                      {v.body}
+                    </span>
+                  )}
+                </div>
 
-                {/* Sadece Alttan Okunabilirlik Gölgesi */}
-                <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/85 via-black/45 to-transparent pointer-events-none" />
+                <div className="relative w-full h-full pb-20 sm:pb-24 pt-10 sm:pt-6 px-4 sm:px-12 flex items-center justify-center">
+                  <SafeImage
+                    src={v.image}
+                    alt={`${v.brand} ${v.model}`}
+                    fill
+                    priority={i === 0}
+                    sizes="(max-width: 1024px) 100vw, 1400px"
+                    className="object-contain p-2 sm:p-8 transition-transform duration-700 ease-out group-hover:scale-105"
+                    fallbackSrc="/arac-placeholder.svg"
+                  />
+                </div>
+
+                {/* Alt Gradient Gölge */}
+                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
               </Link>
 
-              {/* Alt Sol Kayan Cam Kart: Başlık, Fiyat ve Renkli Özellikler */}
-              <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-6 lg:p-8 pointer-events-auto">
+              {/* Alt Bilgi Şeridi: Sade, Kompakt, Görseli Kapatmayan Kurumsal Tasarım */}
+              <div className="absolute inset-x-0 bottom-0 z-20 p-3 sm:p-5 pointer-events-auto">
                 <Link
                   href={href}
-                  className="group/link block max-w-3xl rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/20 p-4 sm:p-5 lg:p-6 shadow-2xl transition hover:border-sky-500 hover:bg-neutral-950/95"
+                  className="group/link block rounded-xl sm:rounded-2xl bg-neutral-900/85 backdrop-blur-md border border-white/10 p-3 sm:p-4 transition hover:border-sky-500/50 hover:bg-neutral-900/95"
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
-                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-sky-400">
-                      ÖNE ÇIKAN MODEL {v.tag ? `· ${v.tag}` : "· VİTRİN"}
-                    </span>
-                    {v.body && (
-                      <span className="rounded bg-white/10 px-2 py-0.5 text-[9px] font-bold text-white/80 uppercase">
-                        {v.body}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-4">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xs sm:text-sm font-black text-sky-400 uppercase tracking-wider">
+                        {v.brand}
                       </span>
-                    )}
-                  </div>
+                      <h2 className="text-sm sm:text-lg lg:text-xl font-black text-white tracking-tight truncate group-hover/link:text-sky-300 transition-colors">
+                        {v.model}
+                      </h2>
+                    </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4">
-                    <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-snug group-hover/link:text-sky-300 transition-colors drop-shadow-sm">
-                      {v.brand} {v.model}
-                    </h2>
-                    <div className="text-base sm:text-xl font-black text-sky-400 shrink-0">
-                      {formatTL(v.price)}
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
+                      <div className="flex items-center gap-2 text-[11px] sm:text-xs text-neutral-300 font-semibold">
+                        <span className="text-emerald-400 font-bold">{v.range} km</span>
+                        <span className="text-white/20">·</span>
+                        <span className="text-amber-400 font-bold">{v.power}</span>
+                        <span className="text-white/20">·</span>
+                        <span className="text-sky-300 font-bold">{v.dcSpeed}</span>
+                      </div>
+                      <div className="text-xs sm:text-base font-black text-white shrink-0 bg-white/10 px-2.5 py-1 rounded-lg border border-white/10">
+                        {formatTL(v.price)}
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Renkli Metrik Çipleri */}
-                  <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3 pt-2.5 border-t border-white/10 text-xs">
-                    <div className="flex items-center gap-1 text-emerald-400 font-bold">
-                      <span>🔋</span>
-                      <span>{v.range} km WLTP</span>
-                    </div>
-                    <span className="text-white/20">•</span>
-                    <div className="flex items-center gap-1 text-amber-400 font-bold">
-                      <span>⚡</span>
-                      <span>{v.power}</span>
-                    </div>
-                    <span className="text-white/20">•</span>
-                    <div className="flex items-center gap-1 text-sky-300 font-bold">
-                      <span>⏱️</span>
-                      <span>{v.dcSpeed}</span>
-                    </div>
-                    {v.acceleration && (
-                      <>
-                        <span className="text-white/20">•</span>
-                        <div className="text-white/70 font-semibold">
-                          0-100: {v.acceleration}
-                        </div>
-                      </>
-                    )}
                   </div>
                 </Link>
               </div>
@@ -169,38 +164,35 @@ export default function FeaturedVehiclesSlider({
             <button
               onClick={prev}
               aria-label="Önceki araç"
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-11 w-11 items-center justify-center rounded-full bg-neutral-950/40 hover:bg-neutral-900/80 text-white backdrop-blur-md border border-white/15 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 shadow-md"
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900/60 hover:bg-neutral-900 text-white backdrop-blur-md border border-white/15 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 shadow-md"
             >
               <IconChevronLeft className="h-5 w-5" />
             </button>
             <button
               onClick={next}
               aria-label="Sonraki araç"
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-11 w-11 items-center justify-center rounded-full bg-neutral-950/40 hover:bg-neutral-900/80 text-white backdrop-blur-md border border-white/15 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 shadow-md"
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900/60 hover:bg-neutral-900 text-white backdrop-blur-md border border-white/15 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 shadow-md"
             >
               <IconChevronRight className="h-5 w-5" />
             </button>
           </>
         )}
 
-        {/* Modern Sayfa Göstergesi (Mobilde üstte, masaüstünde altta) */}
+        {/* Gösterge Noktaları */}
         {count > 1 && (
-          <div className="absolute top-4 right-4 sm:top-auto sm:bottom-8 sm:right-8 z-30 flex items-center gap-2.5 sm:gap-3 bg-neutral-950/75 backdrop-blur-md px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-white/15 shadow-xl">
-            <span className="text-[10px] sm:text-[11px] font-black text-white/80 tracking-widest tabular-nums">
-              {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
-            </span>
-            <div className="flex items-center gap-1">
-              {vehicles.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => go(i)}
-                  aria-label={`Araç ${i + 1}`}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i === index ? "w-5 bg-sky-500" : "w-1.5 bg-white/40 hover:bg-white/70"
-                  }`}
-                />
-              ))}
-            </div>
+          <div className="absolute top-4 right-4 z-30 flex items-center gap-1.5 rounded-full bg-neutral-900/80 px-2.5 py-1 backdrop-blur-md border border-white/10">
+            {vehicles.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => go(i)}
+                aria-label={`Araç ${i + 1}`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === index
+                    ? "w-5 bg-sky-400"
+                    : "w-1.5 bg-white/30 hover:bg-white/60"
+                }`}
+              />
+            ))}
           </div>
         )}
       </div>

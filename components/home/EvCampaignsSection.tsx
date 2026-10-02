@@ -2,173 +2,146 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import SafeImage from "@/components/ui/SafeImage";
 
 interface CampaignItem {
   id: string;
   brand: string;
-  brandBadgeBg: string;
-  brandBadgeColor: string;
   model: string;
   vehicleImage: string;
   bankPartner: string;
-  bankLogoText: string;
-  bankLogoBg: string;
-  bankLogoColor: string;
   bankUrl: string;
   loanAmount: string;
   maturity: string;
   interestRate: string;
+  isZeroPercent: boolean;
   tag: string;
   perks: string[];
   vehicleSlug: string;
   expiryDate: string;
-  type: "zero-interest" | "green-loan" | "trade-in" | "all";
+  type: "zero-interest" | "green-loan" | "trade-in";
 }
 
 const CAMPAIGNS: CampaignItem[] = [
   {
     id: "togg-kamu",
     brand: "TOGG",
-    brandBadgeBg: "bg-[#00A3E0]",
-    brandBadgeColor: "text-white",
-    model: "Togg T10X V2 Uzun Menzil",
+    model: "T10X V2 Uzun Menzil & T10F",
     vehicleImage: "https://dolubatarya.com/uploads/2021/12/2023-togg-t10x-ozellikler-teknik.jpg",
-    bankPartner: "Kamu Bankaları (Ziraat)",
-    bankLogoText: "ZİRAAT",
-    bankLogoBg: "bg-red-600",
-    bankLogoColor: "text-white",
-    bankUrl: "https://www.ziraatbank.com.tr/tr/bireysel/krediler",
+    bankPartner: "Kamu Bankaları (Ziraat · Vakıfbank · Halkbank)",
+    bankUrl: "https://www.ziraatbank.com.tr/tr/bireysel/krediler/tasit-kredisi",
     loanAmount: "800.000 TL",
     maturity: "12 Ay",
     interestRate: "%0 FAİZ",
-    tag: "%0 Faiz Fırsatı",
+    isZeroPercent: true,
+    tag: "Resmî Destek",
     perks: [
-      "800.000 TL için 12 ay %0 faiz desteği",
-      "Kamu bankaları özel tahsisli öncelikli onay",
+      "800.000 TL için 12 ay %0 faiz kamu finansman desteği",
+      "Trumore üzerinden 1 yıllık hediye Trugo şarj paketi",
     ],
     vehicleSlug: "togg-t10x-v2-2026",
-    expiryDate: "Ay Sonu Geçerli",
+    expiryDate: "2026 Güncel",
     type: "zero-interest",
   },
   {
     id: "tesla-garanti",
     brand: "TESLA",
-    brandBadgeBg: "bg-[#E82127]",
-    brandBadgeColor: "text-white",
     model: "Model Y RWD 'Juniper'",
-    vehicleImage: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&auto=format&fit=crop",
-    bankPartner: "Garanti BBVA",
-    bankLogoText: "GARANTİ BBVA",
-    bankLogoBg: "bg-emerald-600",
-    bankLogoColor: "text-white",
+    vehicleImage: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=800&auto=format&fit=crop",
+    bankPartner: "Garanti BBVA & Akbank",
     bankUrl: "https://www.garantibbva.com.tr/krediler/tasit-kredisi",
-    loanAmount: "400.000 TL",
+    loanAmount: "500.000 TL",
     maturity: "12 Ay",
     interestRate: "%1.49 FAİZ",
+    isZeroPercent: false,
     tag: "Takas Teşviki",
     perks: [
-      "50.000 TL doğrudan nakit takas teşviki",
-      "Envanterden 7 günde hemen teslimat",
+      "50.000 TL doğrudan nakit takas indirimi desteği",
+      "Tesla Türkiye resmi envanterinden 7 günde hemen teslim",
     ],
     vehicleSlug: "tesla-model-y-juniper-2026",
     expiryDate: "Sınırlı Kontenjan",
     type: "trade-in",
   },
   {
-    id: "hyundai-yapi-kredi",
+    id: "byd-alj",
+    brand: "BYD",
+    model: "BYD Atto 3 & Seal U",
+    vehicleImage: "https://dolubatarya.com/uploads/2025/07/byd-seal-160-kw-2792.webp",
+    bankPartner: "ALJ Finans & İş Bankası",
+    bankUrl: "https://www.aljfinans.com",
+    loanAmount: "300.000 TL",
+    maturity: "12 Ay",
+    interestRate: "%0 FAİZ",
+    isZeroPercent: true,
+    tag: "%0 Faiz & Takas",
+    perks: [
+      "300.000 TL 12 ay %0 faiz veya 100.000 TL takas desteği",
+      "8 yıl / 200.000 km resmi Blade Batarya garantisi",
+    ],
+    vehicleSlug: "byd-seal-160-kw",
+    expiryDate: "Ay Sonu Geçerli",
+    type: "zero-interest",
+  },
+  {
+    id: "hyundai-inster",
     brand: "HYUNDAI",
-    brandBadgeBg: "bg-[#002C6C]",
-    brandBadgeColor: "text-white",
     model: "Hyundai Inster & Ioniq 5",
     vehicleImage: "https://dolubatarya.com/uploads/2024/12/hyundai-inster-6192.jpg",
-    bankPartner: "Yapı Kredi",
-    bankLogoText: "YAPI KREDİ",
-    bankLogoBg: "bg-blue-700",
-    bankLogoColor: "text-white",
+    bankPartner: "Yapı Kredi Yeşil Taşıt",
     bankUrl: "https://www.yapikredi.com.tr/bireysel-bankacilik/krediler",
     loanAmount: "300.000 TL",
     maturity: "12 Ay",
     interestRate: "%0.99 FAİZ",
+    isZeroPercent: false,
     tag: "Şarj Paketi",
     perks: [
-      "300.000 TL için %0.99 avantajlı taşıt kredisi",
-      "1 Yıllık ücretsiz Eşarj şarj paketi hediyesi",
+      "300.000 TL için %0.99 avantajlı çevreci taşıt kredisi",
+      "1 Yıllık ücretsiz Eşarj şarj kartı hediyesi",
     ],
     vehicleSlug: "hyundai-inster",
-    expiryDate: "Ay Sonuna Kadar",
-    type: "green-loan",
-  },
-  {
-    id: "kia-kuveyt",
-    brand: "KIA",
-    brandBadgeBg: "bg-black",
-    brandBadgeColor: "text-white",
-    model: "Kia EV3 Long Range & EV6",
-    vehicleImage: "https://dolubatarya.com/uploads/2025/02/kia-ev4-saloon-standard-range-3182.jpeg",
-    bankPartner: "Kuveyt Türk",
-    bankLogoText: "KUVEYT TÜRK",
-    bankLogoBg: "bg-teal-700",
-    bankLogoColor: "text-white",
-    bankUrl: "https://www.kuveytturk.com.tr/kendim-icin/finansmanlar/arac-finansmanlari",
-    loanAmount: "250.000 TL",
-    maturity: "12 Ay",
-    interestRate: "%0.99 KÂR PAYI",
-    tag: "Yeşil Taşıt",
-    perks: [
-      "Çevreci yeşil taşıt finansmanı imkanı",
-      "5 yıl / 150.000 km araç ve batarya garantisi",
-    ],
-    vehicleSlug: "kia-ev3-long-range-2026",
     expiryDate: "Güncel Kampanya",
     type: "green-loan",
   },
   {
-    id: "renault-qnb",
+    id: "renault-megane",
     brand: "RENAULT",
-    brandBadgeBg: "bg-[#FFCC00]",
-    brandBadgeColor: "text-neutral-950",
-    model: "Renault Megane E-Tech & R5",
+    model: "Megane E-Tech & Scenic E-Tech",
     vehicleImage: "https://cdn.group.renault.com/ren/master/renault-new-cars/product-plans/megane-e-tech-electrique/megane-bcb-my24/new-editorial/megane-bcb-overview-001-desktop.jpg.ximg.large.webp/faac0803d5.webp",
-    bankPartner: "QNB",
-    bankLogoText: "QNB",
-    bankLogoBg: "bg-purple-900",
-    bankLogoColor: "text-white",
-    bankUrl: "https://www.qnb.com.tr",
-    loanAmount: "200.000 TL",
+    bankPartner: "Renault Finans (Orfin)",
+    bankUrl: "https://www.renault.com.tr/kampanyalar/binek-arac-kampanyalari.html",
+    loanAmount: "250.000 TL",
     maturity: "12 Ay",
-    interestRate: "%0 FAİZ",
-    tag: "%0 Faiz",
+    interestRate: "%0.99 FAİZ",
+    isZeroPercent: false,
+    tag: "Orfin Finans",
     perks: [
-      "200.000 TL için 12 ay %0 faiz desteği",
-      "Wallbox ev tipi şarj ünitesi kurulum avantajı",
+      "250.000 TL için 12 ay %0.99 finansman desteği",
+      "Ev tipi Wallbox kurulumunda indirim ve taksit avantajı",
     ],
     vehicleSlug: "renault-megane-e-tech",
     expiryDate: "Stoklarla Sınırlı",
-    type: "zero-interest",
+    type: "green-loan",
   },
   {
-    id: "byd-is-bankasi",
-    brand: "BYD",
-    brandBadgeBg: "bg-[#1B365D]",
-    brandBadgeColor: "text-white",
-    model: "BYD Seal 160 kW & Atto 3",
-    vehicleImage: "https://dolubatarya.com/uploads/2025/07/byd-seal-160-kw-2792.webp",
-    bankPartner: "Türkiye İş Bankası",
-    bankLogoText: "İŞ BANKASI",
-    bankLogoBg: "bg-blue-900",
-    bankLogoColor: "text-white",
-    bankUrl: "https://www.isbank.com.tr/tasit-kredisi",
-    loanAmount: "350.000 TL",
+    id: "kia-ev3",
+    brand: "KIA",
+    model: "Kia EV3 Long Range & EV6",
+    vehicleImage: "https://www.kia.com/content/dam/kwcms/tr/tr/images/showroom/ev3/ozellikler/360/abp-gtl/kia-ev3-my25-gtl-abp-aurorablackpearl-19_0000.png",
+    bankPartner: "Kuveyt Türk & Garanti BBVA",
+    bankUrl: "https://www.kia.com.tr/kampanyalar",
+    loanAmount: "200.000 TL",
     maturity: "12 Ay",
-    interestRate: "%1.29 FAİZ",
-    tag: "Blade Batarya",
+    interestRate: "%0 FAİZ",
+    isZeroPercent: true,
+    tag: "%0 Faiz Desteği",
     perks: [
-      "350.000 TL için %1.29 çevreci taşıt kredisi",
-      "8 yıl / 200.000 km Blade Batarya garantisi",
+      "200.000 TL 12 ay %0 faiz kredi desteği",
+      "5 yıl / 150.000 km araç ve yüksek voltaj batarya garantisi",
     ],
-    vehicleSlug: "byd-seal-160-kw",
-    expiryDate: "Stoklarla Sınırlı",
-    type: "trade-in",
+    vehicleSlug: "kia-ev3-long-range-2026",
+    expiryDate: "Güncel",
+    type: "zero-interest",
   },
 ];
 
@@ -179,31 +152,38 @@ export default function EvCampaignsSection() {
     filter === "all" ? CAMPAIGNS : CAMPAIGNS.filter((c) => c.type === filter);
 
   return (
-    <section className="flex flex-col gap-5 rounded-2xl border border-neutral-300/80 bg-white p-5 sm:p-6 shadow-sm ring-1 ring-black/5">
-      {/* 1. KURUMSAL BAŞLIK VE FİLTRELEME ŞERİDİ */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-neutral-200 pb-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-neutral-950 text-white shadow-xs">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
+    <section className="flex flex-col gap-5 rounded-3xl border border-neutral-200/80 bg-white p-5 sm:p-7 shadow-xs">
+      {/* 1. KURUMSAL BAŞLIK & SADE FİLTRELER */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-neutral-100 pb-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-neutral-950 text-sky-400 shadow-xs ring-1 ring-black/5">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <line x1="2" y1="10" x2="22" y2="10" />
+            </svg>
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200/60">
+                2026 RESMÎ VERİLER
+              </span>
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-black tracking-tight text-neutral-950 uppercase">
-                ARAÇ KAMPANYALARI &amp; FİNANSMAN
-              </h2>
-              <p className="text-xs sm:text-sm text-neutral-600 font-bold mt-0.5">
-                Resmî distribütör ve banka anlaşmalı güncel faiz destekleri ve finansman fırsatları
-              </p>
-            </div>
+            <h2 className="text-lg sm:text-xl font-black text-neutral-950 tracking-tight mt-1">
+              ARAÇ KAMPANYALARI & FİNANSMAN
+            </h2>
+            <p className="text-xs text-neutral-500 font-medium mt-0.5">
+              Türkiye resmî distribütör ve banka anlaşmalı güncel faiz destekleri ve teşvikler
+            </p>
           </div>
         </div>
 
-        {/* Minimalist Kurumsal Filtre Butonları */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-neutral-100 p-1 rounded-xl text-xs font-bold border border-neutral-200/80 shrink-0">
+        {/* Kurumsal Sade Filtre Butonları */}
+        <div className="flex flex-wrap items-center gap-1.5 bg-neutral-100/80 p-1 rounded-xl text-xs font-bold border border-neutral-200/60 shrink-0">
           <button
             type="button"
             onClick={() => setFilter("all")}
-            className={`px-3 py-1.5 rounded-lg transition text-xs font-black ${
+            className={`px-3 py-1.5 rounded-lg transition text-xs font-bold ${
               filter === "all"
                 ? "bg-neutral-950 text-white shadow-xs"
                 : "text-neutral-600 hover:text-neutral-950"
@@ -214,7 +194,7 @@ export default function EvCampaignsSection() {
           <button
             type="button"
             onClick={() => setFilter("zero-interest")}
-            className={`px-3 py-1.5 rounded-lg transition text-xs font-black ${
+            className={`px-3 py-1.5 rounded-lg transition text-xs font-bold ${
               filter === "zero-interest"
                 ? "bg-neutral-950 text-white shadow-xs"
                 : "text-neutral-600 hover:text-red-600"
@@ -225,18 +205,18 @@ export default function EvCampaignsSection() {
           <button
             type="button"
             onClick={() => setFilter("green-loan")}
-            className={`px-3 py-1.5 rounded-lg transition text-xs font-black ${
+            className={`px-3 py-1.5 rounded-lg transition text-xs font-bold ${
               filter === "green-loan"
                 ? "bg-neutral-950 text-white shadow-xs"
                 : "text-neutral-600 hover:text-neutral-950"
             }`}
           >
-            Yeşil Taşıt Kredisi
+            Yeşil Kredi
           </button>
           <button
             type="button"
             onClick={() => setFilter("trade-in")}
-            className={`px-3 py-1.5 rounded-lg transition text-xs font-black ${
+            className={`px-3 py-1.5 rounded-lg transition text-xs font-bold ${
               filter === "trade-in"
                 ? "bg-neutral-950 text-white shadow-xs"
                 : "text-neutral-600 hover:text-neutral-950"
@@ -247,115 +227,107 @@ export default function EvCampaignsSection() {
         </div>
       </div>
 
-      {/* 2. SADE, NET VE KURUMSAL FİNANSMAN KARTLARI (3'lü Grid, Karışıklıktan Uzak) */}
+      {/* 2. SADE, MODERN VE KURUMSAL KAMPANYA KARTLARI (3'LÜ GRID) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filtered.map((item) => {
-          const isZeroInterest = item.interestRate.includes("%0");
+        {filtered.map((item) => (
+          <div
+            key={item.id}
+            className="group flex flex-col justify-between rounded-2xl border border-neutral-200/90 bg-neutral-50/40 hover:bg-white p-5 transition-all duration-300 hover:border-neutral-300 hover:shadow-lg ring-1 ring-black/5"
+          >
+            <div>
+              {/* Üst Kısım: Marka Adı & Kampanya Türü */}
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <span className="text-xs font-black uppercase tracking-wider text-neutral-500">
+                  {item.brand}
+                </span>
+                <span
+                  className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${
+                    item.isZeroPercent
+                      ? "border-red-200 bg-red-50 text-red-600 font-extrabold"
+                      : "border-neutral-200 bg-white text-neutral-700"
+                  }`}
+                >
+                  {item.tag}
+                </span>
+              </div>
 
-          return (
-            <div
-              key={item.id}
-              className="group flex flex-col justify-between rounded-2xl border border-neutral-250 bg-white p-5 transition duration-200 hover:border-neutral-900 hover:shadow-md ring-1 ring-black/5"
-            >
-              <div>
-                {/* Üst Satır: Marka Rozeti & Kampanya Etiketi */}
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span
-                    className={`inline-flex items-center justify-center px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shadow-2xs ${item.brandBadgeBg} ${item.brandBadgeColor}`}
-                  >
-                    {item.brand}
+              {/* Model İsmi */}
+              <h3 className="text-base font-black text-neutral-900 group-hover:text-sky-600 transition-colors line-clamp-1 mb-3">
+                <Link href={`/araclar/${item.vehicleSlug}`}>{item.model}</Link>
+              </h3>
+
+              {/* Araç Görseli */}
+              <Link
+                href={`/araclar/${item.vehicleSlug}`}
+                className="relative block h-36 w-full overflow-hidden rounded-xl bg-white border border-neutral-200/70 mb-3.5 group/img"
+              >
+                <SafeImage
+                  src={item.vehicleImage}
+                  alt={`${item.brand} ${item.model}`}
+                  fill
+                  className="object-contain p-2 transition-transform duration-500 group-hover/img:scale-105"
+                  fallbackSrc="/arac-placeholder.svg"
+                />
+                <span className="absolute bottom-2 right-2 rounded-md bg-neutral-950/80 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur-xs">
+                  {item.expiryDate}
+                </span>
+              </Link>
+
+              {/* Finansman Oran Kutusu */}
+              <div className="rounded-xl border border-neutral-200 bg-white p-3.5 mb-3.5 shadow-2xs">
+                <div className="flex items-center justify-between border-b border-neutral-100 pb-2 mb-2">
+                  <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-wide">
+                    Finansman Koşulu
                   </span>
                   <span
-                    className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                      isZeroInterest
-                        ? "border-red-200 bg-red-50 text-red-600"
-                        : "border-neutral-200 bg-neutral-50 text-neutral-700"
+                    className={`text-sm font-black ${
+                      item.isZeroPercent ? "text-red-600" : "text-emerald-700"
                     }`}
                   >
-                    {item.tag}
+                    {item.interestRate}
                   </span>
                 </div>
-
-                {/* Model Başlığı */}
-                <h3 className="text-base font-black text-neutral-950 group-hover:text-red-600 transition truncate mb-3">
-                  <Link href={`/araclar/${item.vehicleSlug}`}>{item.model}</Link>
-                </h3>
-
-                {/* Araç Fotoğrafı (Kompakt & Kurumsal) */}
-                <div className="relative h-28 sm:h-32 w-full overflow-hidden rounded-xl border border-neutral-150 bg-neutral-100 mb-3">
-                  <img
-                    src={item.vehicleImage}
-                    alt={`${item.brand} ${item.model}`}
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                  />
-                  <span className="absolute bottom-2 right-2 rounded-md bg-neutral-950/80 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur-xs">
-                    {item.expiryDate}
+                <div className="flex items-center justify-between text-xs font-bold text-neutral-900">
+                  <span>
+                    {item.loanAmount} · {item.maturity}
+                  </span>
+                  <span className="text-[11px] text-neutral-500 font-medium truncate max-w-[120px]">
+                    {item.bankPartner}
                   </span>
                 </div>
-
-                {/* Finansman Özet Kutusu (Temiz & Kurumsal) */}
-                <div className="rounded-xl border border-neutral-200/90 bg-neutral-50 p-3.5 mb-4">
-                  <div className="flex items-baseline justify-between border-b border-neutral-200 pb-2 mb-2">
-                    <span className="text-xs font-black text-neutral-500 uppercase">
-                      Finansman Oranı
-                    </span>
-                    <span
-                      className={`text-sm sm:text-base font-black ${
-                        isZeroInterest ? "text-red-600" : "text-neutral-950"
-                      }`}
-                    >
-                      {item.interestRate}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs font-bold text-neutral-800">
-                    <span>
-                      {item.loanAmount} · {item.maturity}
-                    </span>
-                    <a
-                      href={item.bankUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-black text-neutral-700 hover:text-red-600 transition"
-                      title={`${item.bankPartner} sayfasına git`}
-                    >
-                      <span className="truncate max-w-[110px]">{item.bankPartner}</span>
-                      <span>↗</span>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Avantaj Maddeleri */}
-                <ul className="flex flex-col gap-1.5 mb-5 text-xs text-neutral-600 font-semibold">
-                  {item.perks.map((perk, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-emerald-600 font-black shrink-0">✓</span>
-                      <span className="line-clamp-1">{perk}</span>
-                    </li>
-                  ))}
-                </ul>
               </div>
 
-              {/* Aksiyon Butonları */}
-              <div className="flex flex-col gap-2 pt-2 border-t border-neutral-150">
-                <a
-                  href={item.bankUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full rounded-xl bg-neutral-950 py-2.5 text-center text-xs font-black text-white hover:bg-red-600 transition shadow-xs flex items-center justify-center gap-1.5"
-                >
-                  <span>Banka Kredi Başvurusu</span>
-                  <span className="text-xs">↗</span>
-                </a>
-                <Link
-                  href={`/araclar/${item.vehicleSlug}`}
-                  className="text-center text-[11px] font-bold text-neutral-500 hover:text-neutral-950 transition"
-                >
-                  Model Teknik Özelliklerini İncele →
-                </Link>
-              </div>
+              {/* Avantajlar */}
+              <ul className="flex flex-col gap-1.5 mb-4 text-xs text-neutral-600 font-medium">
+                {item.perks.map((perk, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-emerald-600 font-bold shrink-0 mt-0.5">✓</span>
+                    <span className="line-clamp-1">{perk}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          );
-        })}
+
+            {/* Alt Butonlar */}
+            <div className="flex items-center gap-2 pt-3 border-t border-neutral-100">
+              <Link
+                href={`/araclar/${item.vehicleSlug}`}
+                className="flex-1 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-center py-2.5 text-xs font-bold transition shadow-xs"
+              >
+                Modeli İncele
+              </Link>
+              <a
+                href={item.bankUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl border border-neutral-200 bg-white hover:bg-neutral-50 px-3.5 py-2.5 text-xs font-bold text-neutral-700 hover:text-neutral-950 transition shrink-0"
+                title="Kampanya detayları"
+              >
+                Detay ↗
+              </a>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

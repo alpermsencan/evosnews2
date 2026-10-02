@@ -44,6 +44,14 @@ export const metadata: Metadata = {
     "ikinci el elektrikli araç",
     "ikinci el elektrikli otomobil",
   ],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export const dynamic = "force-dynamic";

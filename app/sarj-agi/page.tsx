@@ -15,13 +15,16 @@ export const metadata = {
     "Türkiye genelindeki şarj istasyonları haritası, güncel operatör tarifeleri ve şarj fiyatları.",
 };
 
+import { FALLBACK_STATIONS } from "@/lib/stations-fallback";
+
 export default async function ChargePage() {
-  const [all, news, tariffs] = await Promise.all([
+  const [allDb, news, tariffs] = await Promise.all([
     prisma.chargeStation.findMany().catch(() => []),
     getByCategory("sarj-agi", 4).catch(() => []),
     prisma.operatorTariff.findMany({ where: { isActive: true } }).catch(() => []),
   ]);
 
+  const all = allDb && allDb.length > 0 ? allDb : (FALLBACK_STATIONS as any);
   const tariffIndex = buildTariffIndex(tariffs);
 
   const byOperator = new Map<

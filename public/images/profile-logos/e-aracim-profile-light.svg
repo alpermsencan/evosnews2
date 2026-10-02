@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bgLight" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="70%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </radialGradient>
+
+    <linearGradient id="eBlueLight" x1="120" y1="120" x2="392" y2="392" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="50%" stop-color="#0369a1"/>
+      <stop offset="100%" stop-color="#0c4a6e"/>
+    </linearGradient>
+
+    <linearGradient id="eBoltLight" x1="200" y1="130" x2="310" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+
+    <filter id="badgeShadowLight" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="20" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <!-- Arka Plan -->
+  <rect width="512" height="512" fill="url(#bgLight)"/>
+
+  <!-- Dış Dairesel Halka -->
+  <circle cx="256" cy="256" r="236" fill="none" stroke="#0284c7" stroke-width="2" stroke-opacity="0.2"/>
+
+  <!-- Merkez Kalkan / Rozet (Koyu Lüks Gövde) -->
+  <g filter="url(#badgeShadowLight)">
+    <rect x="96" y="96" width="320" height="320" rx="72" fill="#0b132b" stroke="#0284c7" stroke-width="4"/>
+  </g>
+
+  <!-- Elektrikli 'e' Yay Gövdesi -->
+  <path
+    d="M336 210C320 162 280 132 230 132C164 132 110 186 110 256C110 326 164 380 230 380C292 380 340 334 350 274H205"
+    fill="none"
+    stroke="#38bdf8"
+    stroke-width="32"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- 'e' İçindeki Şimşek / Enerji Kıvılcımı -->
+  <path
+    d="M280 100L190 240H265L225 365L335 205H265L290 100Z"
+    fill="url(#eBoltLight)"
+  />
+
+  <!-- LED Şarj Noktası -->
+  <circle cx="360" cy="140" r="16" fill="#38bdf8"/>
+  <circle cx="360" cy="140" r="7" fill="#ffffff"/>
+</svg>

@@ -64,45 +64,44 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      {/* HEADER: 2. EL ELEKTRİKLİ ARAÇLAR (Kurumsal, Dikkat Çekici & Lüks Tasarım) */}
-      <header className="relative flex flex-col gap-4 rounded-3xl bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900 p-6 sm:p-8 text-white shadow-xl border border-neutral-800 ring-1 ring-white/10 overflow-hidden">
-        {/* Arka Plan Dekoratif Mavi & Cam Göbeği Enerji Işıması */}
-        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-16 w-80 h-80 rounded-full bg-blue-600/10 blur-3xl pointer-events-none" />
+      {/* HEADER: 2. EL ELEKTRİKLİ ARAÇLAR (Sade, Kompakt & Kurumsal) */}
+      <header className="relative flex flex-col gap-3 rounded-2xl sm:rounded-3xl bg-neutral-950 p-4 sm:p-6 lg:p-7 text-white shadow-md border border-neutral-800 overflow-hidden">
+        {/* Zarif Mavi Arka Plan Işıltısı */}
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-72 h-72 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-          <div className="flex flex-col gap-2 max-w-2xl">
-            {/* Üst Kurumsal Belirteç */}
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-5">
+          <div className="flex flex-col gap-1 sm:gap-1.5 max-w-2xl">
+            {/* Üst Belirteç */}
             <div className="flex items-center gap-2">
-              <span className="flex h-2 w-2 rounded-full bg-sky-400 animate-ping" />
-              <span className="text-[11px] font-black uppercase tracking-widest text-sky-400">
-                TÜRKİYE&apos;NİN RESMÎ ELEKTRİKLİ ARAÇ PAZARYERİ
+              <span className="flex h-1.5 w-1.5 rounded-full bg-sky-400 animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-sky-400">
+                ELEKTRİKLİ ARAÇ PAZARYERİ
               </span>
             </div>
 
-            {/* Dikkat Çekici & Kurumsal Başlık */}
-            <h1 className="text-2xl sm:text-4xl font-black text-white tracking-tight uppercase leading-tight drop-shadow-sm">
+            {/* Sadeleştirilmiş & Küçültülmüş Başlık */}
+            <h1 className="text-lg sm:text-2xl lg:text-3xl font-black text-white tracking-tight uppercase leading-snug">
               İkinci El Elektrikli Araçlar
             </h1>
 
-            <p className="text-xs sm:text-sm text-neutral-300 font-semibold leading-relaxed">
-              Türkiye&apos;nin en zengin, güncel ve güvenilir elektrikli araç ilan platformu.
+            <p className="text-xs sm:text-sm text-neutral-400 font-medium leading-relaxed">
+              Türkiye genelinde yayındaki güncel elektrikli araç ilanları ve detaylı incelemeler.
             </p>
           </div>
 
           {/* Sağ Kolon: İlan Ver Butonu & İlan Sayacı */}
-          <div className="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-3 shrink-0">
+          <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-2 sm:gap-2.5 shrink-0 pt-1 md:pt-0 border-t md:border-t-0 border-neutral-800">
+            <span className="text-xs text-neutral-400 font-medium">
+              <strong className="text-white font-bold">{total}</strong> ilan yayında
+            </span>
+
             <Link
               href="/ilanlar/yeni"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-sky-500 via-blue-600 to-blue-700 px-7 py-3.5 text-xs sm:text-sm font-black text-white shadow-lg shadow-sky-500/25 transition-all duration-300 hover:from-sky-400 hover:to-blue-600 hover:scale-[1.02] active:scale-95 border border-sky-400/40"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 px-4 py-2 sm:px-5 sm:py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
             >
-              <span className="text-base leading-none">+</span>
-              <span className="tracking-wide">ÜCRETSİZ İLAN VER</span>
+              <span>+</span>
+              <span>Ücretsiz İlan Ver</span>
             </Link>
-
-            <span className="text-xs font-bold text-neutral-400">
-              Toplam <strong className="text-white font-black">{total}</strong> ilan yayında
-            </span>
           </div>
         </div>
       </header>
