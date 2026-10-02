@@ -9,21 +9,21 @@
       <stop offset="50%" stop-color="#0ea5e9" />
       <stop offset="100%" stop-color="#0284c7" />
     </linearGradient>
-    <linearGradient id="eBolt" x1="24" y1="12" x2="40" y2="52" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#67e8f9" />
-      <stop offset="100%" stop-color="#0284c7" />
-    </linearGradient>
   </defs>
 
   <!-- Koyu Aerodinamik Gövde -->
-  <rect x="3" y="3" width="58" height="58" rx="16" fill="url(#eBg)" stroke="#0ea5e9" stroke-width="2.5" />
+  <rect x="3" y="3" width="58" height="58" rx="16" fill="url(#eBg)" stroke="#0ea5e9" stroke-width="2.4" />
 
-  <!-- Elektrikli 'e' Harfi Yayı -->
-  <path d="M47 27C44.8 20.5 39 16 31.7 16C22.4 16 15 23.4 15 32.7C15 42 22.4 49.4 31.7 49.4C40 49.4 46.7 43.3 48 35.5H28" stroke="url(#eBlue)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Net, Kusursuz ve Okunabilir Küçük 'e' Harfi (Lowercase "e") -->
+  <path
+    d="M19 33.5H45C45 24 39.5 17.5 31.5 17.5C22.5 17.5 16.5 24.5 16.5 33.5C16.5 42.5 22.5 49.5 31.5 49.5C38.5 49.5 43.5 45.5 45 39"
+    stroke="url(#eBlue)"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
 
-  <!-- Elektrik Şimşek / Kıvılcım -->
-  <path d="M35 12L25 31H34L29 46L43 27H34L37 12Z" fill="url(#eBolt)" />
-
-  <!-- Şarj LED Işığı -->
-  <circle cx="50" cy="16" r="3.2" fill="#38bdf8" />
+  <!-- Elektrik / Şarj LED Noktası -->
+  <circle cx="48" cy="16.5" r="3.2" fill="#38bdf8" />
+  <circle cx="48" cy="16.5" r="1.6" fill="#ffffff" />
 </svg>

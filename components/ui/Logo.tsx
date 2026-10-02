@@ -63,31 +63,24 @@ export default function Logo({
           y="2"
           width="40"
           height="40"
-          rx="12"
+          rx="11"
           fill="url(#eAracimDarkBase)"
           stroke={isDark ? "#334155" : "#0EA5E9"}
-          strokeWidth="1.5"
+          strokeWidth="1.6"
         />
 
-        {/* 2. Elektrikli 'e' Harfinin Dış Yayı ve Şarj Kablosu Formu */}
+        {/* 2. Kusursuz ve Net Küçük 'e' Harfi (Lowercase "e" Anatomy) */}
         <path
-          d="M32 18.5C30.5 14 26.5 11 21.5 11C15.1 11 10 16.1 10 22.5C10 28.9 15.1 34 21.5 34C27.2 34 31.8 29.8 32.7 24.5H19"
+          d="M13 23H31C31 16.5 26.8 12 21 12C14.5 12 10.5 17 10.5 23.5C10.5 30 14.8 35 21.5 35C26.5 35 30 32 31.2 27.5"
           stroke="url(#eAracimBlue)"
-          strokeWidth="3.2"
+          strokeWidth="3.4"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
 
-        {/* 3. 'e'nin Kalbindeki Elektrik Şimşek / Enerji Kıvılcımı */}
-        <path
-          d="M24 8L17 21H23L20 31L29 18H23L25 8Z"
-          fill="url(#eBoltGrad)"
-          className="animate-pulse"
-        />
-
-        {/* 4. Canlı Mavi/Yeşil Şarj LED Noktası */}
-        <circle cx="34" cy="11" r="2.5" className="animate-ping fill-sky-400 opacity-75 origin-[34px_11px]" />
-        <circle cx="34" cy="11" r="1.8" fill="#38BDF8" />
+        {/* 3. Canlı Elektrik / Şarj Enerji Noktası */}
+        <circle cx="33" cy="11.5" r="2.2" fill="#38BDF8" />
+        <circle cx="33" cy="11.5" r="1.1" fill="#FFFFFF" />
       </svg>
     </div>
   );
