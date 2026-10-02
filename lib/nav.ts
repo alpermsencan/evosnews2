@@ -90,12 +90,12 @@ export const QUICK_LINKS: NavItem[] = [
 
 export const FOOTER_GROUPS: NavGroup[] = [
   {
-    title: "EVOTOPILOT İÇERİK",
+    title: "e-ARACIM İÇERİK",
     items: [
       { label: "Haber Merkezi", href: "/kategori/haber-merkezi" },
-      { label: "Teknoloji", href: "/kategori/teknoloji" },
-      { label: "Dünya", href: "/kategori/dunya" },
-      { label: "Test Sürüşü", href: "/kategori/test-surusu" },
+      { label: "Teknoloji & Batarya", href: "/kategori/teknoloji" },
+      { label: "Dünya Gündemi", href: "/kategori/dunya" },
+      { label: "Test Sürüşleri", href: "/kategori/test-surusu" },
     ],
   },
   {
@@ -110,16 +110,19 @@ export const FOOTER_GROUPS: NavGroup[] = [
   {
     title: "ŞARJ & MOBİLİTE",
     items: [
-      { label: "EVO Şarj Ağı & Fiyatları", href: "/sarj-agi" },
+      { label: "Şarj Ağı & Fiyatları", href: "/sarj-agi" },
       { label: "Şarj & Rota Planlama", href: "/sarj-agi/rota" },
+      { label: "ÖTV & Maliyet Hesabı", href: "/finansman" },
     ],
   },
   {
-    title: "KURUMSAL",
+    title: "KURUMSAL & YASAL",
     items: [
       { label: "Hakkımızda", href: "/hakkinda" },
       { label: "İletişim", href: "/iletisim" },
-      { label: "EVO Pro", href: "/pro" },
+      { label: "Veri ve Gizlilik Politikası", href: "/veri-gizlilik" },
+      { label: "KVKK Aydınlatma Metni", href: "/yasal/kvkk" },
+      { label: "İlan Verme Kuralları", href: "/yasal/ilan-verme-kurallari" },
       { label: "Yönetim Paneli", href: "/admin" },
     ],
   },

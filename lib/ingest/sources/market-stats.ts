@@ -218,6 +218,6 @@ export const marketStatsSource: SourceJob = {
   name: "Pazar Göstergeleri (katalogdan türetilmiş)",
   kind: "prices",
   schedule: "0 4 * * *",
-  attribution: "Evos kataloğu ve şarj envanterinden hesaplanmıştır",
+  attribution: "e-aracım kataloğu ve şarj envanterinden hesaplanmıştır",
   run,
 };

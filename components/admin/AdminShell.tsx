@@ -62,7 +62,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <Link href="/admin" className="flex items-center gap-2">
             <IconBolt className="h-6 w-6 text-evos" />
             <span className="text-lg font-black">
-              Evos<span className="text-white/50">Admin</span>
+              e-aracım<span className="text-white/50">Admin</span>
             </span>
           </Link>
           <button
@@ -138,7 +138,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             )?.label ?? "Yönetim"}
           </h1>
           <span className="ml-auto text-xs font-semibold text-neutral-400">
-            Evos Gazete CMS
+            e-aracım CMS
           </span>
         </header>
 

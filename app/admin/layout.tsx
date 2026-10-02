@@ -1,7 +1,7 @@
 import AdminShell from "@/components/admin/AdminShell";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Evos Yönetim Paneli" };
+export const metadata = { title: "e-aracım Yönetim Paneli" };
 
 export default function AdminLayout({
   children,

@@ -5,7 +5,7 @@ import Link from "next/link";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Şarj Rota Hesaplayıcı · Evos",
+  title: "Şarj Rota Hesaplayıcı · e-aracım",
   description: "Elektrikli aracınızla rota çizin, şarj duraklarınızı ve toplam yakıt/şarj maliyetini hesaplayın.",
 };
 

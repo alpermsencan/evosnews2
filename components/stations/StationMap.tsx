@@ -125,7 +125,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
               Google Haritalar'da Aç
             </a>
             <a href="/sarj-agi/rota?toLat=${s.lat}&toLng=${s.lng}" style="display: block; text-align: center; background-color: #f1f5f9; color: #334155; border-radius: 6px; font-size: 11px; font-weight: 700; padding: 5px 0; text-decoration: none; border: 1px solid #cbd5e1;">
-              EVOtoPilot Rota Çiz
+              e-aracım Rota Çiz
             </a>
           </div>
         </div>

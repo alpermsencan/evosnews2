@@ -16,7 +16,7 @@ import MessagesCenter from "@/components/user/MessagesCenter";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Bana Özel · EVOtoPilot",
+  title: "Bana Özel · e-aracım",
   description: "Kullanıcıya özel içerikler, kayıtlı ilanlar, mesajlar ve takip listesi.",
 };
 

@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Elektrikli Otomobil İlanları — 2.EL İLANLAR",
-  description: "Türkiye'de satılık 2. el elektrikli otomobil ilanları, batarya raporları ve VoltScore puanları.",
+  description: "Türkiye'de satılık 2. el elektrikli otomobil ilanları, batarya raporları ve güven puanları.",
 };
 
 type SP = Promise<Record<string, string | undefined>>;

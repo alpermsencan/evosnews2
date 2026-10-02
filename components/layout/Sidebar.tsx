@@ -74,7 +74,7 @@ export default function Sidebar({
           </div>
           <div className="flex flex-1 flex-col leading-tight">
             <span className="text-sm font-extrabold text-[#1F1F1F]">
-              EVOtoPilot hesabına giriş yap
+              e-aracım hesabına giriş yap
             </span>
             <span className="text-xs text-[#757575]">
               Dijital garajın ve takip listen seni bekliyor
@@ -150,7 +150,7 @@ export default function Sidebar({
               Yönetim Paneli
             </Link>
             <p className="mt-4 text-center text-[11px] leading-relaxed text-neutral-400">
-              © {new Date().getFullYear()} EVOtoPilot · Elektrikli Mobilite Platformu
+              © {new Date().getFullYear()} e-aracım · Elektrikli Mobilite Platformu
             </p>
           </div>
         </nav>

@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!user) return { title: "Profil bulunamadı" };
   return {
     title: `${user.name} (@${user.username})`,
-    description: user.bio ?? `${user.name} kullanıcısının EVOtoPilot profili.`,
+    description: user.bio ?? `${user.name} kullanıcısının e-aracım profili.`,
   };
 }
 

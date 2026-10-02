@@ -41,7 +41,7 @@ export default function ListingStickyHeader({
     }
   };
 
-  const shareText = encodeURIComponent(`${title} — EVOtoPilot 2.El İlanı`);
+  const shareText = encodeURIComponent(`${title} — e-aracım 2.El İlanı`);
   const encodedUrl = encodeURIComponent(pageUrl);
 
   return (

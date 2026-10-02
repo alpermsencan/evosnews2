@@ -146,11 +146,11 @@ export default async function HomePage() {
       {/* ANA İÇERİK + SAĞ SÜTUN */}
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="flex min-w-0 flex-1 flex-col gap-8">
-          {/* GÜNDEM -> EVOtoPilot Özel Analiz */}
+          {/* GÜNDEM -> e-aracım Özel Analiz */}
           {feed.length > 0 && (
             <section className="px-3 sm:px-0">
               <SectionTitle
-                title="EVOtoPilot Özel Analiz"
+                title="e-aracım Özel Analiz"
                 href="/kategori/haber-merkezi"
                 subtitle="Elektrikli mobilite ve otomotiv endüstrisinden derinlemesine analizler"
               />
@@ -191,7 +191,7 @@ export default async function HomePage() {
                 title="TOPLULUK"
                 href="/topluluk"
                 color="#c2410c"
-                subtitle="Evos kullanıcılarının deneyimleri ve tartışmaları"
+                subtitle="e-aracım topluluğu gerçek kullanıcı deneyimleri ve tartışmaları"
               />
               <div className="flex flex-col overflow-hidden rounded-lg border border-neutral-200 bg-white">
                 {safeCommunity.map((p) => (

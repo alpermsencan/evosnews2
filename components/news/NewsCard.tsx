@@ -213,7 +213,7 @@ export default function NewsCard({
 
         {/* Alt Bilgi */}
         <div className="mt-3 flex items-center justify-between pt-2 border-t border-neutral-150 text-[10px] font-semibold text-neutral-400">
-          <span className="truncate">{article.author?.name || "EVOtoPilot"}</span>
+          <span className="truncate">{article.author?.name || "e-aracım"}</span>
           <span className="flex items-center gap-1 shrink-0">
             <IconEye className="h-3 w-3" />
             {article.views.toLocaleString("tr-TR")}

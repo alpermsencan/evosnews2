@@ -112,7 +112,7 @@ export default function ListingContactBox({
 
           <a
             href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-              `Merhaba, EVOtoPilot'taki "${listingSlug}" ilanınız hakkında bilgi almak istiyorum.`
+              `Merhaba, e-aracım'daki "${listingSlug}" ilanınız hakkında bilgi almak istiyorum.`
             )}`}
             target="_blank"
             rel="noopener noreferrer"

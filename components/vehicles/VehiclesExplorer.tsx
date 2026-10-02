@@ -151,7 +151,7 @@ export default function VehiclesExplorer({
     "fiyat-azalan": "Fiyat: En Yüksek",
     menzil: "En Uzun Menzil",
     hizlanma: "0-100 En Hızlı",
-    puan: "Evos Puanı",
+    puan: "e-aracım Puanı",
   };
 
   return (
@@ -738,7 +738,7 @@ export default function VehiclesExplorer({
                     { label: "Fiyat: En Yüksekten Düşüğe", val: "fiyat-azalan" },
                     { label: "Menzil: En Uzun", val: "menzil" },
                     { label: "0-100: En Hızlı Hızlanma", val: "hizlanma" },
-                    { label: "Evos Editör Puanı", val: "puan" },
+                    { label: "e-aracım Editör Puanı", val: "puan" },
                   ].map((s) => (
                     <button
                       key={s.val}
@@ -1016,7 +1016,7 @@ export default function VehiclesExplorer({
                   <option value="fiyat-azalan">Fiyat: En Yüksek</option>
                   <option value="menzil">En Uzun Menzil</option>
                   <option value="hizlanma">0-100 En Hızlı</option>
-                  <option value="puan">Evos Puanı</option>
+                  <option value="puan">e-aracım Puanı</option>
                 </select>
               </div>
             </div>

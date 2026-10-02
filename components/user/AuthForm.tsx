@@ -84,12 +84,12 @@ export default function AuthForm({ mode }: { mode: "login" | "register" }) {
       onSubmit={submit}
       className="flex w-full max-w-md flex-col gap-5 rounded-3xl border border-neutral-200 bg-white p-7 sm:p-9 shadow-xl ring-1 ring-black/5"
     >
-      {/* EVOtoPilot Logo & Başlık */}
+      {/* e-aracım Logo & Başlık */}
       <div className="flex flex-col items-center text-center gap-3">
         <Logo size="lg" />
         <div className="flex flex-col gap-1 mt-1">
           <h1 className="text-xl font-black text-neutral-900">
-            {isRegister ? "EVOtoPilot'a Katılın" : "Tekrar Hoş Geldiniz"}
+            {isRegister ? "e-aracım'a Katılın" : "Tekrar Hoş Geldiniz"}
           </h1>
           <p className="text-xs text-neutral-500 leading-relaxed max-w-xs">
             {isRegister

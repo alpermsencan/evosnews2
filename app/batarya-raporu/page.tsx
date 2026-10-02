@@ -23,8 +23,8 @@ const STEPS = [
     d: `Kapasite kaybı hızı aracın kendi geçmişinden çıkarılır ve %${EOL_SOH} değişim sınırına kalan süre hesaplanır. Bu iki alan forma ELLE GİRİLEMEZ — girilebilseydi her raporda "risk: düşük" yazardı.`,
   },
   {
-    t: "Evos doğrular, rozet çıkar",
-    d: "Rapor doğrulanana kadar ilanda rozet görünmez ve değerleri VoltScore hesabına katılmaz. Doğrulandığı anda ilan 'Evos doğrulamalı' rozetini alır ve güven puanı yeniden hesaplanır.",
+    t: "e-aracım doğrular, rozet çıkar",
+    d: "Rapor doğrulanana kadar ilanda rozet görünmez ve değerleri güven puanı hesabına katılmaz. Doğrulandığı anda ilan 'e-aracım doğrulamalı' rozetini alır ve güven puanı yeniden hesaplanır.",
   },
 ];
 
@@ -100,11 +100,11 @@ export default async function BatteryReportPage() {
         <div className="flex items-center gap-2">
           <IconCheck className="h-5 w-5 text-volt-dark" />
           <h2 className="text-xl font-black text-neutral-900">
-            Rapor VoltScore&apos;u nasıl etkiler?
+            Rapor Güven Puanı&apos;nı nasıl etkiler?
           </h2>
         </div>
         <p className="text-sm leading-relaxed text-neutral-600">
-          VoltScore&apos;un en ağır kriteri <strong>batarya sağlığıdır (%30)</strong>.
+          İlan güven puanının en ağır kriteri <strong>batarya sağlığıdır (%30)</strong>.
           Doğrulanmış rapor yoksa satıcının beyan ettiği değer kullanılır ve bu
           ilanda açıkça &quot;beyan&quot; olarak yazar. Rapor doğrulandığında
           ölçülen değer devreye girer ve puan yeniden hesaplanır. Beyan ile ölçüm
@@ -134,7 +134,7 @@ export default async function BatteryReportPage() {
             Servis veya ekspertiz firması mısınız?
           </h2>
           <p className="text-sm leading-relaxed text-neutral-600">
-            Ölçüm yapan kurumlar Evos batarya raporu ağına katılabilir.
+            Ölçüm yapan kurumlar e-aracım batarya raporu ağına katılabilir.
             Ölçümlerinizi panele girin, raporlarınız doğrulandıktan sonra
             ilanlarda kurum adınızla görünsün.
           </p>

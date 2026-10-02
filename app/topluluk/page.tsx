@@ -5,9 +5,9 @@ import RedditCommunity from "@/components/community/RedditCommunity";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "r/evotopilot — Elektrikli Araç Topluluğu",
+  title: "r/e-aracim — Elektrikli Araç Topluluğu",
   description:
-    "Elektrikli araç sahiplerinin deneyim paylaştığı, soru sorduğu, menzil ve şarj verilerini tartıştığı r/evotopilot topluluğu.",
+    "Elektrikli araç sahiplerinin deneyim paylaştığı, soru sorduğu, menzil ve şarj verilerini tartıştığı r/e-aracim topluluğu.",
 };
 
 export default async function CommunityPage() {

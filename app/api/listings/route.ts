@@ -152,7 +152,7 @@ export async function POST(req: NextRequest) {
         images: Array.isArray(b.images) ? b.images.slice(0, 10) : [],
         condition,
         sellerType,
-        sellerName: b.sellerName || viewer?.name || "Evos üyesi",
+        sellerName: b.sellerName || viewer?.name || "e-aracım üyesi",
         sellerPhone: b.sellerPhone ? String(b.sellerPhone).slice(0, 30) : null,
         // Beyan edilen batarya sağlığı; doğrulanmış rapor geldiğinde onun
         // ölçümü öncelik kazanır (bkz. lib/listings.ts).

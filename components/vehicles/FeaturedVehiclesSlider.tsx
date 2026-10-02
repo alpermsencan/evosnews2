@@ -23,28 +23,31 @@ export interface ShowcaseVehicle {
 
 export default function FeaturedVehiclesSlider({
   vehicles,
+  interval = 6000,
 }: {
   vehicles: ShowcaseVehicle[];
+  interval?: number;
 }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const count = vehicles.length;
 
-  const next = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % count);
-  }, [count]);
-
-  const prev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + count) % count);
-  }, [count]);
+  const go = useCallback(
+    (i: number) => setIndex(((i % count) + count) % count),
+    [count]
+  );
+  const next = useCallback(() => go(index + 1), [go, index]);
+  const prev = useCallback(() => go(index - 1), [go, index]);
 
   useEffect(() => {
-    if (isPaused || count <= 1) return;
-    const timer = setInterval(next, 5000);
-    return () => clearInterval(timer);
-  }, [isPaused, count, next]);
+    if (paused || count < 2) return;
+    const t = setTimeout(next, interval);
+    return () => clearTimeout(t);
+  }, [index, paused, next, interval, count]);
+
+  if (!count) return null;
 
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -57,200 +60,150 @@ export default function FeaturedVehiclesSlider({
     const deltaY = e.changedTouches[0].clientY - touchStartY.current;
 
     if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4) {
-      if (deltaX < 0) next();
-      else prev();
+      (deltaX < 0 ? next : prev)();
     }
     touchStartX.current = null;
     touchStartY.current = null;
   };
 
-  if (!count) return null;
-
-  const activeVehicle = vehicles[currentIndex];
-
   return (
-    <div
-      className="relative flex flex-col rounded-3xl border border-neutral-300/80 bg-white p-4 sm:p-6 shadow-sm ring-1 ring-black/5 overflow-hidden select-none touch-pan-y"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+    <section
+      className="relative w-full overflow-hidden bg-neutral-950 rounded-2xl sm:rounded-3xl border border-neutral-200/60 shadow-lg group select-none touch-pan-y"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* 1. ÜST BAŞLIK & SLIDER NAVİGASYONU */}
-      <div className="flex items-center justify-between border-b border-neutral-200 pb-3 mb-4">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-neutral-950 text-white shadow-xs">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base sm:text-lg font-black tracking-tight text-neutral-950 uppercase">
-                ÖNE ÇIKAN VİTRİN MODELLERİ
-              </h2>
-              <span className="rounded bg-sky-600 px-2 py-0.5 text-[9px] font-black uppercase text-white shadow-2xs">
-                VİTRİN
-              </span>
-            </div>
-            <p className="text-xs text-neutral-500 font-medium hidden sm:block">
-              Türkiye pazarının en çok tercih edilen elektrikli modelleri ve resmî verileri
-            </p>
-          </div>
-        </div>
+      <div className="relative aspect-[4/3] w-full sm:aspect-[16/9] lg:aspect-[21/9]">
+        {vehicles.map((v, i) => {
+          const href = `/araclar/${v.slug}`;
+          const isActive = i === index;
 
-        {/* Sağ: İleri / Geri Navigasyon Okları & Sayaç */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={prev}
-            aria-label="Önceki model"
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-950 hover:text-white transition shadow-2xs"
-          >
-            <IconChevronLeft className="h-4 w-4" />
-          </button>
-          <span className="text-xs font-black text-neutral-500 px-1">
-            {currentIndex + 1} / {count}
-          </span>
-          <button
-            type="button"
-            onClick={next}
-            aria-label="Sonraki model"
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-950 hover:text-white transition shadow-2xs"
-          >
-            <IconChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* 2. BÜYÜK KURUMSAL VİTRİN TUVALİ: BİLGİLER RESMİN ÜZERİNE KURUMSAL & RENKLİ YERLEŞTİRİLDİ */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] overflow-hidden rounded-2xl bg-gradient-to-br from-neutral-950 via-slate-900 to-neutral-900 border border-neutral-800 shadow-lg group">
-        {/* Arka Plan Hafif Enerji Işıması */}
-        <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-sky-500/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-blue-600/15 blur-3xl pointer-events-none" />
-
-        {/* BÜYÜK ARAÇ GÖRSELİ */}
-        <div className="relative w-full h-full flex items-center justify-center p-6 sm:p-10">
-          <SafeImage
-            src={activeVehicle.image}
-            alt={`${activeVehicle.brand} ${activeVehicle.model}`}
-            fill
-            priority
-            sizes="(max-width: 1024px) 100vw, 1200px"
-            className="object-contain p-4 sm:p-8 transition-transform duration-700 ease-out group-hover:scale-105"
-            fallbackSrc="/arac-placeholder.svg"
-          />
-        </div>
-
-        {/* ÜST SOL: Kasa Tipi & Marka */}
-        <div className="absolute top-3 left-3 sm:top-5 sm:left-5 flex items-center gap-2 z-10">
-          <span className="rounded-lg bg-white/10 backdrop-blur-md border border-white/20 px-2.5 py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider text-white shadow-xs">
-            {activeVehicle.body}
-          </span>
-          <span className="rounded-lg bg-blue-600/80 backdrop-blur-md border border-blue-400/30 px-2.5 py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider text-sky-200">
-            {activeVehicle.brand}
-          </span>
-        </div>
-
-        {/* ÜST SAĞ: Durum / Kampanya Etiketi */}
-        <div className="absolute top-3 right-3 sm:top-5 sm:right-5 z-10">
-          <span
-            className={`rounded-lg px-2.5 py-1 text-[10px] sm:text-xs font-black uppercase tracking-wider shadow-md backdrop-blur-md ${activeVehicle.tagColor}`}
-          >
-            {activeVehicle.tag}
-          </span>
-        </div>
-
-        {/* ALT ŞERİT: MODEL BAŞLIĞI, FİYAT & RENKLİ METRİKLER (RESİM ÜZERİNDE) */}
-        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-          {/* Sol Kısım: Model İsmi ve Fiyat */}
-          <div className="flex flex-col gap-1">
-            <h3 className="text-lg sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-tight drop-shadow-md">
-              {activeVehicle.brand} {activeVehicle.model}
-            </h3>
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] sm:text-xs font-bold text-neutral-400 uppercase">
-                Başlangıç:
-              </span>
-              <span className="text-base sm:text-xl font-black text-sky-400 tracking-tight drop-shadow-sm">
-                {formatTL(activeVehicle.price)}
-              </span>
-            </div>
-          </div>
-
-          {/* Sağ Kısım: Renkli Kurumsal Metrik Çipleri & Buton */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Menzil (Yeşil) */}
-            <div className="flex items-center gap-1.5 rounded-xl bg-emerald-950/70 border border-emerald-500/40 backdrop-blur-md px-2.5 py-1.5 shadow-xs">
-              <span className="text-emerald-400 text-xs">🔋</span>
-              <div className="flex flex-col leading-none">
-                <span className="text-[8px] font-black uppercase text-emerald-300">WLTP Menzil</span>
-                <span className="text-xs sm:text-sm font-black text-white">{activeVehicle.range} km</span>
-              </div>
-            </div>
-
-            {/* Motor Gücü (Turuncu) */}
-            <div className="flex items-center gap-1.5 rounded-xl bg-amber-950/70 border border-amber-500/40 backdrop-blur-md px-2.5 py-1.5 shadow-xs">
-              <span className="text-amber-400 text-xs">⚡</span>
-              <div className="flex flex-col leading-none">
-                <span className="text-[8px] font-black uppercase text-amber-300">Güç</span>
-                <span className="text-xs sm:text-sm font-black text-white">{activeVehicle.power}</span>
-              </div>
-            </div>
-
-            {/* Hızlı Şarj (Mavi) */}
-            <div className="hidden sm:flex items-center gap-1.5 rounded-xl bg-sky-950/70 border border-sky-500/40 backdrop-blur-md px-2.5 py-1.5 shadow-xs">
-              <span className="text-sky-400 text-xs">⏱️</span>
-              <div className="flex flex-col leading-none">
-                <span className="text-[8px] font-black uppercase text-sky-300">Hızlı Şarj</span>
-                <span className="text-xs sm:text-sm font-black text-white">{activeVehicle.dcSpeed}</span>
-              </div>
-            </div>
-
-            {/* İncele Butonu */}
-            <Link
-              href={`/araclar/${activeVehicle.slug}`}
-              className="rounded-xl bg-white hover:bg-neutral-100 text-neutral-950 px-3.5 py-2 text-xs font-black transition active:scale-95 shadow-md flex items-center gap-1 shrink-0"
+          return (
+            <div
+              key={v.slug}
+              className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                isActive
+                  ? "z-10 opacity-100"
+                  : "z-0 opacity-0 pointer-events-none"
+              }`}
+              aria-hidden={!isActive}
             >
-              <span>İncele</span>
-              <span>→</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+              {/* Arka Plan & Araç Görseli */}
+              <Link href={href} className="block relative w-full h-full overflow-hidden bg-gradient-to-br from-neutral-950 via-slate-950 to-neutral-900">
+                <SafeImage
+                  src={v.image}
+                  alt={`${v.brand} ${v.model}`}
+                  fill
+                  priority={i === 0}
+                  sizes="(max-width: 1024px) 100vw, 1400px"
+                  className="object-contain p-6 sm:p-10 lg:p-14 transition-transform duration-1000 ease-out group-hover:scale-105"
+                  fallbackSrc="/arac-placeholder.svg"
+                />
 
-      {/* 3. ALT MİNİ MODEL SEÇİCİ ŞERİT (Hızlı ve Hafif) */}
-      <div className="mt-3 pt-3 border-t border-neutral-200">
-        <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1 overscroll-x-contain touch-pan-x">
-          {vehicles.map((v, idx) => {
-            const isActive = idx === currentIndex;
-            return (
-              <button
-                key={v.slug}
-                type="button"
-                onClick={() => setCurrentIndex(idx)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition shrink-0 ${
-                  isActive
-                    ? "border-neutral-950 bg-neutral-950 text-white shadow-xs font-black"
-                    : "border-neutral-200 bg-neutral-50 text-neutral-700 hover:bg-neutral-100 font-bold"
-                }`}
-              >
-                <div className="relative h-5 w-8 shrink-0 overflow-hidden rounded bg-white border border-neutral-200">
-                  <SafeImage
-                    src={v.image}
-                    alt={v.model}
-                    fill
-                    sizes="32px"
-                    className="object-contain p-0.5"
-                    fallbackSrc="/arac-placeholder.svg"
-                  />
-                </div>
-                <span className="text-[11px] truncate max-w-[120px]">
-                  {v.brand} {v.model}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                {/* Sadece Alttan Okunabilirlik Gölgesi */}
+                <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/85 via-black/45 to-transparent pointer-events-none" />
+              </Link>
+
+              {/* Alt Sol Kayan Cam Kart: Başlık, Fiyat ve Renkli Özellikler */}
+              <div className="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-6 lg:p-8 pointer-events-auto">
+                <Link
+                  href={href}
+                  className="group/link block max-w-3xl rounded-2xl bg-neutral-950/85 backdrop-blur-md border border-white/20 p-4 sm:p-5 lg:p-6 shadow-2xl transition hover:border-sky-500 hover:bg-neutral-950/95"
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
+                    <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-sky-400">
+                      ÖNE ÇIKAN MODEL {v.tag ? `· ${v.tag}` : "· VİTRİN"}
+                    </span>
+                    {v.body && (
+                      <span className="rounded bg-white/10 px-2 py-0.5 text-[9px] font-bold text-white/80 uppercase">
+                        {v.body}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 sm:gap-4">
+                    <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white tracking-tight leading-snug group-hover/link:text-sky-300 transition-colors drop-shadow-sm">
+                      {v.brand} {v.model}
+                    </h2>
+                    <div className="text-base sm:text-xl font-black text-sky-400 shrink-0">
+                      {formatTL(v.price)}
+                    </div>
+                  </div>
+
+                  {/* Renkli Metrik Çipleri */}
+                  <div className="mt-3 flex flex-wrap items-center gap-2 sm:gap-3 pt-2.5 border-t border-white/10 text-xs">
+                    <div className="flex items-center gap-1 text-emerald-400 font-bold">
+                      <span>🔋</span>
+                      <span>{v.range} km WLTP</span>
+                    </div>
+                    <span className="text-white/20">•</span>
+                    <div className="flex items-center gap-1 text-amber-400 font-bold">
+                      <span>⚡</span>
+                      <span>{v.power}</span>
+                    </div>
+                    <span className="text-white/20">•</span>
+                    <div className="flex items-center gap-1 text-sky-300 font-bold">
+                      <span>⏱️</span>
+                      <span>{v.dcSpeed}</span>
+                    </div>
+                    {v.acceleration && (
+                      <>
+                        <span className="text-white/20">•</span>
+                        <div className="text-white/70 font-semibold">
+                          0-100: {v.acceleration}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Minimalist Cam Ok Butonları */}
+        {count > 1 && (
+          <>
+            <button
+              onClick={prev}
+              aria-label="Önceki araç"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-11 w-11 items-center justify-center rounded-full bg-neutral-950/40 hover:bg-neutral-900/80 text-white backdrop-blur-md border border-white/15 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 shadow-md"
+            >
+              <IconChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={next}
+              aria-label="Sonraki araç"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 hidden sm:flex h-11 w-11 items-center justify-center rounded-full bg-neutral-950/40 hover:bg-neutral-900/80 text-white backdrop-blur-md border border-white/15 transition-all duration-200 opacity-0 group-hover:opacity-100 hover:scale-105 active:scale-95 shadow-md"
+            >
+              <IconChevronRight className="h-5 w-5" />
+            </button>
+          </>
+        )}
+
+        {/* Modern Sayfa Göstergesi (Mobilde üstte, masaüstünde altta) */}
+        {count > 1 && (
+          <div className="absolute top-4 right-4 sm:top-auto sm:bottom-8 sm:right-8 z-30 flex items-center gap-2.5 sm:gap-3 bg-neutral-950/75 backdrop-blur-md px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full border border-white/15 shadow-xl">
+            <span className="text-[10px] sm:text-[11px] font-black text-white/80 tracking-widest tabular-nums">
+              {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+            </span>
+            <div className="flex items-center gap-1">
+              {vehicles.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => go(i)}
+                  aria-label={`Araç ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === index ? "w-5 bg-sky-500" : "w-1.5 bg-white/40 hover:bg-white/70"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }

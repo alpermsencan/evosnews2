@@ -14,7 +14,7 @@ export const revalidate = 60;
 export const metadata = {
   title: "Platformu İncele",
   description:
-    "Evos platform mimarisi, API'ler, iş ortaklıkları ve kurumsal filo çözümleri.",
+    "e-aracım platform mimarisi, API'ler, iş ortaklıkları ve kurumsal filo çözümleri.",
 };
 
 /**
@@ -54,7 +54,7 @@ export default async function PlatformPage() {
           <h1 className="text-2xl font-black sm:text-4xl">PLATFORMU İNCELE</h1>
         </div>
         <p className="max-w-3xl text-sm text-white/85 sm:text-base">
-          Evos; haber yayıncılığı, araç verisi, şarj altyapısı ve yapay zekâ
+          e-aracım; haber yayıncılığı, araç verisi, şarj altyapısı ve akıllı mobilite
           servislerini tek veri modelinde birleştiren bütünleşik bir mobilite
           platformudur. Aşağıdaki sayaçlar veri tabanındaki güncel kayıt
           sayılarıdır.
@@ -95,7 +95,7 @@ export default async function PlatformPage() {
       <section className="rounded-lg border border-neutral-200 bg-white p-6">
         <h2 className="text-lg font-black text-neutral-900 mb-2">KURUMSAL ENTEGRASYON VE OCPI ROAMING</h2>
         <p className="text-sm text-neutral-600 leading-relaxed">
-          EVOtoPilot, açık dolaşım standartlarını destekler. Operatörler arası entegrasyonu kolaylaştırmak için OCPI (Open Charge Point Interface) v2.2.1 protokolünü tam uyumlu olarak sunmaktayız. Kurumsal ortaklarımız, filo yöneticileri ve şarj noktası işletmecileri (CPO) sisteme güvenle dahil olabilir.
+          e-aracım, açık dolaşım standartlarını destekler. Operatörler arası entegrasyonu kolaylaştırmak için OCPI (Open Charge Point Interface) v2.2.1 protokolünü tam uyumlu olarak sunmaktayız. Kurumsal ortaklarımız, filo yöneticileri ve şarj noktası işletmecileri (CPO) sisteme güvenle dahil olabilir.
         </p>
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="rounded border border-neutral-150 p-4 bg-neutral-50">

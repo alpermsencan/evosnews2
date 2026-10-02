@@ -31,7 +31,7 @@ export type ListingLite = {
 };
 
 export default function ListingCard({ listing }: { listing: ListingLite }) {
-  // Rozet YALNIZCA doğrulanmış raporda çıkar; ölçüm girilmiş ama Evos
+  // Rozet YALNIZCA doğrulanmış raporda çıkar; ölçüm girilmiş ama e-aracım
   // doğrulamamışsa satıcı beyanından farkı yoktur.
   const verified = !!listing.batteryReport?.verifiedAt;
 

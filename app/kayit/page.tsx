@@ -4,8 +4,8 @@ import AuthForm from "@/components/user/AuthForm";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Üye Ol — EVOtoPilot",
-  description: "EVOtoPilot'a ücretsiz üye ol; ilan ver, satıcılarla mesajlaş, yorum yap ve beğen.",
+  title: "Üye Ol — e-aracım",
+  description: "e-aracım'a ücretsiz üye ol; ilan ver, satıcılarla mesajlaş, yorum yap ve beğen.",
 };
 
 export default function RegisterPage() {

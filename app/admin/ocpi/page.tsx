@@ -8,7 +8,7 @@ export default async function AdminOcpiPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://evotopilot.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://e-aracim.com";
 
   // Server Action to generate a new OCPI Token
   async function handleGenerateToken(formData: FormData) {
@@ -50,7 +50,7 @@ export default async function AdminOcpiPage() {
           OCPI Roaming Entegrasyonu
         </h1>
         <p className="text-xs text-neutral-500 max-w-3xl">
-          Evos'u bir eMSP (e-Mobility Service Provider) olarak diğer şarj ağı operatörlerine (CPO) bağlayın.
+          e-aracım&apos;ı bir eMSP (e-Mobility Service Provider) olarak diğer şarj ağı operatörlerine (CPO) bağlayın.
           Aşağıdaki bağlantı uçlarını ve yetki anahtarlarını kullanarak el sıkışması (handshake) gerçekleştirebilirsiniz.
         </p>
       </div>

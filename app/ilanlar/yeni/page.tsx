@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "İlan Ver",
-  description: "Elektrikli aracınızı Evos pazaryerinde satışa çıkarın.",
+  description: "Elektrikli aracınızı e-aracım pazaryerinde satışa çıkarın.",
 };
 
 export default async function NewListingPage() {
@@ -28,7 +28,7 @@ export default async function NewListingPage() {
         <h1 className="text-2xl font-black text-neutral-900">İlan Ver</h1>
         <p className="max-w-3xl text-sm leading-relaxed text-neutral-600">
           Elektrikli aracınızı yayınlayın. Batarya sağlığı, servis geçmişi ve
-          şarj alışkanlığı gibi bilgiler aracınızın VoltScore güven puanını
+          şarj alışkanlığı gibi bilgiler aracınızın ilan güven puanını
           oluşturur — bu bilgileri paylaşan ilanlar alıcı tarafından daha çok
           tercih edilir.
         </p>

@@ -130,7 +130,7 @@ export default function DailyEvReview({ vehicle }: { vehicle: Vehicle }) {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black text-neutral-400 tracking-wider">CANLI TEST TELEMETRİSİ</span>
                 <span className="rounded bg-sky-500/10 px-2 py-0.5 text-[10px] font-bold text-sky-400 border border-sky-500/20">
-                  Doğrulanmış EVOS-SOH
+                  Doğrulanmış Batarya SOH
                 </span>
               </div>
 
@@ -173,7 +173,7 @@ export default function DailyEvReview({ vehicle }: { vehicle: Vehicle }) {
               </div>
 
               <p className="text-[11px] leading-relaxed text-neutral-500 mt-2">
-                * Canlı test verileri, EVOtoPilot mühendisleri tarafından OBD-II soketi aracılığıyla batarya yönetim sisteminden (BMS) okunan anlık hücre voltaj sapmaları ve ısıl test sonuçlarına dayanmaktadır.
+                * Canlı test verileri, e-aracım uzmanları tarafından OBD-II soketi aracılığıyla batarya yönetim sisteminden (BMS) okunan anlık hücre voltaj sapmaları ve ısıl test sonuçlarına dayanmaktadır.
               </p>
             </div>
           ) : (

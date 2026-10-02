@@ -45,7 +45,7 @@ export default function ModernVehicleSpecBadges({
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: `${vehicle.brand} ${vehicle.model} - EVOtoPilot`,
+          title: `${vehicle.brand} ${vehicle.model} - e-aracım`,
           url: window.location.href,
         });
       } catch {}

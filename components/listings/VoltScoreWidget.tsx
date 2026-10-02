@@ -117,7 +117,7 @@ export default function VoltScoreWidget({ score, breakdown }: Props) {
       {/* Şeffaflık & Güven Rozeti */}
       <div className="mt-2 rounded-xl bg-white/5 p-3 border border-white/10 text-center">
         <span className="text-[10px] font-bold text-sky-400 block mb-1">
-          ✓ EVOtoPilot Onaylı Batarya ve Güven Algoritması
+          ✓ e-aracım Onaylı Batarya ve Güven Algoritması
         </span>
         <p className="text-[10px] text-neutral-400 leading-relaxed">
           Puan; batarya sağlığı (%30), yaş/km dengesi (%15), hızlı DC şarj geçmişi (%15), kaza (%12), garanti (%10), yetkili servis (%10) ve menzil tutarlılığı (%8) analiz edilerek hesaplanır.

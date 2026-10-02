@@ -10,7 +10,7 @@ import { buildTariffIndex, formatTariff, matchTariff } from "@/lib/tariffs";
 
 export const revalidate = 60;
 export const metadata = {
-  title: "Şarj Ağı & Fiyatları · EVOtoPilot",
+  title: "Şarj Ağı & Fiyatları · e-aracım",
   description:
     "Türkiye genelindeki şarj istasyonları haritası, güncel operatör tarifeleri ve şarj fiyatları.",
 };

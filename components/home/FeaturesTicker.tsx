@@ -40,7 +40,7 @@ const FEATURE_ITEMS = [
   {
     icon: "🛡️",
     title: "DOĞRULANMIŞ BATARYA RAPORU",
-    description: "Batarya sağlığı sertifikalı ikinci el ilanlar ve VoltScore güven endeksi.",
+    description: "Batarya sağlığı sertifikalı ikinci el elektrikli araç ilanları.",
     href: "/batarya-raporu",
   },
   {
@@ -74,7 +74,7 @@ export default function FeaturesTicker() {
       <div className="flex items-center">
         {/* Left Side Static Label */}
         <div className="absolute left-0 top-0 bottom-0 z-20 bg-slate-950 px-5 flex flex-col justify-center text-[10px] font-black uppercase tracking-widest text-sky-400 border-r border-neutral-850 rounded-l-xl">
-          <span>EVOTOPILOT</span>
+          <span>e-ARACIM</span>
           <span className="text-[8px] text-neutral-400 mt-0.5">SERVİSLERİ</span>
         </div>
 

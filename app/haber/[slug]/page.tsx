@@ -24,7 +24,7 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlug(slug, true);
-  if (!article) return { title: "Haber bulunamadı | EVOtoPilot" };
+  if (!article) return { title: "Haber bulunamadı | e-aracım" };
   return {
     title: article.title,
     description: article.spot,
@@ -100,7 +100,7 @@ export default async function ArticlePage({ params }: Props) {
 
   // Editörden gelen HTML; eski düz metin kayıtlar paragraflara dönüştürülür
   let contentHtml = contentToHtml(article.content);
-  // Dış kaynak atıflarını temizle, tamamen kurumsal EVOtoPilot dili
+  // Dış kaynak atıflarını temizle, tamamen kurumsal e-aracım dili
   contentHtml = contentHtml
     .replace(/<p class="source-note">[\s\S]*?<\/p>/gi, "")
     .replace(/<p[^>]*>\s*\(?Kaynak:?[\s\S]*?<\/p>/gi, "")
@@ -108,7 +108,7 @@ export default async function ArticlePage({ params }: Props) {
     .replace(/Kaynak:\s*(Webtekno|DoluBatarya|VoltHaber)[^\n<]*/gi, "");
 
   const displayImageCredit = article.imageCredit && /(Webtekno|DoluBatarya|VoltHaber)/i.test(article.imageCredit)
-    ? "EVOtoPilot Medya"
+    ? "e-aracım Medya"
     : article.imageCredit;
 
   return (
@@ -212,14 +212,14 @@ export default async function ArticlePage({ params }: Props) {
             dangerouslySetInnerHTML={{ __html: contentHtml }}
           />
 
-          {/* EVOTOPILOT ÖZEL EDİTÖR ANALİZİ & DEĞERLENDİRMESİ */}
+          {/* e-ARACIM ÖZEL EDİTÖR ANALİZİ & DEĞERLENDİRMESİ */}
           <section className="mx-4 my-3 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/70 via-indigo-50/40 to-white p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-600 text-white">
                 <IconBolt className="h-3.5 w-3.5" />
               </span>
               <h3 className="text-sm font-black tracking-wide text-blue-900 uppercase">
-                EVOtoPilot Analizi &amp; Değerlendirmesi
+                e-aracım Analizi &amp; Değerlendirmesi
               </h3>
               <span className="ml-auto rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-black text-blue-700">
                 UZMAN GÖRÜŞÜ

@@ -218,7 +218,7 @@ export default function RedditCommunity({
 
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto px-3 sm:px-0">
-      {/* 1. REDDIT SUBREDDIT BANNER (r/evotopilot) */}
+      {/* 1. REDDIT SUBREDDIT BANNER (r/e-aracim) */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-neutral-900 to-sky-950 border border-neutral-800 shadow-xl text-white">
         <div className="h-28 sm:h-36 w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-600/30 via-transparent to-transparent flex items-end p-4 sm:p-6" />
 
@@ -236,7 +236,7 @@ export default function RedditCommunity({
             <div className="flex flex-col gap-1 pb-1">
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">
-                  r/evotopilot
+                  r/e-aracim
                 </h1>
                 <span className="rounded-full bg-sky-500/20 border border-sky-400/40 px-2.5 py-0.5 text-[10px] font-black text-sky-300">
                   Resmî Topluluk
@@ -312,7 +312,7 @@ export default function RedditCommunity({
             <input
               type="text"
               readOnly
-              placeholder="r/evotopilot topluluğunda bir konu aç veya soru sor..."
+              placeholder="r/e-aracim topluluğunda bir konu aç veya soru sor..."
               className="flex-1 bg-neutral-100/70 hover:bg-neutral-100 rounded-xl px-4 py-2 text-xs text-neutral-700 outline-none cursor-pointer"
             />
             <button
@@ -475,7 +475,7 @@ export default function RedditCommunity({
                               📌 SABİTLENDİ
                             </span>
                           )}
-                          <span className="font-bold text-neutral-900">r/evotopilot</span>
+                          <span className="font-bold text-neutral-900">r/e-aracim</span>
                           <span>•</span>
                           <span>Gönderen u/{post.author}</span>
                           <span>•</span>
@@ -626,7 +626,7 @@ export default function RedditCommunity({
           {/* Topluluk Hakkında Kartı */}
           <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs flex flex-col gap-3">
             <h3 className="text-xs font-black uppercase tracking-wider text-neutral-400">
-              r/evotopilot Hakkında
+              r/e-aracim Hakkında
             </h3>
             <p className="text-xs text-neutral-600 leading-relaxed font-medium">
               Türkiye&apos;de elektrikli araç kullanıcılarını, test sürüş deneyimlerini, gerçek şarj ve menzil verilerini bir araya getiren bağımsız forum ve paylaşım platformu.
@@ -666,7 +666,7 @@ export default function RedditCommunity({
           {/* Topluluk Kuralları */}
           <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs flex flex-col gap-3">
             <h3 className="text-xs font-black uppercase tracking-wider text-neutral-400">
-              r/evotopilot Kuralları
+              r/e-aracim Kuralları
             </h3>
             <ol className="flex flex-col gap-2 text-xs text-neutral-600 divide-y divide-neutral-100">
               <li className="pt-1.5 flex items-start gap-2">
@@ -739,7 +739,7 @@ export default function RedditCommunity({
                 Topluluğa Katılın
               </h3>
               <p className="text-xs text-neutral-500 leading-relaxed">
-                r/evotopilot topluluğunda <strong>{authModalReason}</strong> için lütfen üye girişi yapın veya ücretsiz hesap oluşturun.
+                r/e-aracim topluluğunda <strong>{authModalReason}</strong> için lütfen üye girişi yapın veya ücretsiz hesap oluşturun.
               </p>
             </div>
 
@@ -779,7 +779,7 @@ export default function RedditCommunity({
 
             <div>
               <h3 className="text-lg font-black text-neutral-900">
-                r/evotopilot&apos;ta Gönderi Paylaş
+                r/e-aracim&apos;ta Gönderi Paylaş
               </h3>
               <p className="text-xs text-neutral-500">
                 Sorunuzu, incelemenizi veya menzil tecrübenizi toplulukla paylaşın.

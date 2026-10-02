@@ -233,7 +233,7 @@ export async function rewriteArticle(
 
   const contentHtml = [
     ...paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`),
-    `<p class="source-note"><em>Bu haber <a href="${escapeHtml(input.sourceUrl)}" rel="nofollow noopener" target="_blank">${escapeHtml(input.sourceName)}</a> kaynağındaki bilgilere dayanılarak Evos Gazete tarafından derlenmiştir.</em></p>`,
+    `<p class="source-note"><em>Bu haber <a href="${escapeHtml(input.sourceUrl)}" rel="nofollow noopener" target="_blank">${escapeHtml(input.sourceName)}</a> kaynağındaki bilgilere dayanılarak e-aracım tarafından derlenmiştir.</em></p>`,
   ].join("\n");
 
   return { title, spot, contentHtml, tags, model };

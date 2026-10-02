@@ -43,7 +43,7 @@ export default function LoginForm() {
       <div className="flex items-center gap-2">
         <IconBolt className="h-7 w-7 text-sky-600" />
         <span className="text-2xl font-black text-neutral-900 tracking-tight">
-          Evos<span className="text-neutral-400">Admin</span>
+          e-aracım<span className="text-neutral-400">Admin</span>
         </span>
       </div>
 

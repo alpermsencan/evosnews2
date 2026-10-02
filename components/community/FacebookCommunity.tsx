@@ -272,7 +272,7 @@ export default function FacebookCommunity({
           </div>
 
           <div className="px-3 pt-3 text-[11px] text-neutral-500 leading-relaxed">
-            Gizlilik · Koşullar · Topluluk İlkeleri · Evos © 2026
+            Gizlilik · Koşullar · Topluluk İlkeleri · e-aracım © 2026
           </div>
         </aside>
 
@@ -629,7 +629,7 @@ export default function FacebookCommunity({
               <div className="relative h-16 w-16 rounded-xl overflow-hidden bg-neutral-200 shrink-0">
                 <Image
                   src="https://images.unsplash.com/photo-1563720223185-11003d516935?w=200&auto=format&fit=crop&q=80"
-                  alt="Evos 2026"
+                  alt="e-aracım 2026"
                   fill
                   className="object-cover group-hover:scale-105 transition"
                 />
@@ -638,7 +638,7 @@ export default function FacebookCommunity({
                 <span className="text-xs font-bold text-neutral-900 group-hover:text-[#1877F2]">
                   2026 Elektrikli Araç Rehberi
                 </span>
-                <span className="text-[11px] text-neutral-500">evosnews.com</span>
+                <span className="text-[11px] text-neutral-500">e-aracim.com</span>
               </div>
             </Link>
           </div>

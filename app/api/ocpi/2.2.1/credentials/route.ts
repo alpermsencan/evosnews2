@@ -54,13 +54,13 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
       data: {
         token: serverToken,
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://evotopilot.com"}/api/ocpi/2.2.1`,
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://e-aracim.com"}/api/ocpi/2.2.1`,
         roles: [
           {
             role: "EMSP",
             business_details: {
-              name: "Evos Charging Network",
-              website: "https://evotopilot.com"
+              name: "e-aracım Charging Network",
+              website: "https://e-aracim.com"
             },
             party_id: "EVS",
             country_code: "TR"

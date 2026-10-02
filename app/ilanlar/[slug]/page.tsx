@@ -255,7 +255,7 @@ export default async function ListingDetail({
             <div className="flex items-center gap-2">
               <IconShield className="h-5 w-5 text-blue-700" />
               <span className="text-[14px] font-black text-blue-900">
-                EVOtoPilot Güvenli İlan
+                e-aracım Güvenli İlan
               </span>
             </div>
             <span className="text-[12px] leading-relaxed text-blue-800/80">

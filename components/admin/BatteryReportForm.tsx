@@ -65,7 +65,7 @@ export default function BatteryReportForm({
       const res = await fetch(`/api/listings/${listingId}/battery-report`, {
         method: "PUT",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ verifiedBy: "Evos" }),
+        body: JSON.stringify({ verifiedBy: "e-aracım" }),
       });
       if (!res.ok) throw new Error((await res.json())?.error ?? "Doğrulanamadı");
       router.refresh();

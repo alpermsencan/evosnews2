@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
       data: {
         name: b.name,
         slug: slugify(b.slug || b.name),
-        operator: b.operator || "Evos Charge Network",
+        operator: b.operator || "e-aracım Charge Network",
         city: b.city,
         district: b.district || "",
         address: b.address || "",

@@ -2,22 +2,16 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import SectionTitle from "@/components/news/SectionTitle";
 import { IconBolt, IconCheck, IconChevronRight } from "@/components/ui/Icons";
+import { SITE_DOMAIN, SITE_EMAIL, SITE_LOCATION, SITE_NAME, SITE_PHONE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Hakkımızda",
+  title: `Hakkımızda — ${SITE_NAME}`,
   description:
-    "Evos, elektrikli araç deneyimini araştırmadan satışa kadar tek platformda toplar. Veri ilkelerimiz ve nasıl çalıştığımız.",
+    `${SITE_NAME} (${SITE_DOMAIN}), elektrikli araç deneyimini araştırmadan satışa kadar tek platformda toplar. Veri ilkelerimiz ve misyonumuz.`,
 };
 
-/**
- * Kurumsal tanıtım sayfası.
- *
- * Buradaki rakamlar SABİT DEĞİL: veritabanından okunur. Tanıtım sayfalarına
- * elle yazılan "10.000+ kullanıcı" tarzı ifadeler kısa sürede yalan olur;
- * gerçek sayaç hem doğrudur hem de kendini günceller.
- */
 export default async function AboutPage() {
   const [articles, vehicles, stations, tariffs, listings, members] = await Promise.all([
     prisma.article.count({ where: { status: "PUBLISHED" } }),
@@ -30,17 +24,26 @@ export default async function AboutPage() {
 
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-evos to-evos-dark p-6 text-white">
-        <div className="flex items-center gap-2">
-          <IconBolt className="h-7 w-7" />
-          <h1 className="text-2xl font-black sm:text-4xl">HAKKIMIZDA</h1>
+      {/* Hero Banner */}
+      <header className="flex flex-col gap-3 rounded-3xl bg-gradient-to-br from-neutral-950 via-slate-900 to-neutral-900 p-6 sm:p-8 text-white border border-neutral-800 shadow-xl">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/20 text-sky-400 border border-sky-400/30">
+            <IconBolt className="h-6 w-6" />
+          </div>
+          <div>
+            <span className="text-xs font-black uppercase tracking-wider text-sky-400">
+              ELEKTRİKLİ MOBİLİTE PLATFORMU
+            </span>
+            <h1 className="text-2xl sm:text-4xl font-black tracking-tight">HAKKIMIZDA</h1>
+          </div>
         </div>
-        <p className="max-w-3xl text-sm text-white/85 sm:text-base">
-          Evos, elektrikli araç deneyimini araştırmadan satışa kadar tek
-          platformda toplar: haber, model kataloğu, şarj ağı ve tarifeleri,
-          ikinci el pazaryeri, batarya raporu ve yapay zekâ destekli danışman.
+        <p className="max-w-3xl text-sm sm:text-base text-neutral-300 leading-relaxed">
+          <strong>{SITE_NAME}</strong> ({SITE_DOMAIN}), Türkiye&apos;de elektrikli araç ekosistemini
+          araştırmadan satın almaya kadar tek çatı altında toplayan bağımsız platformdur: güncel haberler,
+          kapsamlı model kataloğu, şarj asistanı ve tarifeleri, ikinci el elektrikli araç pazaryeri
+          ve şeffaf teknik analizler.
         </p>
-        <div className="mt-1 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           <Stat label="Yayında haber" value={articles} />
           <Stat label="Katalog modeli" value={vehicles} />
           <Stat label="Şarj istasyonu" value={stations} />
@@ -50,63 +53,73 @@ export default async function AboutPage() {
         </div>
       </header>
 
+      {/* Veri İlkelerimiz */}
       <section>
-        <SectionTitle title="VERİ İLKELERİMİZ" color="#e30613" />
+        <SectionTitle title="VERİ İLKELERİMİZ" color="#0284c7" />
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
           <Principle
-            t="Örnek veri yoktur"
-            d="Sitedeki her kayıt ya bir dış kaynaktan otomatik gelir, ya kullanıcıdan, ya da yönetim panelinden doğrulanarak girilir. Sayfayı dolu göstermek için sahte ilan, sahte yorum veya sahte kullanıcı üretilmez."
+            t="Doğrulanmış ve Gerçek Veri"
+            d="Sitemizdeki her teknik kayıt resmî kataloglardan, üretici verilerinden veya yönetim panelinden teyit edilerek girilir. Sayfayı yapay olarak dolu göstermek için yanıltıcı veri veya sahte ilan barındırılmaz."
           />
           <Principle
-            t="Bilinmeyen alan boş kalır"
-            d="Bir aracın DC şarj gücü ya da bir istasyonun tarifesi doğrulanamıyorsa alan boş bırakılır ve arayüzde '—' görünür. Tahmini bir sayı yazmak, kullanıcının o sayıya güvenmesine yol açardı."
+            t="Bilinmeyen Alan Boş Kalır"
+            d="Bir modelin şarj eğrisi, DC maksimum gücü ya da güncel fiyatı üretici tarafından açıklanmamışsa alan boş bırakılır. Tahmini bir rakam yazmak kullanıcıyı yanıltabileceği için spekülatif sayılar kullanılmaz."
           />
           <Principle
-            t="Her rakamın kaynağı vardır"
-            d="Fiyat, tarife ve menzil değerleri kaynağı ve doğrulama tarihiyle birlikte saklanır. Veri bayatladığında panelde uyarı çıkar; 'güncel' demek ölçülebilir bir iddiadır."
+            t="Şeffaf ve Açık Kaynak"
+            d="Menzil, motor gücü, batarya kapasitesi ve tüketim verileri uluslararası standartlar (WLTP) ve resmî test döngüleri doğrultusunda kullanıcılara tarafsız şekilde sunulur."
           />
           <Principle
-            t="Haberde telif güvenliği"
-            d="Kaynağın metni asla kopyalanmaz. Her haber olgular çıkarılarak sıfırdan Türkçe yeniden yazılır; yazılamayan haber yayına çıkmaz, kuyrukta kalır. Kaynak adı ve bağlantısı her zaman korunur."
+            t="Özgün ve Doğru Habercilik"
+            d="Sektörel gelişmeler, teknoloji lansmanları ve pazar verileri titizlikle incelenerek tarafsız bir dille okuyucuya aktarılır. Kaynaklar ve alıntılar her zaman şeffafça korunur."
           />
           <Principle
-            t="Puanlar şeffaftır"
-            d="VoltScore sunucuda, her araca aynı formülle hesaplanır. Verisi olmayan kriter puana katılmaz ve puanın hangi veri kapsamıyla üretildiği kullanıcıya gösterilir."
+            t="Kullanıcı Odaklı Güvenlik"
+            d="Kullanıcılarımızın kişisel bilgileri 6698 sayılı KVKK standartlarında korunur. Şifreler ve kimlik bilgileri yüksek güvenlikli kriptografik yöntemlerle saklanır."
           />
           <Principle
-            t="Bağımsız altyapı"
-            d="Harita için dış döşeme sunucusu kullanılmaz; ülke sınırı kamu malı veriden bir kez üretilip site içinde saklanır. Kotaya, anahtara ve sağlayıcıya bağımlı değiliz."
+            t="Bağımsız Dijital Altyapı"
+            d="Platformumuz kendi bağımsız mimarisiyle çalışır; modern web standartlarına, yüksek hıza ve kesintisiz kullanıcı deneyimine odaklanır."
           />
         </div>
       </section>
 
+      {/* Ne Yapıyoruz */}
       <section>
-        <SectionTitle title="NE YAPIYORUZ?" color="#e30613" />
+        <SectionTitle title="NELER SUNUYORUZ?" color="#0284c7" />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Module href="/kategori/haber-merkezi" t="Haber merkezi" d="Günlük otomatik akış, Türkçe yeniden yazım, kaynak atfı." />
-          <Module href="/araclar" t="Model kataloğu" d="Teknik veri, karşılaştırma ve gerçek mevsimsel menzil." />
-          <Module href="/ilanlar" t="Pazaryeri" d="Sıfır ve ikinci el ilanlar, batarya raporu ve VoltScore ile." />
-          <Module href="/sarj-agi" t="Şarj ağı &amp; fiyatları" d="İstasyon haritası, operatör tarifeleri ve şarj rotası." />
-          <Module href="/karsilastir" t="Araç karşılaştırma" d="Sıfır ve 2. el modelleri teknik verileriyle kıyaslayın." />
-          <Module href="/finansman" t="Finansman &amp; ÖTV" d="Vergi, kredi taksiti ve enerji maliyeti tek ekranda." />
-          <Module href="/arac-merkezi" t="Araç merkezi" d="Segment şampiyonları, araç incelemeleri ve test sürüşleri." />
-          <Module href="/topluluk" t="Topluluk" d="Model bazlı gruplar, akış, reels ve tartışmalar." />
+          <Module href="/" t="Haber & Analiz" d="Elektrikli otomobil dünyasından son gelişmeler ve özel teknoloji analizleri." />
+          <Module href="/araclar" t="Model Kataloğu" d="Türkiye pazarındaki tüm modellerin detaylı teknik verileri ve karşılaştırması." />
+          <Module href="/ilanlar" t="2. El Elektrikli Araçlar" d="Alıcı ve satıcıyı güvenle buluşturan elektrikli araç pazaryeri." />
+          <Module href="/sarj-agi" t="Şarj Ağı & Asistanı" d="Operatör tarifeleri, istasyon haritası ve batarya dolum maliyet hesabı." />
+          <Module href="/karsilastir" t="Araç Karşılaştırma" d="Modelleri menzil, beygir, şarj hızı ve fiyat bazında yan yana kıyaslayın." />
+          <Module href="/topluluk" t="Topluluk (r/e-aracim)" d="Elektrikli araç sahiplerinin ve meraklılarının deneyim paylaştığı forum." />
+          <Module href="/veri-gizlilik" t="Veri ve Gizlilik" d="KVKK aydınlatma bildirimimiz, şeffaf gizlilik ve çerez ilkelerimiz." />
+          <Module href="/iletisim" t="Doğrudan İletişim" d="Kurumsal iş birliği, içerik düzeltme ve her türlü soru için bize yazın." />
         </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-lg border border-neutral-200 bg-white p-6 lg:flex-row lg:items-center">
+      {/* İletişim Kartı */}
+      <section className="flex flex-col gap-6 rounded-3xl border border-neutral-200 bg-white p-6 sm:p-8 shadow-sm lg:flex-row lg:items-center justify-between">
         <div className="flex min-w-0 flex-1 flex-col gap-2">
-          <h2 className="text-xl font-black text-neutral-900">Bize ulaşın</h2>
+          <h2 className="text-xl font-black text-neutral-900">Kurumsal İletişim & İş Birliği</h2>
           <p className="text-sm leading-relaxed text-neutral-600">
-            İş birliği, kurumsal entegrasyon, veri ortaklığı ya da basın
-            talepleriniz için iletişim sayfasından yazabilirsiniz.
+            {SITE_NAME} ile reklam, kurumsal entegrasyon, veri ortaklığı veya basın bülteni paylaşımı için doğrudan bizimle iletişime geçebilirsiniz.
           </p>
+          <div className="mt-2 flex flex-wrap items-center gap-4 text-xs font-bold text-neutral-500">
+            <span>E-posta: <a href={`mailto:${SITE_EMAIL}`} className="text-sky-600 hover:underline">{SITE_EMAIL}</a></span>
+            <span>•</span>
+            <span>Telefon: <a href={`tel:${SITE_PHONE.replace(/\s+/g, "")}`} className="text-neutral-900 hover:underline">{SITE_PHONE}</a></span>
+            <span>•</span>
+            <span>Konum: <span className="text-neutral-700">{SITE_LOCATION}</span></span>
+          </div>
         </div>
         <Link
           href="/iletisim"
-          className="flex shrink-0 items-center justify-center gap-1 rounded-md bg-evos px-5 py-3 text-sm font-black text-white transition hover:bg-evos-dark"
+          className="flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-neutral-950 hover:bg-neutral-900 px-6 py-3.5 text-sm font-black text-white transition active:scale-95 shadow-md"
         >
-          İLETİŞİM <IconChevronRight className="h-4 w-4" />
+          <span>İLETİŞİME GEÇİN</span>
+          <IconChevronRight className="h-4 w-4" />
         </Link>
       </section>
     </div>
@@ -115,17 +128,17 @@ export default async function AboutPage() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex flex-col rounded-lg bg-white/10 px-3 py-2 backdrop-blur">
+    <div className="flex flex-col rounded-2xl bg-white/10 px-3.5 py-2.5 backdrop-blur border border-white/10">
       <span className="text-[11px] font-semibold text-white/70">{label}</span>
-      <span className="text-lg font-black">{value.toLocaleString("tr-TR")}</span>
+      <span className="text-lg sm:text-xl font-black text-sky-400">{value.toLocaleString("tr-TR")}</span>
     </div>
   );
 }
 
 function Principle({ t, d }: { t: string; d: string }) {
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-neutral-200 bg-white p-5">
-      <IconCheck className="h-5 w-5 text-evos" />
+    <div className="flex flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-5 shadow-xs">
+      <IconCheck className="h-5 w-5 text-sky-600" />
       <h3 className="text-[15px] font-black text-neutral-900">{t}</h3>
       <p className="text-[13px] leading-relaxed text-neutral-600">{d}</p>
     </div>
@@ -136,9 +149,9 @@ function Module({ href, t, d }: { href: string; t: string; d: string }) {
   return (
     <Link
       href={href}
-      className="flex flex-col gap-1 rounded-lg border border-neutral-200 bg-white p-4 transition hover:border-evos hover:shadow-md"
+      className="flex flex-col gap-1 rounded-2xl border border-neutral-200 bg-white p-4 transition hover:border-sky-500 hover:shadow-md group"
     >
-      <h3 className="text-[14px] font-black text-neutral-900">{t}</h3>
+      <h3 className="text-[14px] font-black text-neutral-900 group-hover:text-sky-600 transition-colors">{t}</h3>
       <p className="text-[12px] leading-relaxed text-neutral-500">{d}</p>
     </Link>
   );

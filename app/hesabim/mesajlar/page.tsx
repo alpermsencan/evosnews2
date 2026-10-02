@@ -7,7 +7,7 @@ import MessagesCenter from "@/components/user/MessagesCenter";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Mesajlarım — EVOtoPilot",
+  title: "Mesajlarım — e-aracım",
   description: "İkinci el elektrikli araç ilanları ve üyelerle doğrudan mesajlaşma merkezi.",
 };
 

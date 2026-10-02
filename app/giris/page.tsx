@@ -4,8 +4,8 @@ import AuthForm from "@/components/user/AuthForm";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Giriş Yap — EVOtoPilot",
-  description: "EVOtoPilot üye girişi.",
+  title: "Giriş Yap — e-aracım",
+  description: "e-aracım üye girişi.",
 };
 
 export default function LoginPage() {

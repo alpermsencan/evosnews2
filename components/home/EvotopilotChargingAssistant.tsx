@@ -44,7 +44,7 @@ export default function EvotopilotChargingAssistant() {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-xs font-black tracking-wider text-white uppercase">
-                  EVOTOPİLOT ŞARJ ASİSTANI
+                  e-ARACIM ŞARJ ASİSTANI
                 </h3>
                 <span className="h-1.5 w-1.5 rounded-full bg-yellow-400 animate-ping" />
               </div>

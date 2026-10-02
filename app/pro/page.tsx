@@ -4,9 +4,9 @@ import LeadForm from "@/components/ui/LeadForm";
 import { IconChart, IconCheck, IconShield, IconUsers } from "@/components/ui/Icons";
 
 export const metadata = {
-  title: "Evos Pro — Galeri ve Kurumsal Çözümler",
+  title: "e-aracım Pro — Galeri ve Kurumsal Çözümler",
   description:
-    "Galeriler, yetkili bayiler, şarj operatörleri ve servisler için Evos Pro: vitrin, toplu ilan, batarya raporu ağı ve veri erişimi.",
+    "Galeriler, yetkili bayiler, şarj operatörleri ve servisler için e-aracım Pro: vitrin, toplu ilan, batarya raporu ağı ve veri erişimi.",
 };
 
 /**
@@ -30,7 +30,7 @@ const PLANS = [
       "Vitrin (sponsorlu) ilan hakkı",
       "Batarya raporu ekleme ve doğrulama akışı",
       "İlan performans raporu: görüntülenme, favori, karşılaştırmaya eklenme",
-      "VoltScore ile öne çıkma — puanı yüksek ilan listede üste taşınır",
+      "Güven puanı ile öne çıkma — puanı yüksek ilan listede üste taşınır",
     ],
   },
   {
@@ -57,7 +57,7 @@ const PLANS = [
       "Batarya raporu ağına katılım",
       "Ölçümlerin kurum adıyla yayımlanması",
       "Rapor doğrulama akışı ve geçmiş kayıtlar",
-      "İlanlarda 'Evos doğrulamalı' rozetiyle görünürlük",
+      "İlanlarda 'e-aracım doğrulamalı' rozetiyle görünürlük",
       "Bölgenizdeki rapor talebi yönlendirmesi",
     ],
   },
@@ -75,16 +75,16 @@ const MODEL = [
 export default function ProPage() {
   return (
     <div className="flex flex-col gap-6 px-3 sm:px-0 sm:pt-4">
-      <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-evos-ink via-slate-800 to-evos-dark p-6 text-white">
+      <header className="flex flex-col gap-3 rounded-lg bg-gradient-to-br from-neutral-950 via-slate-800 to-neutral-900 p-6 text-white">
         <span className="text-[11px] font-black tracking-[0.2em] text-white/60">
-          EVOS PRO
+          e-ARACIM PRO
         </span>
         <h1 className="text-2xl font-black sm:text-4xl">
           Kurumsal çözümler
         </h1>
         <p className="max-w-3xl text-sm text-white/85 sm:text-base">
           Galeriler, yetkili bayiler, şarj operatörleri ve ekspertiz firmaları
-          için Evos&apos;un veri altyapısı üzerine kurulu araçlar. Aynı ilkeler
+          için e-aracım&apos;ın veri altyapısı üzerine kurulu araçlar. Aynı ilkeler
           burada da geçerli: doğrulanmamış veri yayımlanmaz, her rakamın kaynağı
           saklanır.
         </p>

@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         spot,
         content,
         image: image || "/haber-placeholder.svg",
-        imageCredit: body.imageCredit || "Evos Görsel Arşivi",
+        imageCredit: body.imageCredit || "e-aracım Görsel Arşivi",
         gallery: body.gallery ?? [],
         tags: body.tags ?? [],
         categoryId,

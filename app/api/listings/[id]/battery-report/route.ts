@@ -52,7 +52,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params;
     const b = await req.json().catch(() => ({}));
-    const report = await verifyBatteryReport(id, b.verifiedBy || "Evos");
+    const report = await verifyBatteryReport(id, b.verifiedBy || "e-aracım");
     return ok({ report });
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Doğrulanamadı", 500);

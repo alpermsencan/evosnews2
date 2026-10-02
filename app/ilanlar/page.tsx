@@ -11,7 +11,7 @@ import { IconCar, IconChevronRight } from "@/components/ui/Icons";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "İkinci El Elektrikli Araçlar — EVOtoPilot",
+  title: "İkinci El Elektrikli Araçlar — e-aracım",
   description:
     "Türkiye'nin en zengin, güncel ve güvenilir elektrikli araç ilan platformu.",
 };
