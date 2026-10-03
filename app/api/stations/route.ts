@@ -3,35 +3,66 @@ import { prisma } from "@/lib/prisma";
 import { fail, handle, num, ok, slugify } from "@/lib/api";
 import type { Prisma } from "@prisma/client";
 import { touchStations } from "@/lib/revalidate";
+import { queryLiveChargingStations } from "@/lib/stations-service";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Boş bırakılabilen sayısal alan. Formdan boş gelen değeri 0 veya varsayılan
- * bir sayı olarak yazmak uydurma veri üretir; onun yerine boş bırakılır ve
- * arayüzde "—" görünür.
- */
 const optionalNum = (v: unknown) => {
   const n = Number(v);
   return v === "" || v == null || !Number.isFinite(n) || n <= 0 ? null : n;
 };
 
-/** GET /api/stations?il=&operator=&hizli=1&minGuc= */
+/**
+ * GET /api/stations
+ * Türkiye genelindeki 16.900+ istasyonu harita görünümüne (viewport bounds)
+ * veya arama/operatör/güç filtrelerine göre canlı döndürür.
+ */
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
-  const where: Prisma.ChargeStationWhereInput = {};
 
-  const city = sp.get("il");
-  const operator = sp.get("operator");
+  const minLat = sp.get("minLat") ? Number(sp.get("minLat")) : undefined;
+  const maxLat = sp.get("maxLat") ? Number(sp.get("maxLat")) : undefined;
+  const minLng = sp.get("minLng") ? Number(sp.get("minLng")) : undefined;
+  const maxLng = sp.get("maxLng") ? Number(sp.get("maxLng")) : undefined;
+
+  const city = sp.get("il") || sp.get("city");
+  const operator = sp.get("operator") || sp.get("brand");
   const fast = sp.get("hizli");
-  const minPower = Number(sp.get("minGuc"));
-  const q = sp.get("q");
+  const minPower = Number(sp.get("minGuc") || sp.get("minPowerKw"));
+  const q = sp.get("q") || sp.get("query");
+  const limit = Math.min(num(sp.get("limit") || sp.get("take"), 500), 1500);
 
+  // 1. Canlı EPDK / Babuba Ağından Sorgula
+  const liveItems = await queryLiveChargingStations({
+    minLat,
+    maxLat,
+    minLng,
+    maxLng,
+    brand: operator || undefined,
+    minPowerKw: Number.isFinite(minPower) && minPower > 0 ? minPower : undefined,
+    q: q || city || undefined,
+    take: limit,
+  });
+
+  if (liveItems && liveItems.length > 0) {
+    let filtered = liveItems;
+    if (fast === "1") {
+      filtered = filtered.filter((s) => s.isFast);
+    }
+
+    return handle(async () => ({
+      items: filtered,
+      total: filtered.length,
+      source: "epdk_live",
+    }));
+  }
+
+  // 2. Yedek: Yerel MongoDB Veritabanından Getir
+  const where: Prisma.ChargeStationWhereInput = {};
   if (city) where.city = city;
-  if (operator) where.operator = operator;
+  if (operator && operator !== "Tümü") where.operator = { contains: operator, mode: "insensitive" };
   if (fast === "1") where.isFast = true;
-  if (Number.isFinite(minPower) && minPower > 0)
-    where.maxPowerKw = { gte: minPower };
+  if (Number.isFinite(minPower) && minPower > 0) where.maxPowerKw = { gte: minPower };
   if (q) {
     where.OR = [
       { name: { contains: q, mode: "insensitive" } },
@@ -45,7 +76,7 @@ export async function GET(req: NextRequest) {
       prisma.chargeStation.findMany({
         where,
         orderBy: [{ maxPowerKw: "desc" }],
-        take: Math.min(num(sp.get("limit"), 100), 200),
+        take: limit,
       }),
       prisma.chargeStation.findMany({
         select: { city: true },
@@ -58,11 +89,13 @@ export async function GET(req: NextRequest) {
         orderBy: { operator: "asc" },
       }),
     ]);
+
     return {
       items,
       total: items.length,
       cities: cities.map((c) => c.city),
       operators: operators.map((o) => o.operator),
+      source: "db_fallback",
     };
   });
 }
@@ -86,8 +119,6 @@ export async function POST(req: NextRequest) {
         socketTypes: b.socketTypes ?? ["Type 2"],
         pricePerKwh: optionalNum(b.pricePerKwh),
         isFast: !!b.isFast,
-        // Üçlü durum: işaretli / işaretsiz / bilgi yok. Kaynakta bu bilgi
-        // olmadığı için varsayılan "bilinmiyor"dur.
         is24h: b.is24h === undefined ? null : !!b.is24h,
         amenities: b.amenities ?? [],
         status: b.status || "aktif",

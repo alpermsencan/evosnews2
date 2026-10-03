@@ -16,15 +16,22 @@ export const metadata = {
 };
 
 import { FALLBACK_STATIONS } from "@/lib/stations-fallback";
+import { queryLiveChargingStations } from "@/lib/stations-service";
 
 export default async function ChargePage() {
-  const [allDb, news, tariffs] = await Promise.all([
+  const [liveStations, allDb, news, tariffs] = await Promise.all([
+    queryLiveChargingStations({ take: 1000 }).catch(() => []),
     prisma.chargeStation.findMany().catch(() => []),
     getByCategory("sarj-agi", 4).catch(() => []),
     prisma.operatorTariff.findMany({ where: { isActive: true } }).catch(() => []),
   ]);
 
-  const all = allDb && allDb.length > 0 ? allDb : (FALLBACK_STATIONS as any);
+  const all =
+    liveStations && liveStations.length > 0
+      ? liveStations
+      : allDb && allDb.length > 0
+        ? allDb
+        : (FALLBACK_STATIONS as any);
   const tariffIndex = buildTariffIndex(tariffs);
 
   const byOperator = new Map<
@@ -50,8 +57,9 @@ export default async function ChargePage() {
     };
     cur.count += 1;
     cur.sockets += s.socketCount;
-    if (s.pricePerKwh != null) {
-      cur.priceSum += s.pricePerKwh;
+    const priceVal = (s as any).pricePerKwh ?? (s as any).price;
+    if (priceVal != null) {
+      cur.priceSum += priceVal;
       cur.priced += 1;
     }
     if (s.maxPowerKw != null) cur.maxKw = Math.max(cur.maxKw ?? 0, s.maxPowerKw);
@@ -60,26 +68,27 @@ export default async function ChargePage() {
 
   const cityCounts = new Map<string, number>();
   for (const s of all) {
-    if (s.city === "Belirtilmemiş") continue;
+    if (s.city === "Belirtilmemiş" || !s.city || s.city === "Türkiye") continue;
     cityCounts.set(s.city, (cityCounts.get(s.city) ?? 0) + s.socketCount);
   }
   const topCities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
   const maxCity = topCities[0]?.[1] ?? 1;
 
-  const nearbyStations = all.map((s) => {
+  const nearbyStations = all.map((s: any) => {
     const tariff = matchTariff(tariffIndex, s.operator);
     return {
-      id: s.id,
+      id: String(s.id),
       name: s.name,
       operator: s.operator,
       city: s.city,
       district: s.district,
+      address: s.address,
       lat: s.lat,
       lng: s.lng,
       socketCount: s.socketCount,
       maxPowerKw: s.maxPowerKw,
       isFast: s.isFast,
-      price: s.pricePerKwh ?? tariff?.dcPrice ?? null,
+      price: s.pricePerKwh ?? s.price ?? tariff?.dcPrice ?? null,
     };
   });
 

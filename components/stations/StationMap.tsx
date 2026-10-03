@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { IconMap, IconBolt, IconSearch, IconClose } from "@/components/ui/Icons";
+import { IconBolt, IconSearch, IconClose } from "@/components/ui/Icons";
 import { FALLBACK_STATIONS } from "@/lib/stations-fallback";
 
 export type MapStation = {
@@ -11,12 +11,17 @@ export type MapStation = {
   operator: string;
   city: string;
   district: string;
+  address?: string;
   lat: number;
   lng: number;
   maxPowerKw: number | null;
   socketCount: number;
+  dcSocketCount?: number;
+  acSocketCount?: number;
   isFast: boolean;
-  price: number | null;
+  isGreenStation?: boolean;
+  socketKinds?: string[];
+  price?: number | null;
   distanceKm?: number;
 };
 
@@ -24,21 +29,31 @@ const GOOGLE_MAPS_API_KEY =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
   "AIzaSyDByVeAH6VK2aMi-AmD54WrC0oG3zbqtSE";
 
-// Operatör Listesi
+// Türkiye'deki En Popüler 18 Resmî Şarj Operatörü
 const OPERATORS = [
   "Tümü",
-  "Trugo",
   "ZES",
+  "Trugo",
   "Eşarj",
-  "Astor",
-  "Tesla",
   "Voltrun",
-  "Sharz",
+  "WAT Mobilite",
+  "Astor Şarj",
+  "Otopriz",
+  "En Yakıt",
+  "Beefull",
+  "Otojet",
+  "OnCharge",
+  "Ovolt",
+  "Aksa Şarj",
+  "Tesla Supercharger",
+  "Sharz.Net",
+  "Shell Recharge",
+  "5 Şarj",
 ];
 
 // İki koordinat arası km mesafe (Haversine formülü)
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371; // Dünya yarıçapı km
+  const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -73,22 +88,36 @@ function createMarkerSvg(color: string, isHpc: boolean): string {
   `)}`;
 }
 
-export default function StationMap({ stations }: { stations: MapStation[] }) {
+export default function StationMap({ stations: initialStations = [] }: { stations: MapStation[] }) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const userMarkerRef = useRef<any>(null);
-  const activeInfoWindowRef = useRef<any>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Veri güvencesi: Eğer veritabanından 0 istasyon geldiyse, yedek Türkiye ağını devreye sok
-  const activeStations = useMemo(() => {
-    if (stations && stations.length > 0) return stations;
+  const [mapsLoaded, setMapsLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locationStatus, setLocationStatus] = useState<string | null>(null);
+  const [isLiveLoading, setIsLiveLoading] = useState(false);
+
+  // Filtreler (Babuba & EPDK standartları)
+  const [selectedOperator, setSelectedOperator] = useState<string>("Tümü");
+  const [selectedPower, setSelectedPower] = useState<"all" | "hpc" | "fast" | "ac">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStation, setSelectedStation] = useState<MapStation | null>(null);
+
+  // Canlı İstasyon Hafızası (Haritada gezinildikçe dinamik dolar)
+  const [activeStations, setActiveStations] = useState<MapStation[]>(() => {
+    if (initialStations && initialStations.length > 0) return initialStations;
     return FALLBACK_STATIONS.map((s) => ({
       id: s.id,
       name: s.name,
       operator: s.operator,
       city: s.city,
       district: s.district,
+      address: s.address,
       lat: s.lat,
       lng: s.lng,
       maxPowerKw: s.maxPowerKw,
@@ -96,19 +125,19 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
       isFast: s.isFast,
       price: s.price,
     }));
-  }, [stations]);
+  });
 
-  const [mapsLoaded, setMapsLoaded] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [locating, setLocating] = useState(false);
-  const [locationStatus, setLocationStatus] = useState<string | null>(null);
-
-  // Filtreler (Babuba usulü)
-  const [selectedOperator, setSelectedOperator] = useState<string>("Tümü");
-  const [selectedPower, setSelectedPower] = useState<"all" | "hpc" | "fast" | "ac">("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStation, setSelectedStation] = useState<MapStation | null>(null);
+  // initialStations senkronizasyonu (SSR verilerini hafızaya entegre et)
+  useEffect(() => {
+    if (initialStations && initialStations.length > 0) {
+      setActiveStations((prev) => {
+        const mapById = new Map<string, MapStation>();
+        prev.forEach((s) => mapById.set(s.id, s));
+        initialStations.forEach((s) => mapById.set(s.id, s));
+        return Array.from(mapById.values());
+      });
+    }
+  }, [initialStations]);
 
   // 1. Google Maps JS SDK Loader
   useEffect(() => {
@@ -141,7 +170,69 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
     document.head.appendChild(script);
   }, []);
 
-  // 2. Initialize Google Map
+  // 2. Canlı Görünüm (Viewport) Tabanlı İstasyon Çekme Fonksiyonu
+  const fetchViewportStations = useCallback(
+    async (bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }) => {
+      setIsLiveLoading(true);
+      try {
+        const qParams = new URLSearchParams();
+        qParams.set("minLat", bounds.minLat.toFixed(6));
+        qParams.set("maxLat", bounds.maxLat.toFixed(6));
+        qParams.set("minLng", bounds.minLng.toFixed(6));
+        qParams.set("maxLng", bounds.maxLng.toFixed(6));
+        qParams.set("take", "600");
+
+        if (selectedOperator !== "Tümü") {
+          qParams.set("operator", selectedOperator);
+        }
+
+        if (selectedPower === "hpc") qParams.set("minGuc", "150");
+        else if (selectedPower === "fast") qParams.set("minGuc", "50");
+
+        const res = await fetch(`/api/stations?${qParams.toString()}`);
+        if (!res.ok) throw new Error("İstasyonlar yüklenemedi");
+
+        const json = await res.json();
+        const items = json.items || [];
+
+        if (Array.isArray(items) && items.length > 0) {
+          setActiveStations((prev) => {
+            // Var olan istasyonlarla yenileri birleştir (tekrarları önle)
+            const mapById = new Map<string, MapStation>();
+            prev.forEach((s) => mapById.set(s.id, s));
+            items.forEach((s: any) => {
+              mapById.set(String(s.id), {
+                id: String(s.id),
+                name: s.name,
+                operator: s.operator,
+                city: s.city,
+                district: s.district,
+                address: s.address,
+                lat: s.lat,
+                lng: s.lng,
+                maxPowerKw: s.maxPowerKw,
+                socketCount: s.socketCount,
+                dcSocketCount: s.dcSocketCount,
+                acSocketCount: s.acSocketCount,
+                isFast: s.isFast,
+                isGreenStation: s.isGreenStation,
+                socketKinds: s.socketKinds,
+                price: s.price,
+              });
+            });
+            return Array.from(mapById.values());
+          });
+        }
+      } catch (err) {
+        console.warn("[StationMap] Viewport fetch error:", err);
+      } finally {
+        setIsLiveLoading(false);
+      }
+    },
+    [selectedOperator, selectedPower]
+  );
+
+  // 3. Initialize Google Map
   useEffect(() => {
     if (!mapsLoaded || !mapContainerRef.current) return;
     const google = (window as any).google;
@@ -167,10 +258,46 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
       });
 
       mapInstanceRef.current = map;
-    }
-  }, [mapsLoaded]);
 
-  // 3. Mesafe hesaplama ve filtreleme
+      // Harita kaydırıldığında veya yakınlaştırıldığında canlı istasyonları yükle (Debounce 350ms)
+      map.addListener("idle", () => {
+        const bounds = map.getBounds();
+        if (!bounds) return;
+
+        const ne = bounds.getNorthEast();
+        const sw = bounds.getSouthWest();
+
+        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(() => {
+          fetchViewportStations({
+            minLat: sw.lat(),
+            maxLat: ne.lat(),
+            minLng: sw.lng(),
+            maxLng: ne.lng(),
+          });
+        }, 350);
+      });
+    }
+  }, [mapsLoaded, fetchViewportStations]);
+
+  // 4. Operatör veya Güç Değiştiğinde Canlı Yenileme
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    const map = mapInstanceRef.current;
+    const bounds = map.getBounds();
+    if (bounds) {
+      const ne = bounds.getNorthEast();
+      const sw = bounds.getSouthWest();
+      fetchViewportStations({
+        minLat: sw.lat(),
+        maxLat: ne.lat(),
+        minLng: sw.lng(),
+        maxLng: ne.lng(),
+      });
+    }
+  }, [selectedOperator, selectedPower, fetchViewportStations]);
+
+  // 5. Mesafe hesaplama ve filtreleme
   const stationsWithDistance = useMemo(() => {
     return activeStations.map((s) => {
       let distanceKm: number | undefined;
@@ -205,7 +332,8 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
         const matchOp = (s.operator || "").toLowerCase().includes(q);
         const matchCity = (s.city || "").toLowerCase().includes(q);
         const matchDistrict = (s.district || "").toLowerCase().includes(q);
-        if (!matchName && !matchOp && !matchCity && !matchDistrict) return false;
+        const matchAddress = (s.address || "").toLowerCase().includes(q);
+        if (!matchName && !matchOp && !matchCity && !matchDistrict && !matchAddress) return false;
       }
 
       return true;
@@ -222,7 +350,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
     });
   }, [filteredStations]);
 
-  // 4. Update Markers on Google Map
+  // 6. Update Markers on Google Map (Kesinti veya sınır olmadan tüm istasyonları pinler)
   useEffect(() => {
     if (!mapInstanceRef.current) return;
     const google = (window as any).google;
@@ -234,10 +362,10 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
     markersRef.current.forEach((m) => m.setMap(null));
     markersRef.current = [];
 
-    // Haritada en fazla 350 marker göstererek performansı yüksek tut
-    const visibleStations = filteredStations.slice(0, 350);
+    // Harita görünümündeki tüm istasyonları çiz (Maksimum 800 adet ile akıcı performans)
+    const renderList = filteredStations.slice(0, 800);
 
-    visibleStations.forEach((s) => {
+    renderList.forEach((s) => {
       const kw = s.maxPowerKw || (s.isFast ? 180 : 22);
       const isHpc = kw >= 150;
       const isFast = kw >= 50 && kw < 150;
@@ -264,7 +392,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
     });
   }, [filteredStations]);
 
-  // 5. GPS "Konumumu Bul" (Babuba tarzı)
+  // 7. GPS "Konumumu Bul" (Babuba tarzı)
   const locateUser = useCallback(() => {
     if (!navigator.geolocation) {
       setLocationStatus("Tarayıcınız konum özelliğini desteklemiyor.");
@@ -290,7 +418,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
 
           // Pan and zoom to user
           map.panTo(coords);
-          map.setZoom(13);
+          map.setZoom(14);
 
           // Update user pin
           if (userMarkerRef.current) {
@@ -324,8 +452,8 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
     );
   }, []);
 
-  // 6. Şehir / İlçe Arama ve Haritada Uçma
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  // 8. Şehir / İlçe Arama ve Haritada Uçma
+  const handleSearchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim() || !mapInstanceRef.current) return;
 
@@ -339,7 +467,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
         if (status === "OK" && results[0]) {
           const loc = results[0].geometry.location;
           mapInstanceRef.current.panTo(loc);
-          mapInstanceRef.current.setZoom(12);
+          mapInstanceRef.current.setZoom(13);
         }
       }
     );
@@ -347,7 +475,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* 1. ÜST ARAMA, KONUM VE FİLTRELEME ÇUBUĞU (Babuba Stili) */}
+      {/* 1. ÜST ARAMA, KONUM VE FİLTRELEME ÇUBUĞU */}
       <div className="flex flex-col gap-3 rounded-2xl bg-white border border-neutral-200 p-3 sm:p-4 shadow-xs">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {/* Arama Kutusu */}
@@ -357,7 +485,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Şehir, ilçe veya istasyon ara (örn: Kadıköy, Bolu Dağı, Çankaya)..."
+              placeholder="Şehir, ilçe, sokak veya istasyon ara (örn: Kadıköy, Bolu Dağı, Çankaya)..."
               className="w-full rounded-xl bg-neutral-50 border border-neutral-200 pl-10 pr-9 py-2.5 text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-sky-500 focus:outline-none transition"
             />
             {searchQuery && (
@@ -376,7 +504,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
             type="button"
             onClick={locateUser}
             disabled={locating}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white px-4 py-2.5 text-xs font-bold transition shadow-xs shrink-0 active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white px-4 py-2.5 text-xs font-bold transition shadow-xs shrink-0 active:scale-95 disabled:opacity-50 cursor-pointer"
           >
             <span className={`h-2 w-2 rounded-full bg-white ${locating ? "animate-ping" : ""}`} />
             <span>{locating ? "Konum Alınıyor..." : "📍 Konumumu Bul"}</span>
@@ -389,10 +517,10 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
           </div>
         )}
 
-        {/* 2. OPERATÖR VE GÜÇ FİLTRE BUTONLARI (Babuba Stili) */}
+        {/* 2. OPERATÖR VE GÜÇ FİLTRE BUTONLARI (18 Büyük Operatör Tam Destek) */}
         <div className="flex flex-col gap-2 pt-2 border-t border-neutral-100">
           {/* Operatörler */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs font-bold">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-bold">
             <span className="text-[11px] text-neutral-400 font-black uppercase shrink-0 mr-1">
               Operatör:
             </span>
@@ -401,7 +529,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
                 key={op}
                 type="button"
                 onClick={() => setSelectedOperator(op)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-bold whitespace-nowrap transition ${
+                className={`rounded-lg px-3 py-1.5 text-xs font-bold whitespace-nowrap transition cursor-pointer ${
                   selectedOperator === op
                     ? "bg-neutral-950 text-white shadow-xs"
                     : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/80"
@@ -413,14 +541,14 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
           </div>
 
           {/* Güç Dilimleri */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs font-bold">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-bold">
             <span className="text-[11px] text-neutral-400 font-black uppercase shrink-0 mr-1">
               Güç:
             </span>
             <button
               type="button"
               onClick={() => setSelectedPower("all")}
-              className={`rounded-lg px-3 py-1 text-xs font-bold whitespace-nowrap transition ${
+              className={`rounded-lg px-3 py-1 text-xs font-bold whitespace-nowrap transition cursor-pointer ${
                 selectedPower === "all"
                   ? "bg-neutral-950 text-white"
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200/80"
@@ -431,7 +559,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
             <button
               type="button"
               onClick={() => setSelectedPower("hpc")}
-              className={`rounded-lg px-3 py-1 text-xs font-bold whitespace-nowrap transition ${
+              className={`rounded-lg px-3 py-1 text-xs font-bold whitespace-nowrap transition cursor-pointer ${
                 selectedPower === "hpc"
                   ? "bg-red-600 text-white"
                   : "bg-red-50 text-red-700 border border-red-200/60 hover:bg-red-100"
@@ -442,7 +570,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
             <button
               type="button"
               onClick={() => setSelectedPower("fast")}
-              className={`rounded-lg px-3 py-1 text-xs font-bold whitespace-nowrap transition ${
+              className={`rounded-lg px-3 py-1 text-xs font-bold whitespace-nowrap transition cursor-pointer ${
                 selectedPower === "fast"
                   ? "bg-amber-600 text-white"
                   : "bg-amber-50 text-amber-700 border border-amber-200/60 hover:bg-amber-100"
@@ -453,7 +581,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
             <button
               type="button"
               onClick={() => setSelectedPower("ac")}
-              className={`rounded-lg px-3 py-1 text-xs font-bold whitespace-nowrap transition ${
+              className={`rounded-lg px-3 py-1 text-xs font-bold whitespace-nowrap transition cursor-pointer ${
                 selectedPower === "ac"
                   ? "bg-emerald-600 text-white"
                   : "bg-emerald-50 text-emerald-700 border border-emerald-200/60 hover:bg-emerald-100"
@@ -465,17 +593,34 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
         </div>
       </div>
 
-      {/* 3. GOOGLE HARİTA VE DETAY ÇEKMECESİ KAPSAYICISI */}
-      <div className="relative w-full h-[520px] sm:h-[600px] rounded-3xl overflow-hidden border border-neutral-200 shadow-md bg-neutral-100">
+      {/* 3. GOOGLE HARİTA VE DETAY KARTI */}
+      <div className="relative w-full h-[540px] sm:h-[640px] rounded-3xl overflow-hidden border border-neutral-200 shadow-md bg-neutral-100">
         <div ref={mapContainerRef} className="w-full h-full" />
+
+        {/* Canlı Tarama Bildirim Rozeti */}
+        <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-full bg-neutral-950/85 backdrop-blur-md px-3.5 py-1.5 text-[11px] font-bold text-white shadow-lg border border-white/10">
+            <span className={`h-2 w-2 rounded-full ${isLiveLoading ? "bg-amber-400 animate-ping" : "bg-emerald-400"}`} />
+            <span>
+              {isLiveLoading ? "Canlı istasyonlar taranıyor..." : "16.900+ Lisanslı EPDK İstasyonu"}
+            </span>
+          </div>
+        </div>
 
         {/* İstasyon Detay Kartı (Harita üzerinde Babuba tarzı açılan kart) */}
         {selectedStation && (
           <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 z-30 rounded-2xl bg-white/95 backdrop-blur-md border border-neutral-200/90 p-4 sm:p-5 shadow-2xl transition-all">
             <div className="flex items-center justify-between gap-2 mb-2">
-              <span className="rounded-md bg-sky-50 border border-sky-200 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-sky-700">
-                {selectedStation.operator}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="rounded-md bg-sky-50 border border-sky-200 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-sky-700">
+                  {selectedStation.operator}
+                </span>
+                {selectedStation.isGreenStation && (
+                  <span className="rounded-md bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[9px] font-black uppercase text-emerald-700">
+                    🌱 %100 Yeşil
+                  </span>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => setSelectedStation(null)}
@@ -490,15 +635,15 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
               {selectedStation.name}
             </h3>
 
-            <p className="text-xs text-neutral-500 mb-3">
-              {selectedStation.district ? `${selectedStation.district}, ` : ""}
-              {selectedStation.city}
-              {selectedStation.distanceKm != null && (
-                <span className="font-bold text-sky-600 ml-1">
-                  · Size {selectedStation.distanceKm} km
-                </span>
-              )}
+            <p className="text-xs text-neutral-500 mb-1 leading-relaxed">
+              {selectedStation.address || `${selectedStation.district ? `${selectedStation.district}, ` : ""}${selectedStation.city}`}
             </p>
+
+            {selectedStation.distanceKm != null && (
+              <p className="text-xs font-black text-sky-600 mb-2.5">
+                📍 Bulunduğunuz konuma {selectedStation.distanceKm} km
+              </p>
+            )}
 
             {/* Metrikler Kutusu */}
             <div className="grid grid-cols-3 gap-2 rounded-xl bg-neutral-50 p-2.5 border border-neutral-200/70 mb-3.5 text-center text-xs">
@@ -515,9 +660,9 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
                 </strong>
               </div>
               <div>
-                <span className="block text-[9px] font-bold text-neutral-400 uppercase">Tarife</span>
-                <strong className="block text-xs font-black text-neutral-900">
-                  {selectedStation.price ? `${selectedStation.price.toFixed(2)} ₺` : "8.49 ₺"}
+                <span className="block text-[9px] font-bold text-neutral-400 uppercase">Tip</span>
+                <strong className="block text-xs font-black text-neutral-900 truncate">
+                  {selectedStation.isFast ? "DC Hızlı" : "AC Standart"}
                 </strong>
               </div>
             </div>
@@ -544,15 +689,15 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
         )}
       </div>
 
-      {/* 4. YAKINDAKİ ŞARJ İSTASYONLARI LİSTESİ (Babuba Stili) */}
+      {/* 4. YAKINDAKİ / BULUNAN İSTASYONLAR LİSTESİ */}
       <div className="flex flex-col gap-3 pt-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base sm:text-lg font-black text-neutral-900">
-              {userLocation ? "Size En Yakın İstasyonlar" : "Öne Çıkan Şarj İstasyonları"}
+              {userLocation ? "Size En Yakın İstasyonlar" : "Bölgedeki Şarj İstasyonları"}
             </h2>
             <p className="text-xs text-neutral-500">
-              {filteredStations.length} adet istasyon bulundu
+              Haritada {filteredStations.length} adet aktif istasyon listeleniyor
             </p>
           </div>
           <span className="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-100">
@@ -561,7 +706,7 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {sortedStations.slice(0, 12).map((s) => {
+          {sortedStations.slice(0, 18).map((s) => {
             const kw = s.maxPowerKw || (s.isFast ? 180 : 22);
             const isHpc = kw >= 150;
 
@@ -572,9 +717,12 @@ export default function StationMap({ stations }: { stations: MapStation[] }) {
                   setSelectedStation(s);
                   if (mapInstanceRef.current) {
                     mapInstanceRef.current.panTo({ lat: s.lat, lng: s.lng });
-                    mapInstanceRef.current.setZoom(14);
+                    mapInstanceRef.current.setZoom(15);
                   }
-                  window.scrollTo({ top: mapContainerRef.current?.offsetTop ? mapContainerRef.current.offsetTop - 80 : 0, behavior: "smooth" });
+                  window.scrollTo({
+                    top: mapContainerRef.current?.offsetTop ? mapContainerRef.current.offsetTop - 80 : 0,
+                    behavior: "smooth",
+                  });
                 }}
                 className="cursor-pointer rounded-2xl border border-neutral-200 bg-white p-4 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between gap-3 group"
               >
