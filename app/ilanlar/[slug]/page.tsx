@@ -15,8 +15,8 @@ import ListingStickyHeader from "@/components/listings/ListingStickyHeader";
 import ListingTouchGallery from "@/components/listings/ListingTouchGallery";
 import VoltScoreWidget from "@/components/listings/VoltScoreWidget";
 import ListingContactBox from "@/components/listings/ListingContactBox";
-import CarDamageReport from "@/components/listings/CarDamageReport";
 import ListingLocationMap from "@/components/listings/ListingLocationMap";
+import ListingDetailTabs from "@/components/listings/ListingDetailTabs";
 
 export const dynamic = "force-dynamic";
 
@@ -136,82 +136,8 @@ export default async function ListingDetail({
             </div>
           </div>
 
-          {/* TEKNİK BİLGİLER TABLOSU */}
-          <section className="flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-sm">
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
-              <h2 className="text-base sm:text-lg font-black tracking-tight text-neutral-900">
-                Teknik Bilgiler &amp; Donanım
-              </h2>
-              <span className="text-[11px] font-bold text-neutral-400">
-                İlan No: #{listing.id.slice(-6).toUpperCase()}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-[13px]">
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">Marka &amp; Model</span>
-                <span className="font-bold text-neutral-900">{listing.brand} {listing.model}</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">Model Yılı</span>
-                <span className="font-bold text-neutral-900">{listing.year}</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">Kilometre</span>
-                <span className="font-bold text-neutral-900">{listing.km.toLocaleString("tr-TR")} km</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">Batarya Kapasitesi</span>
-                <span className="font-bold text-blue-700">
-                  {listing.vehicle?.batteryKwh ? `${listing.vehicle.batteryKwh} kWh` : "Belirtilmemiş"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">Menzil (WLTP)</span>
-                <span className="font-bold text-emerald-700">
-                  {listing.vehicle?.rangeKm ? `${listing.vehicle.rangeKm} km` : "Belirtilmemiş"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">DC Hızlı Şarj</span>
-                <span className="font-bold text-neutral-900">
-                  {listing.vehicle?.dcChargeKw ? `${listing.vehicle.dcChargeKw} kW Max` : "Standart DC"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">Motor Gücü</span>
-                <span className="font-bold text-neutral-900">
-                  {listing.vehicle?.powerHp ? `${listing.vehicle.powerHp} HP` : "Elektrik Motoru"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">0-100 Hızlanma</span>
-                <span className="font-bold text-neutral-900">
-                  {listing.vehicle?.accelSec ? `${listing.vehicle.accelSec} sn` : "—"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">Vites / Aktarma</span>
-                <span className="font-bold text-neutral-900">Otomatik (1 İleri EV)</span>
-              </div>
-              <div className="flex items-center justify-between border-b border-neutral-100 py-1.5">
-                <span className="font-medium text-neutral-500">Boya / Değişen Beyanı</span>
-                <span className="font-bold text-neutral-900">{listing.damage || "Aşağıdaki Ekspertiz Şemasında"}</span>
-              </div>
-            </div>
-          </section>
-
-          {/* EKSPERTİZ & HASAR DURUMU ŞEMASI (13 PARÇA) */}
-          <CarDamageReport value={(listing as any).expertise} editable={false} />
-
-          {listing.description && (
-            <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-5 sm:p-6 shadow-sm">
-              <h2 className="text-base font-black text-neutral-900">Satıcı Açıklaması</h2>
-              <p className="whitespace-pre-line text-[14px] leading-relaxed text-neutral-700">
-                {listing.description}
-              </p>
-            </section>
-          )}
+          {/* İLAN İÇERİK SEKMELERİ (TEKNİK BİLGİLER, AÇIKLAMA, KONUM, EKSPERTİZ) */}
+          <ListingDetailTabs listing={listing as any} />
 
         </div>
 
@@ -229,11 +155,13 @@ export default async function ListingDetail({
             viewerId={viewer?.id}
           />
 
-          {/* HARİTALI ARAÇ KONUM BİLGİSİ (GOOGLE HARİTALAR ENTEGRASYONU) */}
-          <ListingLocationMap
-            city={listing.city}
-            district={listing.district}
-          />
+          {/* HARİTALI ARAÇ KONUM BİLGİSİ (Masaüstünde Sağ Sütunda Kalır, Mobilde Sekmede Gösterilir) */}
+          <div className="hidden lg:block">
+            <ListingLocationMap
+              city={listing.city}
+              district={listing.district}
+            />
+          </div>
 
           {listing.vehicle && (
             <section className="flex flex-col gap-2 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
