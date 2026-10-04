@@ -31,12 +31,17 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/otv-rehberi",
-        destination: "/finansman",
+        destination: "/araclar",
         permanent: true,
       },
       {
         source: "/tasarruf-hesapla",
-        destination: "/finansman",
+        destination: "/araclar",
+        permanent: true,
+      },
+      {
+        source: "/finansman",
+        destination: "/araclar",
         permanent: true,
       },
       {
@@ -50,8 +55,13 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/karsilastir",
+        destination: "/araclar",
+        permanent: true,
+      },
+      {
         source: "/karsilastirma/:path*",
-        destination: "/karsilastir",
+        destination: "/araclar",
         permanent: true,
       },
     ];

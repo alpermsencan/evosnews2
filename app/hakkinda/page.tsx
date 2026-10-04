@@ -92,7 +92,7 @@ export default async function AboutPage() {
           <Module href="/araclar" t="Model Kataloğu" d="Türkiye pazarındaki tüm modellerin detaylı teknik verileri ve karşılaştırması." />
           <Module href="/ilanlar" t="2. El Elektrikli Araçlar" d="Alıcı ve satıcıyı güvenle buluşturan elektrikli araç pazaryeri." />
           <Module href="/sarj-agi" t="Şarj Ağı & Asistanı" d="Operatör tarifeleri, istasyon haritası ve batarya dolum maliyet hesabı." />
-          <Module href="/karsilastir" t="Araç Karşılaştırma" d="Modelleri menzil, beygir, şarj hızı ve fiyat bazında yan yana kıyaslayın." />
+          <Module href="/sarj-agi/rota" t="Şarj & Rota Planlama" d="Elektrikli aracınızla uzun yolda şarj durakları ve maliyet analizi planlayın." />
           <Module href="/topluluk" t="Topluluk (r/e-aracim)" d="Elektrikli araç sahiplerinin ve meraklılarının deneyim paylaştığı forum." />
           <Module href="/veri-gizlilik" t="Veri ve Gizlilik" d="KVKK aydınlatma bildirimimiz, şeffaf gizlilik ve çerez ilkelerimiz." />
           <Module href="/iletisim" t="Doğrudan İletişim" d="Kurumsal iş birliği, içerik düzeltme ve her türlü soru için bize yazın." />

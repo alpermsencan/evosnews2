@@ -241,10 +241,10 @@ export default async function VehicleDetail({ params }: Props) {
             <span className="text-[11px] text-emerald-400/80 font-bold">Benzin: {formatTL(iceCost)}/yıl</span>
           </div>
           <Link
-            href="/finansman"
+            href="/sarj-agi"
             className="px-4 py-2 rounded-xl bg-emerald-400 text-black font-black text-xs hover:bg-emerald-300 transition"
           >
-            Hesaplayıcı
+            Şarj Tarifeleri
           </Link>
         </div>
       </div>

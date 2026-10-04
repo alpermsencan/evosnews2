@@ -112,7 +112,7 @@ export const FOOTER_GROUPS: NavGroup[] = [
     items: [
       { label: "Şarj Ağı & Fiyatları", href: "/sarj-agi" },
       { label: "Şarj & Rota Planlama", href: "/sarj-agi/rota" },
-      { label: "ÖTV & Maliyet Hesabı", href: "/finansman" },
+      { label: "En Yakın İstasyonlar", href: "/sarj-agi" },
     ],
   },
   {

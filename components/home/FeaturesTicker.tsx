@@ -32,10 +32,10 @@ const FEATURE_ITEMS = [
     href: "/araclar",
   },
   {
-    icon: "📑",
-    title: "ÖTV & FİNANSMAN REHBERİ",
-    description: "Elektrikli araçlara özel güncel ÖTV matrah limitleri ve vergi hesaplayıcı.",
-    href: "/finansman",
+    icon: "⚡",
+    title: "ŞARJ AĞI & HARİTA",
+    description: "Türkiye genelindeki 16.900+ lisanslı şarj istasyonu ve kWh fiyatları.",
+    href: "/sarj-agi",
   },
   {
     icon: "🛡️",

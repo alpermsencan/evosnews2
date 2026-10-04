@@ -128,20 +128,13 @@ export default function HeroHybrid({ slides }: { slides: Slide[] }) {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-1">
+              <div className="pt-1">
                 <button
                   type="submit"
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-sky-500 py-3 text-xs font-black text-white shadow-md transition hover:bg-sky-400 active:scale-[0.98]"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-sky-500 py-3 text-xs font-black text-white shadow-md transition hover:bg-sky-400 active:scale-[0.98]"
                 >
                   <IconSearch className="h-4 w-4" /> UYGUN MODELLERİ BUL
                 </button>
-                <Link
-                  href="/finansman"
-                  className="flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-3 py-3 text-xs font-black text-white hover:bg-white/15 transition"
-                  title="2026 ÖTV & Finansman Hesaplayıcı"
-                >
-                  <IconTag className="h-4 w-4" />
-                </Link>
               </div>
             </form>
           </div>

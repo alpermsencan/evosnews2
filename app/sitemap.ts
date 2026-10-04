@@ -13,7 +13,6 @@ const STATIC_PATHS = [
   { path: "sarj-agi", priority: 0.8, freq: "weekly" as const },
   { path: "ilanlar", priority: 0.9, freq: "daily" as const },
   { path: "batarya-raporu", priority: 0.7, freq: "monthly" as const },
-  { path: "finansman", priority: 0.7, freq: "monthly" as const },
   { path: "hakkinda", priority: 0.5, freq: "monthly" as const },
   { path: "iletisim", priority: 0.4, freq: "monthly" as const },
   { path: "pro", priority: 0.5, freq: "monthly" as const },
