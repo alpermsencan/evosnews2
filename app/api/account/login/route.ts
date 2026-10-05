@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { fail } from "@/lib/api";
 import { verifyPassword } from "@/lib/auth";
 import { SESSION_COOKIE, sessionCookieOptions, signSession } from "@/lib/session";
+import { ADMIN_COOKIE, adminToken } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -46,6 +47,18 @@ export async function POST(req: NextRequest) {
       },
     });
     res.cookies.set(SESSION_COOKIE, token, sessionCookieOptions);
+
+    if (user.role === "admin") {
+      const aToken = await adminToken(user.username);
+      res.cookies.set(ADMIN_COOKIE, aToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
+
     return res;
   } catch (e) {
     return fail(e instanceof Error ? e.message : "Giriş yapılamadı", 500);

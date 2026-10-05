@@ -1,46 +1,70 @@
 import type { NextRequest } from "next/server";
+import { SignJWT, jwtVerify } from "jose";
 
 export const ADMIN_COOKIE = "evos_admin";
+export const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || "alperx").trim();
+export const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || "ytung011").trim();
 
-/** Varsayılan ve garanti yönetici parolası */
+function getSecretKey() {
+  const secret =
+    process.env.AUTH_SECRET ||
+    "7c10b4f8a42f55cbcf43db0e08f51ab3520141f238ad9b92209bbbb969cb452f";
+  return new TextEncoder().encode(secret);
+}
+
+/** Varsayılan yönetici parolası */
 export function adminPassword(): string {
-  return "evos2026";
+  return ADMIN_PASSWORD;
 }
 
 /**
- * Girilen parolanın doğrulanması:
- * Kullanıcı "evos2026", "1453Mertxx" veya .env içinde tanımlı şifreyi girerse
- * her durumda yetkilendirilir.
+ * Yönetici kullanıcı adı ve parola doğrulama.
+ * Yalnızca 'alperx' ve 'ytung011' kabul edilir.
+ */
+export function isValidAdminCredentials(
+  username: string | undefined | null,
+  password: string | undefined | null
+): boolean {
+  if (!username || !password) return false;
+  const u = username.trim().toLowerCase();
+  const p = password.trim();
+  return u === ADMIN_USERNAME.toLowerCase() && p === ADMIN_PASSWORD;
+}
+
+/**
+ * Tek şifre kontrolü için (geriye dönük uyumluluk)
  */
 export function isValidAdminPassword(input: string | undefined | null): boolean {
   if (!input) return false;
   const p = input.trim();
-  const envPass = process.env.ADMIN_PASSWORD?.trim();
-  return (
-    p === "evos2026" ||
-    p === "1453Mertxx" ||
-    (Boolean(envPass) && p === envPass)
-  );
+  return p === ADMIN_PASSWORD;
 }
 
-/** Çereze yazılacak imza / token */
-export async function adminToken(): Promise<string> {
-  return "evos_admin_authorized";
+/**
+ * Kriptografik olarak imzalanmış 30 günlük güvenli yönetici JWT token'ı
+ */
+export async function adminToken(username: string = ADMIN_USERNAME): Promise<string> {
+  return new SignJWT({ role: "admin", username })
+    .setProtectedHeader({ alg: "HS256" })
+    .setSubject(username)
+    .setIssuedAt()
+    .setExpirationTime("30d")
+    .sign(getSecretKey());
 }
 
-/** Çerezdeki token'ın yetki kontrolü */
+/**
+ * Çerezdeki JWT token'ın kriptografik imza ve yetki kontrolü
+ */
 export async function isAdminCookie(value: string | undefined): Promise<boolean> {
   if (!value) return false;
   const v = value.trim();
-  if (
-    v === "evos_admin_authorized" ||
-    v === "evos2026" ||
-    v === "1453Mertxx" ||
-    (process.env.ADMIN_PASSWORD && v === process.env.ADMIN_PASSWORD.trim())
-  ) {
-    return true;
+
+  try {
+    const { payload } = await jwtVerify(v, getSecretKey());
+    return payload.role === "admin" && String(payload.username).toLowerCase() === ADMIN_USERNAME.toLowerCase();
+  } catch {
+    return false;
   }
-  return false;
 }
 
 export async function isAdminRequest(req: NextRequest): Promise<boolean> {

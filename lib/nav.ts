@@ -34,7 +34,7 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
         label: "2.EL İLANLAR",
         href: "/ilanlar",
         desc: "Elektrikli araç pazarı, kategori bazlı vitrin",
-        badge: "YENİ",
+        badge: "YAKINDA",
       },
     ],
   },

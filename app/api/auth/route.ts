@@ -1,26 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fail } from "@/lib/api";
-import { ADMIN_COOKIE, adminToken, isValidAdminPassword } from "@/lib/admin-auth";
+import {
+  ADMIN_COOKIE,
+  ADMIN_USERNAME,
+  adminToken,
+  isValidAdminCredentials,
+  isValidAdminPassword,
+} from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
 
-/** POST /api/auth -> { password } : admin girişi */
+/** POST /api/auth -> { username, password } : admin girişi */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const password = body.password;
+    const username = (body.username || ADMIN_USERNAME).trim();
+    const password = (body.password || "").trim();
 
-    if (!isValidAdminPassword(password)) {
-      return fail("Şifre hatalı. Lütfen 'evos2026' giriniz.", 401);
+    if (!isValidAdminCredentials(username, password) && !isValidAdminPassword(password)) {
+      return fail("Geçersiz yönetici kullanıcı adı veya şifre.", 401);
     }
 
-    const token = await adminToken();
+    const token = await adminToken(username);
     const res = NextResponse.json({ success: true, redirect: "/admin" });
 
-    // Hostinger ve HTTP/HTTPS ortamlarının tümünde çalışması için secure: false
     res.cookies.set(ADMIN_COOKIE, token, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24 * 30, // 30 gün
@@ -28,33 +34,8 @@ export async function POST(req: NextRequest) {
 
     return res;
   } catch {
-    return fail("Giriş yapılamadı", 500);
+    return fail("Giriş işlemi gerçekleştirilemedi.", 500);
   }
-}
-
-/** GET /api/auth?key=evos2026 -> Tek tıkla doğrudan giriş ve yönlendirme */
-export async function GET(req: NextRequest) {
-  const key = req.nextUrl.searchParams.get("key");
-  const devam = req.nextUrl.searchParams.get("devam") || "/admin";
-
-  if (isValidAdminPassword(key)) {
-    const token = await adminToken();
-    const url = req.nextUrl.clone();
-    url.pathname = devam;
-    url.search = "";
-
-    const res = NextResponse.redirect(url);
-    res.cookies.set(ADMIN_COOKIE, token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30,
-    });
-    return res;
-  }
-
-  return NextResponse.redirect(new URL("/admin/giris", req.url));
 }
 
 /** DELETE /api/auth : çıkış */

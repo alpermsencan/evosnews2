@@ -27,6 +27,23 @@ const optionalInt = (v: unknown) => {
  * açık uçtan görünmez.
  */
 export async function GET(req: NextRequest) {
+  // 2. El İlanlar özelliği şu an yalnızca admin (alperx) için aktiftir.
+  // Normal ziyaretçilere boş liste ve bilgi mesajı dönülür.
+  const adminCookie = req.cookies.get(ADMIN_COOKIE)?.value;
+  const isAdmin = await isAdminCookie(adminCookie);
+
+  if (!isAdmin) {
+    return ok({
+      items: [],
+      total: 0,
+      page: 1,
+      pageSize: 20,
+      totalPages: 0,
+      isUnderMaintenance: true,
+      message: "2. El Araç İlanları yakında yayına hazırlanıyor.",
+    });
+  }
+
   const sp = req.nextUrl.searchParams;
   const where: Prisma.ListingWhereInput = { status: "PUBLISHED" };
 
