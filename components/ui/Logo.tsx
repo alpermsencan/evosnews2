@@ -35,14 +35,14 @@ export default function Logo({
     xl: "text-3xl sm:text-4xl",
   };
 
-  // Yeni Logo Amblemi: Neon Mavi Çember, Elektrikli Araç Silüeti & Şimşekli "e" Harfi
+  // Yeni Dairesel Amblem: Neon Mavi Halka, Elektrikli Araç Silüeti & Şimşekli "e" Harfi
   const emblem = (
-    <div className={`relative shrink-0 flex items-center justify-center rounded-full ${emblemSizes[size]} group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_12px_rgba(56,189,248,0.45)]`}>
+    <div className={`relative shrink-0 flex items-center justify-center rounded-full ${emblemSizes[size]} group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_14px_rgba(0,180,216,0.5)]`}>
       <Image
-        src="/images/logo-emblem-badge.png"
-        alt="e-aracım.com Logo"
-        width={160}
-        height={160}
+        src="/images/logo-circle-badge.png"
+        alt="e-aracim.com Logo"
+        width={180}
+        height={180}
         priority
         className="w-full h-full object-contain rounded-full"
       />
@@ -51,7 +51,7 @@ export default function Logo({
 
   if (variant === "icon-only") {
     return href ? (
-      <Link href={href} aria-label="e-aracım Anasayfa" className={`inline-flex ${className}`}>
+      <Link href={href} aria-label="e-aracim.com Anasayfa" className={`inline-flex ${className}`}>
         {emblem}
       </Link>
     ) : (
@@ -59,42 +59,11 @@ export default function Logo({
     );
   }
 
-  // Eğer variant="horizontal" veya tam logo istenirse yüksek çözünürlüklü grafik banner render edilir
-  if (variant === "horizontal") {
-    const bannerSizes = {
-      sm: "h-7 sm:h-8",
-      md: "h-9 sm:h-10",
-      lg: "h-11 sm:h-12",
-      xl: "h-14 sm:h-16",
-    };
-
-    const graphic = (
-      <div className={`relative flex items-center ${bannerSizes[size]} aspect-[2.47/1] group select-none ${className}`}>
-        <Image
-          src={isDark ? "/images/logo-horizontal-dark.png" : "/images/logo-horizontal-light.png"}
-          alt="e-aracim.com - Elektrikli Araç Rehberi"
-          width={470}
-          height={190}
-          priority
-          className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-300"
-        />
-      </div>
-    );
-
-    return href ? (
-      <Link href={href} aria-label="e-aracim.com Anasayfa" className="inline-flex items-center focus:outline-none">
-        {graphic}
-      </Link>
-    ) : (
-      graphic
-    );
-  }
-
   const content = (
     <div className={`flex items-center gap-2.5 sm:gap-3 group select-none ${className}`}>
       {emblem}
 
-      {/* Tipografi: e-aracim.com & ELEKTRİKLİ ARAÇ REHBERİ */}
+      {/* Tipografi: e-aracim.com & ELEKTRİKLİ ARAÇ DÜNYASI */}
       <div className="flex flex-col justify-center leading-none">
         <div className={`flex items-baseline font-black tracking-tight ${titleSizes[size]}`}>
           {/* Neon Mavi Vurgulu 'e' */}
@@ -115,16 +84,18 @@ export default function Logo({
           </span>
         </div>
 
-        {/* Alt Satır: Logodaki Resmi Slogan "ELEKTRİKLİ ARAÇ REHBERİ" */}
+        {/* Alt Satır: Logodaki Resmi Slogan "ELEKTRİKLİ ARAÇ DÜNYASI" */}
         {showTagline !== false && (
-          <div className="flex items-center gap-1 mt-1 sm:mt-1.5">
+          <div className="flex items-center gap-1.5 mt-1 sm:mt-1.5">
+            <span className="h-0.5 w-3 bg-[#00B4D8]/70 rounded-full shrink-0" />
             <span
-              className={`text-[8px] sm:text-[9.5px] font-black uppercase tracking-[0.25em] select-none ${
-                isDark ? "text-neutral-200" : "text-neutral-800"
+              className={`text-[8px] sm:text-[9px] font-black uppercase tracking-[0.24em] select-none ${
+                isDark ? "text-neutral-200" : "text-neutral-700"
               }`}
             >
-              ELEKTRİKLİ ARAÇ REHBERİ
+              ELEKTRİKLİ ARAÇ DÜNYASI
             </span>
+            <span className="h-0.5 w-3 bg-[#00B4D8]/70 rounded-full shrink-0" />
           </div>
         )}
       </div>
