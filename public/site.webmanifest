@@ -1,7 +1,7 @@
 {
-  "name": "e-aracım",
-  "short_name": "e-aracım",
-  "description": "Türkiye'nin Elektrikli Araç Platformu",
+  "name": "e-aracim.com · Elektrikli Araç Rehberi",
+  "short_name": "e-aracim.com",
+  "description": "Türkiye'nin Elektrikli Araç Rehberi",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#070c18",

@@ -59,6 +59,37 @@ export default function Logo({
     );
   }
 
+  // Eğer variant="horizontal" veya tam logo istenirse yüksek çözünürlüklü grafik banner render edilir
+  if (variant === "horizontal") {
+    const bannerSizes = {
+      sm: "h-7 sm:h-8",
+      md: "h-9 sm:h-10",
+      lg: "h-11 sm:h-12",
+      xl: "h-14 sm:h-16",
+    };
+
+    const graphic = (
+      <div className={`relative flex items-center ${bannerSizes[size]} aspect-[2.47/1] group select-none ${className}`}>
+        <Image
+          src={isDark ? "/images/logo-horizontal-dark.png" : "/images/logo-horizontal-light.png"}
+          alt="e-aracim.com - Elektrikli Araç Rehberi"
+          width={470}
+          height={190}
+          priority
+          className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-300"
+        />
+      </div>
+    );
+
+    return href ? (
+      <Link href={href} aria-label="e-aracim.com Anasayfa" className="inline-flex items-center focus:outline-none">
+        {graphic}
+      </Link>
+    ) : (
+      graphic
+    );
+  }
+
   const content = (
     <div className={`flex items-center gap-2.5 sm:gap-3 group select-none ${className}`}>
       {emblem}
@@ -67,7 +98,7 @@ export default function Logo({
       <div className="flex flex-col justify-center leading-none">
         <div className={`flex items-baseline font-black tracking-tight ${titleSizes[size]}`}>
           {/* Neon Mavi Vurgulu 'e' */}
-          <span className="text-[#00B4D8] drop-shadow-[0_0_10px_rgba(0,180,216,0.5)]">
+          <span className="text-[#00B4D8] drop-shadow-[0_0_12px_rgba(0,180,216,0.6)]">
             e
           </span>
           {/* Tire */}
@@ -75,7 +106,7 @@ export default function Logo({
             -
           </span>
           {/* aracim */}
-          <span className="text-[#00B4D8] drop-shadow-[0_0_8px_rgba(0,180,216,0.4)]">
+          <span className="text-[#00B4D8] drop-shadow-[0_0_10px_rgba(0,180,216,0.45)]">
             aracim
           </span>
           {/* .com kurumsal domain uzantısı (Beyaz / Koyu Kontrast) */}
@@ -86,10 +117,10 @@ export default function Logo({
 
         {/* Alt Satır: Logodaki Resmi Slogan "ELEKTRİKLİ ARAÇ REHBERİ" */}
         {showTagline !== false && (
-          <div className="flex items-center gap-1.5 mt-1 sm:mt-1.5">
+          <div className="flex items-center gap-1 mt-1 sm:mt-1.5">
             <span
-              className={`text-[8.5px] sm:text-[9.5px] font-black uppercase tracking-[0.22em] select-none ${
-                isDark ? "text-neutral-200" : "text-neutral-700"
+              className={`text-[8px] sm:text-[9.5px] font-black uppercase tracking-[0.25em] select-none ${
+                isDark ? "text-neutral-200" : "text-neutral-800"
               }`}
             >
               ELEKTRİKLİ ARAÇ REHBERİ
@@ -101,7 +132,7 @@ export default function Logo({
   );
 
   return href ? (
-    <Link href={href} aria-label="e-aracım Anasayfa" className="inline-flex items-center focus:outline-none">
+    <Link href={href} aria-label="e-aracim.com Anasayfa" className="inline-flex items-center focus:outline-none">
       {content}
     </Link>
   ) : (

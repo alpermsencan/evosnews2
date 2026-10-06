@@ -24,11 +24,11 @@ export const metadata: Metadata = {
     types: { "application/rss+xml": `${siteUrl()}/feed.xml` },
   },
   title: {
-    default: "e-aracım · Elektrikli Araç & Akıllı Mobilite Platformu",
-    template: "%s · e-aracım",
+    default: "e-aracim.com · Elektrikli Araç Rehberi",
+    template: "%s · e-aracim.com",
   },
   description:
-    "Türkiye'nin elektrikli araç platformu e-aracım: 2026 güncel elektrikli model kataloğu, şarj ağı ve fiyatları, ÖTV rehberi, ikinci el elektrikli araç ilanları ve uzman analizler.",
+    "Türkiye'nin lider elektrikli araç rehberi e-aracim.com: Güncel elektrikli otomobil modelleri, şarj istasyonları ve tarifeleri, menzil hesaplama, 2.el ilanlar ve rehber içerikler.",
   keywords: [
     "elektrikli araç",
     "e-aracım",

@@ -11,8 +11,8 @@ export default function Footer() {
           <div className="flex max-w-sm flex-col gap-4">
             <Logo size="lg" theme="dark" variant="footer" />
             <p className="text-sm leading-relaxed text-neutral-400">
-              Türkiye&apos;nin elektrikli araç ve akıllı mobilite platformu.
-              Doğrulanmış elektrikli model verileri, canlı şarj ağı haritası, ikinci el pazarı ve uzman rehberliği tek merkezde.
+              Türkiye&apos;nin elektrikli araç rehberi. Doğrulanmış elektrikli model verileri,
+              canlı şarj ağı haritası, ikinci el pazarı ve uzman rehberliği tek merkezde.
             </p>
             <div className="flex flex-col gap-1.5 text-xs text-neutral-400 font-medium">
               <div className="flex items-center gap-2">
