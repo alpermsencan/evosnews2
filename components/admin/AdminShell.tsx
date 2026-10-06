@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import Logo from "@/components/ui/Logo";
 import {
   IconBolt,
   IconCar,
@@ -59,12 +60,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         }`}
       >
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-4">
-          <Link href="/admin" className="flex items-center gap-2">
-            <IconBolt className="h-6 w-6 text-evos" />
-            <span className="text-lg font-black">
-              e-aracım<span className="text-white/50">Admin</span>
-            </span>
-          </Link>
+          <Logo size="sm" theme="dark" href="/admin" showTagline={false} />
           <button
             onClick={() => setOpen(false)}
             className="rounded p-1 text-white/70 hover:bg-white/10 lg:hidden"

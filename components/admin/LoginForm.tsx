@@ -2,7 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { IconBolt, IconLock, IconUser } from "@/components/ui/Icons";
+import Logo from "@/components/ui/Logo";
+import { IconLock, IconUser } from "@/components/ui/Icons";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -42,18 +43,11 @@ export default function LoginForm() {
   return (
     <div className="flex w-full max-w-sm flex-col gap-4 rounded-3xl bg-white p-7 shadow-2xl border border-neutral-200">
       {/* Üst Logo ve Başlık */}
-      <div className="flex items-center gap-2.5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-950 text-sky-400 shadow-sm border border-neutral-800">
-          <IconBolt className="h-6 w-6 text-sky-400" />
-        </div>
-        <div>
-          <span className="text-xl font-black text-neutral-950 tracking-tight block leading-tight">
-            e-aracım<span className="text-sky-600 font-black">.com</span>
-          </span>
-          <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">
-            Güvenli Yönetici Paneli
-          </span>
-        </div>
+      <div className="flex flex-col gap-1 items-start">
+        <Logo size="md" theme="light" showTagline={false} />
+        <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400 mt-1 pl-1">
+          Güvenli Yönetici Paneli
+        </span>
       </div>
 
       <p className="text-xs text-neutral-500 leading-relaxed">
