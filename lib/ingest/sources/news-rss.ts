@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/api";
 import { contentHash } from "../http";
 import { fetchText } from "../http";
-import { dateOf, extractBlocks, linkOf, stripHtml, tagAttr, tagText } from "../xml";
+import { dateOf, escapeHtml, extractBlocks, linkOf, stripHtml, tagAttr, tagText } from "../xml";
 import { fetchSourcePage, rewriteArticle, rewriteEnabled } from "../rewrite";
 import { matchesTopic } from "../topic";
 import { routeCategory } from "../route-category";
@@ -39,6 +39,9 @@ const REWRITE_CONCURRENCY = 4;
 /** Süre bütçesinin son bu kadarı yazma/temizlik için ayrılır. */
 const DEADLINE_RESERVE_MS = 6_000;
 
+/** Konu dışı kayıtlar yayın kotasını tüketmesin; tarama yine sınırlı kalsın. */
+const MAX_FEED_ITEMS = 500;
+
 function toSpot(raw: string, fallback: string) {
   const text = stripHtml(raw).trim();
   const base = text || fallback;
@@ -56,8 +59,8 @@ function toSpot(raw: string, fallback: string) {
  */
 function draftBody(spot: string, sourceName: string, sourceUrl: string) {
   return [
-    `<p>${spot}</p>`,
-    `<p><em>Bu taslak <a href="${sourceUrl}" rel="nofollow noopener" target="_blank">${sourceName}</a> kaynağındaki habere dayanıyor ve henüz yeniden yazılmadı.</em></p>`,
+    `<p>${escapeHtml(spot)}</p>`,
+    `<p><em>Bu taslak <a href="${escapeHtml(sourceUrl)}" rel="nofollow noopener" target="_blank">${escapeHtml(sourceName)}</a> kaynağındaki habere dayanıyor ve henüz yeniden yazılmadı.</em></p>`,
   ].join("\n");
 }
 
@@ -94,7 +97,7 @@ async function categorySlugIndex() {
 
 /** AŞAMA 1 — beslemeyi oku, yeni başlıkları taslak olarak kuyruğa al. */
 async function collect(
-  { source, limit }: IngestContext,
+  { source, limit, deadline }: IngestContext,
   stats: ReturnType<typeof emptyStats>,
   notes: string[],
 ) {
@@ -116,8 +119,16 @@ async function collect(
   // yalnızca hiçbir kural eşleşmediğinde kullanılır (bkz. route-category.ts).
   const categoryIds = await categorySlugIndex();
 
-  const xml = await fetchText(source.endpoint, { timeoutMs: 20_000 });
-  const items = [...extractBlocks(xml, "item"), ...extractBlocks(xml, "entry")].slice(0, limit);
+  const remainingMs = deadline ? deadline - Date.now() - DEADLINE_RESERVE_MS : 20_000;
+  if (remainingMs <= 0) {
+    notes.push("Süre bütçesi doldu — besleme bir sonraki çalışmada okunacak");
+    return;
+  }
+  const xml = await fetchText(source.endpoint, {
+    timeoutMs: Math.min(20_000, remainingMs),
+    ...(deadline ? { retries: 0 } : {}),
+  });
+  const items = [...extractBlocks(xml, "item"), ...extractBlocks(xml, "entry")].slice(0, MAX_FEED_ITEMS);
 
   if (!items.length) {
     notes.push("Beslemede öğe bulunamadı");
@@ -127,6 +138,11 @@ async function collect(
   const sourceName = source.name;
 
   for (const item of items) {
+    if (stats.created + stats.updated >= limit) break;
+    if (deadline && Date.now() >= deadline - DEADLINE_RESERVE_MS) {
+      notes.push("Süre bütçesi doldu — kalan besleme kayıtları ertelendi");
+      break;
+    }
     stats.fetched++;
 
     const title = stripHtml(tagText(item, "title"));
@@ -228,28 +244,44 @@ async function rewritePending(
         status: "DRAFT",
         OR: [{ rewrittenAt: null }, { rewrittenAt: { isSet: false } }],
       },
+      orderBy: { publishedAt: "desc" },
       take: REWRITE_BATCH,
     });
 
     for (const draft of pending) {
-      await prisma.article.update({
-        where: { id: draft.id },
-        data: {
-          status: source.autoPublish ? "PUBLISHED" : "DRAFT",
-          rewrittenAt: new Date(),
-          content: [
-            `<p>${draft.spot}</p>`,
-            `<p class="mt-4 font-bold text-xs text-neutral-400">`,
-            `  Bu haber otomatik olarak <strong>${source.name}</strong> kaynağından derlenmiştir. `,
-            `  Haberin detaylarını okumak için kaynağı ziyaret edebilirsiniz: `,
-            `  <a href="${draft.sourceUrl}" target="_blank" rel="noopener nofollow" class="text-evos hover:underline">`,
-            `    Orijinal Kaynağa Git ›`,
-            `  </a>`,
-            `</p>`
-          ].join("\n"),
+      if (deadline && Date.now() >= deadline - DEADLINE_RESERVE_MS) {
+        notes.push("Süre bütçesi doldu — kalan taslaklar kuyrukta kaldı");
+        break;
+      }
+      if (!draft.sourceUrl || !/^https?:\/\//i.test(draft.sourceUrl)) {
+        stats.skipped++;
+        continue;
+      }
+      try {
+        await prisma.article.update({
+          where: { id: draft.id },
+          data: {
+            status: source.autoPublish ? "PUBLISHED" : "DRAFT",
+            rewrittenAt: new Date(),
+            content: [
+              `<p>${escapeHtml(draft.spot)}</p>`,
+              `<p class="mt-4 font-bold text-xs text-neutral-400">`,
+              `  Bu haber otomatik olarak <strong>${escapeHtml(source.name)}</strong> kaynağından derlenmiştir. `,
+              `  Haberin detaylarını okumak için kaynağı ziyaret edebilirsiniz: `,
+              `  <a href="${escapeHtml(draft.sourceUrl)}" target="_blank" rel="noopener nofollow" class="text-evos hover:underline">`,
+              `    Orijinal Kaynağa Git ›`,
+              `  </a>`,
+              `</p>`
+            ].join("\n"),
+          }
+        });
+        stats.updated++;
+      } catch (e) {
+        stats.failed++;
+        if (notes.length < 5) {
+          notes.push(`Taslak yayınlanamadı: ${e instanceof Error ? e.message : "bilinmeyen hata"}`);
         }
-      });
-      stats.created++;
+      }
     }
     return;
   }
@@ -375,7 +407,14 @@ async function run(ctx: IngestContext): Promise<IngestResult> {
   const stats = emptyStats();
   const notes: string[] = [];
 
-  await collect(ctx, stats, notes);
+  try {
+    await collect(ctx, stats, notes);
+  } catch (e) {
+    // Besleme geçici olarak erişilemiyorsa daha önce toplanan kuyruk yine
+    // işlenir; hata sayacı izleme sisteminde kısmi başarısızlığı korur.
+    stats.failed++;
+    notes.push(`Besleme okunamadı: ${e instanceof Error ? e.message : "bilinmeyen hata"}`);
+  }
   await rewritePending(ctx, stats, notes);
 
   return { ...stats, notes };

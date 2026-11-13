@@ -176,7 +176,12 @@ export async function runSource(
       }),
       prisma.dataSource.update({
         where: { id: source.id },
-        data: { lastRunAt: new Date(), lastOkAt: new Date(), lastError: null },
+        data: {
+          lastRunAt: new Date(),
+          ...(status === "ok" ? { lastOkAt: new Date(), lastError: null } : {
+            lastError: (stats.notes?.join(" | ") || `${stats.failed} kayıt işlenemedi`).slice(0, 500),
+          }),
+        },
       }),
     ]);
 

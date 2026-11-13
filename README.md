@@ -5,6 +5,9 @@ Next.js 16 (App Router) + MongoDB + Prisma + Tailwind CSS v4. Admin paneli dahil
 
 ## Kurulum
 
+Hostinger haber zamanlaması ve sonuçların izlenmesi:
+[Haber güncelleme sistemi](docs/haber-guncelleme.md).
+
 ```bash
 npm install
 npm run db:generate     # Prisma client üret

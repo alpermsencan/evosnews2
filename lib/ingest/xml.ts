@@ -25,17 +25,27 @@ const ENTITIES: Record<string, string> = {
 };
 
 export function decodeEntities(input: string) {
+  const character = (match: string, code: number) =>
+    Number.isInteger(code) && code >= 0 && code <= 0x10ffff && !(code >= 0xd800 && code <= 0xdfff)
+      ? String.fromCodePoint(code)
+      : match;
   return input
-    .replace(/&(#x[0-9a-f]+);/gi, (_, h: string) =>
-      String.fromCodePoint(parseInt(h.slice(2), 16)),
+    .replace(/&(#x[0-9a-f]+);/gi, (m, h: string) =>
+      character(m, parseInt(h.slice(2), 16)),
     )
     .replace(/&(#\d+);/g, (m, d: string) => {
       const named = ENTITIES[d];
       if (named) return named;
       const code = Number(d.slice(1));
-      return Number.isFinite(code) ? String.fromCodePoint(code) : m;
+      return character(m, code);
     })
     .replace(/&([a-z]+);/gi, (m, name: string) => ENTITIES[name.toLowerCase()] ?? m);
+}
+
+/** Beslemeden çözülen düz metin HTML'e yerleştirilmeden önce kaçışlanır. */
+export function escapeHtml(input: string) {
+  return input.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 /** HTML etiketlerini söker, boşlukları normalleştirir. */
@@ -86,8 +96,13 @@ export function tagAttr(block: string, tag: string, attr: string): string {
 export function linkOf(block: string): string {
   const plain = tagText(block, "link");
   if (plain && /^https?:\/\//i.test(plain)) return plain;
-  const href = tagAttr(block, "link", "href");
-  return href;
+  const links = block.match(/<link\b[^>]*>/gi) ?? [];
+  for (const link of links) {
+    const rel = tagAttr(link, "link", "rel").toLowerCase();
+    const href = tagAttr(link, "link", "href");
+    if ((!rel || rel === "alternate") && /^https?:\/\//i.test(href)) return href;
+  }
+  return "";
 }
 
 /** RSS `pubDate` / Atom `published|updated` → Date (geçersizse null). */

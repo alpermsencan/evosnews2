@@ -154,6 +154,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
     const sections: Record<string, unknown> = { stationsSkipped: !stationsDue };
     const tags = new Set<string>();
     let changed = false;
+    let sourceFailures = false;
 
     for (const [i, kind] of kinds.entries()) {
       // Haber en yavaş iş olduğu için sona bırakıldı ve kalan bütçenin
@@ -167,6 +168,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
         ...o.stats,
         error: o.error,
       }));
+      sourceFailures ||= result.outcomes.some((o) => o.status === "error" || o.status === "partial");
 
       if (result.outcomes.some((o) => o.stats.created > 0 || o.stats.updated > 0)) {
         changed = true;
@@ -216,7 +218,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
         stale: summary.stale,
         sources: sections,
       },
-      summary.ok ? 200 : 207,
+      summary.ok && !sourceFailures ? 200 : 207,
     );
   }
 
@@ -231,6 +233,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
   if (changed) for (const tag of tags) revalidateTag(tag, "max");
 
   const failed = outcomes.filter((o) => o.status === "error");
+  const partial = outcomes.some((o) => o.status === "partial");
 
   return ok(
     {
@@ -245,6 +248,6 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ job: string
       })),
     },
     // Tüm kaynaklar patladıysa Vercel cron'u başarısız görsün ve uyarı üretsin.
-    failed.length > 0 && failed.length === outcomes.length ? 500 : 200,
+    failed.length > 0 && failed.length === outcomes.length ? 500 : failed.length > 0 || partial ? 207 : 200,
   );
 }

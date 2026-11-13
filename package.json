@@ -8,6 +8,7 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
+    "test:ingest": "node --test tests/ingest.test.mjs",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:purge-seed": "node --env-file=.env prisma/purge-seed.mjs",
