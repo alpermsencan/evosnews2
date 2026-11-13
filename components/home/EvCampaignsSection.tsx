@@ -1,10 +1,11 @@
 "use client";
 
+import { isCurrentCampaign, type CampaignVerification } from "@/lib/campaign-verification";
 import React, { useState } from "react";
 import Link from "next/link";
 import SafeImage from "@/components/ui/SafeImage";
 
-interface CampaignItem {
+interface CampaignItem extends CampaignVerification {
   id: string;
   brand: string;
   model: string;
@@ -148,8 +149,8 @@ const CAMPAIGNS: CampaignItem[] = [
 export default function EvCampaignsSection() {
   const [filter, setFilter] = useState<"all" | "zero-interest" | "green-loan" | "trade-in">("all");
 
-  const filtered =
-    filter === "all" ? CAMPAIGNS : CAMPAIGNS.filter((c) => c.type === filter);
+  const activeCampaigns = CAMPAIGNS.filter(c => isCurrentCampaign(c));
+  const filtered = filter === "all" ? activeCampaigns : activeCampaigns.filter(c => c.type === filter);
 
   return (
     <section className="flex flex-col gap-5 rounded-3xl border border-neutral-200/80 bg-white p-5 sm:p-7 shadow-xs">
@@ -165,7 +166,7 @@ export default function EvCampaignsSection() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-black uppercase tracking-wider text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md border border-sky-200/60">
-                2026 RESMÎ VERİLER
+                FİNANSMAN REHBERİ
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             </div>
@@ -173,11 +174,12 @@ export default function EvCampaignsSection() {
               ARAÇ KAMPANYALARI & FİNANSMAN
             </h2>
             <p className="text-xs text-neutral-500 font-medium mt-0.5">
-              Türkiye resmî distribütör ve banka anlaşmalı güncel faiz destekleri ve teşvikler
+              Güncel koşulları bankanın veya üreticinin resmî sayfasından doğrulayın.
             </p>
           </div>
         </div>
 
+        {activeCampaigns.length > 0 && (<>
         {/* Kurumsal Sade Filtre Butonları */}
         <div className="flex flex-wrap items-center gap-1.5 bg-neutral-100/80 p-1 rounded-xl text-xs font-bold border border-neutral-200/60 shrink-0">
           <button
@@ -189,7 +191,7 @@ export default function EvCampaignsSection() {
                 : "text-neutral-600 hover:text-neutral-950"
             }`}
           >
-            Tümü ({CAMPAIGNS.length})
+            Tümü ({activeCampaigns.length})
           </button>
           <button
             type="button"
@@ -225,10 +227,19 @@ export default function EvCampaignsSection() {
             Takas Destekli
           </button>
         </div>
+        </>)}
       </div>
 
       {/* 2. SADE, MODERN VE KURUMSAL KAMPANYA KARTLARI (3'LÜ GRID) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {activeCampaigns.length === 0 && (
+          <div className="col-span-full rounded-xl bg-neutral-50 p-4 text-sm text-neutral-600">
+            <p>Tarih ve kaynak doğrulaması tamamlanmış kampanya bulunmuyor. Güncel faiz ve kredi koşulları için resmî sayfaları inceleyin:</p>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {CAMPAIGNS.map(item => <li key={item.id}><a href={item.bankUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-sky-700 hover:underline">{item.brand} · {item.bankPartner}</a></li>)}
+            </ul>
+          </div>
+        )}
         {filtered.map((item) => (
           <div
             key={item.id}

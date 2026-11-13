@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import NewsCard from "@/components/news/NewsCard";
 import VehicleCard from "@/components/vehicles/VehicleCard";
@@ -34,6 +35,12 @@ export default async function VehicleHubPage() {
       prisma.vehicle.findFirst({ orderBy: { acceleration: "asc" }, include: { syncImages: true } }),
     ]);
 
+  const champions = [
+    { title: "EN UYGUN FİYAT", color: "bg-emerald-600", v: cheapest, metric: cheapest ? formatTL(cheapest.price) : "" },
+    { title: "EN UZUN MENZİL", color: "bg-blue-600", v: longest, metric: longest ? `${longest.rangeKm} km` : "" },
+    { title: "EN HIZLI", color: "bg-red-600", v: fastest, metric: fastest ? `${fastest.acceleration} sn (0–100 km/sa)` : "" },
+  ];
+
   // Calculate deterministic daily vehicle for test drive offset from daily review
   const today = new Date();
   const dayIndex = Math.floor(today.getTime() / (1000 * 60 * 60 * 24));
@@ -62,7 +69,7 @@ export default async function VehicleHubPage() {
 
       {/* GÜNLÜK EV İNCELEMESİ */}
       {vehicles[0] && (
-        <DailyEvReview vehicle={vehicles[0] as any} />
+        <DailyEvReview vehicle={testDriveVehicle} />
       )}
 
       {/* ŞAMPİYONLAR */}

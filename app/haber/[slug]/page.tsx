@@ -1,10 +1,11 @@
+import { articleHtml } from "@/lib/html";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getArticleBySlug, getArticleComments, getRelated, getMostRead } from "@/lib/queries";
-import { contentToHtml, formatDate, timeAgo, toDate } from "@/lib/utils";
+import { formatDate, timeAgo, toDate } from "@/lib/utils";
 import NewsCard from "@/components/news/NewsCard";
 import MostRead from "@/components/news/MostRead";
 import SectionTitle from "@/components/news/SectionTitle";
@@ -99,7 +100,7 @@ export default async function ArticlePage({ params }: Props) {
       : null;
 
   // Editörden gelen HTML; eski düz metin kayıtlar paragraflara dönüştürülür
-  let contentHtml = contentToHtml(article.content);
+  let contentHtml = articleHtml(article.content);
   // Dış kaynak atıflarını temizle, tamamen kurumsal e-aracım dili
   contentHtml = contentHtml
     .replace(/<p class="source-note">[\s\S]*?<\/p>/gi, "")

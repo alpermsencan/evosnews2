@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 
 export function ok(data: unknown, init?: number) {
-  return NextResponse.json(data as Record<string, unknown>, { status: init ?? 200 });
+  return NextResponse.json(data as Record<string, unknown>, { status: init ?? 200, headers: { "Cache-Control": "no-store" } });
 }
 
 export function fail(message: string, status = 400) {
-  return NextResponse.json({ error: message }, { status });
+  const safeMessage = status === 500 ? "İşlem tamamlanamadı. Lütfen daha sonra tekrar deneyin." : message;
+  return NextResponse.json({ error: safeMessage }, { status, headers: { "Cache-Control": "no-store" } });
 }
 
 export async function handle<T>(fn: () => Promise<T>) {

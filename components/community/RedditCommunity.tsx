@@ -708,7 +708,7 @@ export default function RedditCommunity({
               <span>→</span>
             </Link>
             <Link
-              href="/istasyonlar"
+              href="/sarj-agi"
               className="flex items-center justify-between text-xs font-bold text-neutral-700 hover:text-blue-600 transition py-1"
             >
               <span>📍 Şarj İstasyonları Haritası</span>

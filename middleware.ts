@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE, verifySession } from "@/lib/session";
 import { ADMIN_COOKIE, isAdminCookie } from "@/lib/admin-auth";
+import { rateLimit, sameOrigin } from "@/lib/request-security";
 
 /** Giriş yapmış üye gerektiren alanlar */
 const MEMBER_PATHS = [
@@ -32,6 +33,9 @@ const ADMIN_API = [
   /^\/api\/admin(\/|$)/,
   /^\/api\/moderation(\/|$)/,
   /^\/api\/sources(\/|$)/,
+  /^\/api\/garage(\/|$)/,
+  /^\/api\/leads(\/|$)/,
+  /^\/api\/newsletter(\/|$)/,
 ];
 
 /** Üyelere/ziyaretçilere açık kalması gereken yazma uçları (istisnalar). */
@@ -42,6 +46,7 @@ const PUBLIC_WRITES = [
   // çıkmaz (bkz. app/api/listings/route.ts). Favorileme de üyeye açıktır.
   /^\/api\/listings$/,
   /^\/api\/listings\/[^/]+\/favorite$/,
+  /^\/api\/(leads|newsletter)$/,
 ];
 
 /**
@@ -62,6 +67,17 @@ function needsAdmin(pathname: string, method: string) {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const adminCookie = req.cookies.get(ADMIN_COOKIE)?.value;
+  if (!["GET", "HEAD", "OPTIONS"].includes(req.method) && !sameOrigin(req)) {
+    return NextResponse.json({ error: "İzin verilmeyen kaynak" }, { status: 403 });
+  }
+  if (pathname.startsWith("/api/")) {
+    const client = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const limited = rateLimit(`request:${client}`, 300, 60_000);
+    if (limited) return limited;
+  }
+  if (["/api/leads", "/api/newsletter", "/api/stats"].includes(pathname) && ["GET", "HEAD"].includes(req.method) && !(await isAdminCookie(adminCookie))) {
+    return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
+  }
 
   // Admin API koruması
   if (needsAdmin(pathname, req.method) && !(await isAdminCookie(adminCookie))) {

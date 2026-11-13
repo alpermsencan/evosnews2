@@ -1,5 +1,9 @@
 export type VehicleVariantData = {
   name: string;
+  year?: number;
+  fuelType?: string;
+  transmission?: string;
+  driveType?: string;
   listPrice: number;
   campaignPrice?: number | null;
   campaignAmount?: number | null;

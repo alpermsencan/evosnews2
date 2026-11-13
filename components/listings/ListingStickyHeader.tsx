@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { siteUrl } from "@/lib/site";
 import { useRouter } from "next/navigation";
 import {
   IconArrowLeft,
@@ -19,13 +20,7 @@ export default function ListingStickyHeader({
   const router = useRouter();
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [pageUrl, setPageUrl] = useState("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setPageUrl(window.location.href);
-    }
-  }, []);
+  const pageUrl = `${siteUrl()}/ilanlar/${encodeURIComponent(slug)}`;
 
   const handleCopyLink = async () => {
     try {

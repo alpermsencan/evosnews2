@@ -147,7 +147,7 @@ export default async function CategoryPageTemplate({
   return (
     <CategoryListingView
       category={category}
-      listings={listings as any}
+      listings={listings}
       brands={brands}
       cities={cities}
       totalCount={totalCount}

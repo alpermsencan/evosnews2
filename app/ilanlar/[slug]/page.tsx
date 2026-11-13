@@ -137,7 +137,7 @@ export default async function ListingDetail({
           </div>
 
           {/* İLAN İÇERİK SEKMELERİ (TEKNİK BİLGİLER, AÇIKLAMA, KONUM, EKSPERTİZ) */}
-          <ListingDetailTabs listing={listing as any} />
+          <ListingDetailTabs listing={listing} />
 
         </div>
 
@@ -159,7 +159,7 @@ export default async function ListingDetail({
           <div className="hidden lg:block">
             <ListingLocationMap
               city={listing.city}
-              district={listing.district}
+              district={listing.city}
             />
           </div>
 

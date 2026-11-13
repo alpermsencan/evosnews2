@@ -29,26 +29,21 @@ export default function VehicleImagesManager({ vehicleId }: VehicleImagesManager
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch all images for this vehicle
-  const fetchImages = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(`/api/vehicles/${vehicleId}/images`);
-      const data = await res.json();
-      if (res.ok && (data.images || data.success)) {
-        setImages(data.images || []);
-      } else {
-        setError(data.error || data.message || "Görseller yüklenemedi.");
-      }
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Ağ hatası oluştu.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchImages = (signal?: AbortSignal) => fetch(`/api/vehicles/${vehicleId}/images`, { signal })
+    .then(async res => ({ ok: res.ok, data: await res.json() }))
+    .then(({ ok, data }) => {
+      if (signal?.aborted) return;
+      setError("");
+      if (ok && (data.images || data.success)) setImages(data.images || []);
+      else setError(data.error || data.message || "Görseller yüklenemedi.");
+    })
+    .catch((error: unknown) => { if (!signal?.aborted) setError(error instanceof Error ? error.message : "Ağ hatası oluştu."); })
+    .finally(() => { if (!signal?.aborted) setLoading(false); });
 
   useEffect(() => {
-    fetchImages();
+    const controller = new AbortController();
+    fetchImages(controller.signal);
+    return () => controller.abort();
   }, [vehicleId]);
 
   // Set an image as primary
@@ -244,7 +239,7 @@ export default function VehicleImagesManager({ vehicleId }: VehicleImagesManager
         </div>
         <button
           type="button"
-          onClick={fetchImages}
+          onClick={() => fetchImages()}
           disabled={loading}
           className="text-xs font-bold text-neutral-600 hover:text-neutral-900 bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-1.5 transition self-start"
         >

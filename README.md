@@ -3,6 +3,8 @@
 Hürriyet tarzı header + sidebar yapısına sahip, elektrikli araç temalı gazete.
 Next.js 16 (App Router) + MongoDB + Prisma + Tailwind CSS v4. Admin paneli dahil.
 
+Güvenlik sürümünü dağıtırken: [Hostinger güvenlik geçişi](docs/guvenlik-duzeltmeleri.md).
+
 ## Kurulum
 
 Hostinger haber zamanlaması ve sonuçların izlenmesi:

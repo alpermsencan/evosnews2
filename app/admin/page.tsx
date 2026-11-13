@@ -1,3 +1,4 @@
+import type { Prisma, Lead, Category, Article, Listing } from "@prisma/client";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { formatDate, timeAgo } from "@/lib/utils";
@@ -18,11 +19,11 @@ export default async function AdminDashboard() {
   let pendingListings = 0;
   let totalViews = 0;
   let topArticles: { id: string; title: string; slug: string; views: number }[] = [];
-  let recentComments: any[] = [];
-  let recentLeads: any[] = [];
-  let perCategory: any[] = [];
-  let latest: any[] = [];
-  let recentPendingListings: any[] = [];
+  let recentComments: Prisma.CommentGetPayload<{ include: { article: { select: { title: true; slug: true } } } }>[] = [];
+  let recentLeads: Lead[] = [];
+  let perCategory: (Pick<Category, "id" | "name" | "color"> & { _count: { articles: number } })[] = [];
+  let latest: (Pick<Article, "id" | "title" | "slug" | "publishedAt"> & { category: { name: string; color: string } })[] = [];
+  let recentPendingListings: Pick<Listing, "id" | "title" | "brand" | "model" | "price" | "createdAt" | "sellerName">[] = [];
 
   try {
     const results = await Promise.allSettled([

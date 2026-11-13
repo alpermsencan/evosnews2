@@ -15,12 +15,12 @@ export async function GET() {
       dbConnected: true,
       timestamp: new Date().toISOString(),
     });
-  } catch (error: any) {
+  } catch {
     return NextResponse.json(
       {
         status: "error",
         version: "2026.10.02-v2",
-        message: error?.message || String(error),
+        message: "Veritabanına erişilemiyor.",
         timestamp: new Date().toISOString(),
       },
       { status: 500 }

@@ -291,7 +291,7 @@ export default function FacebookCommunity({
                   <div className="h-full w-full bg-white flex flex-col justify-between">
                     <div className="relative h-32 w-full overflow-hidden bg-neutral-200">
                       <Image
-                        src={s.avatar}
+                        src={s.avatar || "/haber-placeholder.svg"}
                         alt="Profil"
                         fill
                         className="object-cover group-hover:scale-105 transition"
@@ -309,13 +309,13 @@ export default function FacebookCommunity({
                 ) : (
                   <>
                     <Image
-                      src={s.bg}
-                      alt={s.title}
+                      src={s.bg || "/haber-placeholder.svg"}
+                      alt={s.title || "Topluluk hikâyesi"}
                       fill
                       className="object-cover brightness-[0.75] group-hover:scale-105 transition duration-300"
                     />
                     <div className="absolute top-2.5 left-2.5 h-9 w-9 rounded-full overflow-hidden ring-4 ring-[#1877F2] shadow">
-                      <Image src={s.avatar} alt={s.user} fill className="object-cover" />
+                      <Image src={s.avatar || "/haber-placeholder.svg"} alt={s.user || "Topluluk üyesi"} fill className="object-cover" />
                     </div>
                     <div className="absolute bottom-2.5 left-2.5 right-2.5">
                       <span className="text-[12px] font-bold text-white leading-tight drop-shadow block">

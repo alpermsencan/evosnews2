@@ -10,7 +10,7 @@ const MAX_AGE = 60 * 60 * 24 * 30; // 30 gün
 
 function secret() {
   const value = process.env.AUTH_SECRET;
-  if (!value)
+  if (!value || value.length < 32)
     throw new Error(
       "AUTH_SECRET tanımlı değil. .env dosyasına rastgele bir değer ekleyin."
     );
@@ -25,8 +25,10 @@ export type SessionPayload = {
 };
 
 export async function signSession(payload: SessionPayload) {
-  return new SignJWT({ ...payload })
+  return new SignJWT({ ...payload, version: 2 })
     .setProtectedHeader({ alg: "HS256" })
+    .setIssuer("evos")
+    .setAudience("evos-member-v2")
     .setSubject(payload.sub)
     .setIssuedAt()
     .setExpirationTime(`${MAX_AGE}s`)
@@ -38,8 +40,8 @@ export async function verifySession(
 ): Promise<SessionPayload | null> {
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, secret());
-    if (!payload.sub) return null;
+    const { payload } = await jwtVerify(token, secret(), { algorithms: ["HS256"], issuer: "evos", audience: "evos-member-v2" });
+    if (!payload.sub || payload.version !== 2) return null;
     return {
       sub: payload.sub,
       username: String(payload.username ?? ""),

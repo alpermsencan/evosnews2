@@ -133,6 +133,9 @@ export async function fetchRenaultPrices(): Promise<VehicleSyncData[]> {
   const result: VehicleSyncData[] = JSON.parse(JSON.stringify(RENAULT_STATIC_FALLBACKS));
 
   for (const vehicle of result) {
+    // The fallback contains historical snapshots, not a verified live price
+    // feed. Import images only; never overwrite prices with these snapshots.
+    vehicle.variants = [];
     const modelLower = vehicle.model.toLowerCase();
     const cdnUrls = RENAULT_CDN_IMAGES[modelLower] || [];
     

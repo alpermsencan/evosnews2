@@ -13,7 +13,7 @@ export async function GET(req: NextRequest, { params }: Ctx) {
   const { username } = await params;
 
   const user = await prisma.user.findUnique({
-    where: { username: username.toLowerCase() },
+    where: /^[0-9a-fA-F]{24}$/.test(username) ? { id: username } : { username: username.toLowerCase() },
     select: {
       id: true,
       username: true,

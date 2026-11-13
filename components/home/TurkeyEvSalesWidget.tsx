@@ -444,6 +444,7 @@ export default function TurkeyEvSalesWidget() {
                         <img
                           src={item.modelImage}
                           alt={`${item.brand} ${item.model}`}
+                          onError={event => { if (!event.currentTarget.src.endsWith("/arac-placeholder.svg")) event.currentTarget.src = "/arac-placeholder.svg"; }}
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                         />
                       </div>
@@ -452,7 +453,7 @@ export default function TurkeyEvSalesWidget() {
                       <div className="min-w-0 pr-1">
                         {item.slug ? (
                           <Link
-                            href={`/araclar/${item.slug}`}
+                            href={`/araclar?marka=${encodeURIComponent(item.brand === "MERCEDES" ? "Mercedes-Benz" : item.brand)}`}
                             className="text-xs font-black text-neutral-950 hover:text-red-600 transition block truncate"
                             title={`${item.brand} ${item.model}`}
                           >

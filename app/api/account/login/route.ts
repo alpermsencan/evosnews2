@@ -1,3 +1,5 @@
+import { rateLimit, sameOrigin } from "@/lib/request-security";
+import { isAuthConfigured } from "@/lib/admin-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail } from "@/lib/api";
@@ -10,6 +12,8 @@ export const runtime = "nodejs";
 
 /** POST /api/account/login — e-posta veya kullanıcı adı + şifre */
 export async function POST(req: NextRequest) {
+  if (!sameOrigin(req)) return fail("İzin verilmeyen kaynak", 403);
+  if (!isAuthConfigured()) return fail("Oturum güvenliği yapılandırılmamış", 503);
   try {
     const body = await req.json();
     const identifier = String(body.email ?? body.identifier ?? "")
@@ -20,6 +24,9 @@ export async function POST(req: NextRequest) {
     if (!identifier || !password)
       return fail("E-posta ve şifre zorunludur");
 
+    if (identifier.length > 120 || password.length > 1024) return fail("Geçersiz giriş", 400);
+    const limited = rateLimit(`login:${identifier}`);
+    if (limited) return limited;
     const user = await prisma.user.findFirst({
       where: { OR: [{ email: identifier }, { username: identifier }] },
     });
@@ -29,6 +36,7 @@ export async function POST(req: NextRequest) {
       return fail("E-posta veya şifre hatalı", 401);
 
     if (user.isBanned) return fail("Bu hesap askıya alınmış", 403);
+    if (user.role === "admin" && password.length < 12) return fail("Yönetici parolasının güvenli biçimde yenilenmesi gerekiyor", 403);
 
     const token = await signSession({
       sub: user.id,
@@ -55,7 +63,7 @@ export async function POST(req: NextRequest) {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: 60 * 60 * 24 * 30,
+        maxAge: 8 * 60 * 60,
       });
     }
 

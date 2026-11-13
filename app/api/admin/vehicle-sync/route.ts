@@ -1,33 +1,13 @@
 import { NextRequest } from "next/server";
 import { fail, ok } from "@/lib/api";
 import { prisma } from "@/lib/prisma";
-import { ADMIN_COOKIE, isAdminCookie, isAdminRequest } from "@/lib/admin-auth";
-import { SESSION_COOKIE, verifySession } from "@/lib/session";
+import { isAdminRequest } from "@/lib/admin-auth";
 import { syncBrandVehicles } from "@/lib/vehicle-sync";
 
 export const dynamic = "force-dynamic";
 
 async function isAuthorized(req: NextRequest) {
-  try {
-    if (await isAdminRequest(req)) return true;
-    const adminCookie = req.cookies.get(ADMIN_COOKIE)?.value;
-    if (await isAdminCookie(adminCookie)) return true;
-
-    const sessionCookie = req.cookies.get(SESSION_COOKIE)?.value;
-    if (sessionCookie) {
-      const session = await verifySession(sessionCookie);
-      if (session && ["ADMIN", "admin", "YONETICI", "yonetici"].includes(session.role)) {
-        return true;
-      }
-    }
-    // Geliştirme ortamında admin erişimine tolerans tanı
-    if (process.env.NODE_ENV !== "production") {
-      return true;
-    }
-  } catch (e) {
-    console.error("[API][ADMIN][VEHICLE_SYNC] Auth check error:", e);
-  }
-  return false;
+  return isAdminRequest(req);
 }
 
 export async function GET(req: NextRequest) {

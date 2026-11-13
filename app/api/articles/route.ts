@@ -1,3 +1,6 @@
+import { articleHtml } from "@/lib/html";
+import { isAdminRequest } from "@/lib/admin-auth";
+import { PUBLIC_ARTICLE_SELECT } from "@/lib/public-article";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, num, ok, slugify } from "@/lib/api";
@@ -16,7 +19,7 @@ export async function GET(req: NextRequest) {
   const featured = sp.get("one-cikan");
   const sort = sp.get("sirala");
 
-  const where: Prisma.ArticleWhereInput = {};
+  const where: Prisma.ArticleWhereInput = await isAdminRequest(req) ? {} : { status: "PUBLISHED" };
   if (category) where.category = { slug: category };
   if (featured === "1") where.isFeatured = true;
   if (q) {
@@ -35,10 +38,7 @@ export async function GET(req: NextRequest) {
           sort === "populer" ? { views: "desc" } : { publishedAt: "desc" },
         take: limit,
         skip: (page - 1) * limit,
-        include: {
-          category: { select: { name: true, slug: true, color: true } },
-          author: { select: { name: true, slug: true } },
-        },
+        select: PUBLIC_ARTICLE_SELECT,
       }),
       prisma.article.count({ where }),
     ]);
@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
 
 /** POST /api/articles - yeni haber */
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const body = await req.json();
     const { title, spot, content, image, categoryId } = body;
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
         title,
         slug: finalSlug,
         spot,
-        content,
+        content: articleHtml(String(content)),
         image: image || "/haber-placeholder.svg",
         imageCredit: body.imageCredit || "e-aracım Görsel Arşivi",
         gallery: body.gallery ?? [],

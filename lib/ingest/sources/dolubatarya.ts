@@ -18,11 +18,20 @@ const YOUTUBE_CHANNEL_ID = "UCLRYyGAoqR26MpjAmbrG6oQ";
 const POSTS_URL = "https://www.youtube.com/@dolubatarya/posts";
 const VIDEO_FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${YOUTUBE_CHANNEL_ID}`;
 
-function findObjectsWithKey(obj: any, key: string, results: any[] = []): any[] {
-  if (!obj || typeof obj !== "object") return results;
-  if (obj[key]) results.push(obj[key]);
-  for (const k of Object.keys(obj)) {
-    findObjectsWithKey(obj[k], key, results);
+type YoutubePost = {
+  postId?: string;
+  contentText?: { runs?: { text: string }[] };
+  backstageAttachment?: {
+    backstageImageRenderer?: { image?: { thumbnails?: { url: string }[] } };
+    postMultiImageRenderer?: { images?: { backstageImageRenderer?: { image?: { thumbnails?: { url: string }[] } } }[] };
+    videoRenderer?: { thumbnail?: { thumbnails?: { url: string }[] } };
+  };
+};
+function findObjectsWithKey(obj: unknown, key: string, results: YoutubePost[] = [], depth = 0): YoutubePost[] {
+  if (!obj || typeof obj !== "object" || depth > 80 || results.length >= 500) return results;
+  for (const [name, value] of Object.entries(obj)) {
+    if (name === key && value && typeof value === "object" && !Array.isArray(value)) results.push(value as YoutubePost);
+    findObjectsWithKey(value, key, results, depth + 1);
   }
   return results;
 }
@@ -125,7 +134,7 @@ export const dolubataryaSource: SourceJob = {
             }
 
             const rawText =
-              p.contentText?.runs?.map((r: any) => r.text).join("") || "";
+              p.contentText?.runs?.map((r) => r.text).join("") || "";
             if (!rawText.trim()) {
               stats.skipped++;
               continue;
@@ -216,9 +225,9 @@ export const dolubataryaSource: SourceJob = {
           }
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       stats.failed++;
-      notes.push(`Topluluk hatası: ${err.message}`);
+      notes.push(`Topluluk hatası: ${err instanceof Error ? err.message : "Kaynak hatası"}`);
     }
 
     // 2) Video RSS Akışını Çek
@@ -299,9 +308,9 @@ export const dolubataryaSource: SourceJob = {
 
         stats.created++;
       }
-    } catch (err: any) {
+    } catch (err) {
       stats.failed++;
-      notes.push(`Video RSS hatası: ${err.message}`);
+      notes.push(`Video RSS hatası: ${err instanceof Error ? err.message : "Kaynak hatası"}`);
     }
 
     return stats;

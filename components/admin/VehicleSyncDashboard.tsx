@@ -117,25 +117,20 @@ export default function VehicleSyncDashboard() {
   const [syncingBrand, setSyncingBrand] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const fetchData = useCallback(async (pageNum = 1) => {
-    try {
-      setLoading(true);
-      const res = await fetch(`/api/admin/vehicle-sync?page=${pageNum}&limit=20`);
-      if (res.ok) {
-        const json = await res.json();
-        setData(json);
-      } else {
-        console.warn("[SYNC_DASHBOARD] Fetch response not ok:", res.status);
-      }
-    } catch (err) {
-      console.error("[SYNC_DASHBOARD] Fetch error:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchData = useCallback((pageNum = 1, signal?: AbortSignal) =>
+    fetch(`/api/admin/vehicle-sync?page=${pageNum}&limit=20`, { signal })
+      .then(async response => {
+        if (!response.ok) throw new Error("Senkronizasyon verileri alınamadı");
+        return response.json();
+      })
+      .then(json => { if (!signal?.aborted) setData(json); })
+      .catch(error => { if (!signal?.aborted) setToastMessage({ type: "error", text: error instanceof Error ? error.message : "Veriler alınamadı" }); })
+      .finally(() => { if (!signal?.aborted) setLoading(false); }), []);
 
   useEffect(() => {
-    fetchData(page);
+    const controller = new AbortController();
+    fetchData(page, controller.signal);
+    return () => controller.abort();
   }, [fetchData, page]);
 
   // Manuel senkronizasyon tetikleme (tek marka veya tümü)

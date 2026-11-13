@@ -8,7 +8,7 @@ interface SafeImageProps extends Omit<ImageProps, "src" | "onError"> {
   fallbackSrc?: string;
 }
 
-export default function SafeImage({
+function ImageWithFallback({
   src,
   fallbackSrc = "/arac-placeholder.svg",
   alt,
@@ -16,12 +16,6 @@ export default function SafeImage({
 }: SafeImageProps) {
   const [imgSrc, setImgSrc] = useState(src || fallbackSrc);
   const [hasError, setHasError] = useState(false);
-
-  // If the src prop changes externally, update state
-  React.useEffect(() => {
-    setImgSrc(src || fallbackSrc);
-    setHasError(false);
-  }, [src, fallbackSrc]);
 
   const handleError = () => {
     if (!hasError) {
@@ -42,4 +36,8 @@ export default function SafeImage({
       onError={handleError}
     />
   );
+}
+
+export default function SafeImage(props: SafeImageProps) {
+  return <ImageWithFallback key={`${props.src}:${props.fallbackSrc || ""}`} {...props} />;
 }

@@ -4,6 +4,7 @@ import SectionTitle from "@/components/news/SectionTitle";
 import NewsCard from "@/components/news/NewsCard";
 import { getByCategory } from "@/lib/queries";
 import NearbyStations from "@/components/stations/NearbyStations";
+import type { MapStation } from "@/components/stations/StationMap";
 import StationMap from "@/components/stations/StationMap";
 import { IconBolt, IconMap, IconClock } from "@/components/ui/Icons";
 import { buildTariffIndex, formatTariff, matchTariff } from "@/lib/tariffs";
@@ -26,12 +27,12 @@ export default async function ChargePage() {
     prisma.operatorTariff.findMany({ where: { isActive: true } }).catch(() => []),
   ]);
 
-  const all =
+  const all: (MapStation & { pricePerKwh?: number | null; socketTypes?: string[] })[] =
     liveStations && liveStations.length > 0
       ? liveStations
       : allDb && allDb.length > 0
         ? allDb
-        : (FALLBACK_STATIONS as any);
+        : FALLBACK_STATIONS;
   const tariffIndex = buildTariffIndex(tariffs);
 
   const byOperator = new Map<
@@ -57,7 +58,7 @@ export default async function ChargePage() {
     };
     cur.count += 1;
     cur.sockets += s.socketCount;
-    const priceVal = (s as any).pricePerKwh ?? (s as any).price;
+    const priceVal = s.pricePerKwh ?? s.price;
     if (priceVal != null) {
       cur.priceSum += priceVal;
       cur.priced += 1;
@@ -74,7 +75,7 @@ export default async function ChargePage() {
   const topCities = [...cityCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
   const maxCity = topCities[0]?.[1] ?? 1;
 
-  const nearbyStations = all.map((s: any) => {
+  const nearbyStations = all.map((s) => {
     const tariff = matchTariff(tariffIndex, s.operator);
     return {
       id: String(s.id),

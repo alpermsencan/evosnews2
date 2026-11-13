@@ -102,7 +102,11 @@ export async function fetchTeslaPrices(): Promise<VehicleSyncData[]> {
   const apiUrl = `${TESLA_INVENTORY_API_URL}?query=${encodeURIComponent(query)}`;
 
   let priceApiBlocked = false;
-  let rawResults: any[] = [];
+  let rawResults: {
+    Model?: string; model?: string; TrimName?: string; trim?: string;
+    PurchasePrice?: number; TotalPrice?: number; Price?: number; Year?: number;
+    BatteryCapacity?: number; Range?: number;
+  }[] = [];
 
   try {
     const res = await fetch(apiUrl, {

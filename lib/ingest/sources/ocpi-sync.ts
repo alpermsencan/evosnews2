@@ -1,3 +1,4 @@
+import { fetchJson } from "../http";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/api";
 
@@ -10,33 +11,19 @@ interface CpoConfig {
   token: string;
 }
 
-// Türkiye'deki entegrasyonu yapılacak CPO'lar için örnek adaptör tanımları
 const REGISTERED_CPOS: CpoConfig[] = [
-  {
-    key: "zes",
-    name: "ZES (Zorlu Energy Solutions)",
-    countryCode: "TR",
-    partyId: "ZES",
-    endpoint: "https://api.zes.net/ocpi/2.2.1/locations",
-    token: "default_zes_test_token_12345",
-  },
-  {
-    key: "esarj",
-    name: "Eşarj",
-    countryCode: "TR",
-    partyId: "ESA",
-    endpoint: "https://api.esarj.com/ocpi/2.2.1/locations",
-    token: "default_esarj_test_token_67890",
-  },
-  {
-    key: "trugo",
-    name: "Trugo",
-    countryCode: "TR",
-    partyId: "TRU",
-    endpoint: "https://api.trugo.com.tr/ocpi/2.2.1/locations",
-    token: "default_trugo_test_token_abcde",
-  }
+  { key: "zes", name: "ZES", countryCode: "TR", partyId: "ZES", endpoint: process.env.OCPI_ZES_URL || "", token: process.env.OCPI_ZES_TOKEN || "" },
+  { key: "esarj", name: "Eşarj", countryCode: "TR", partyId: "ESA", endpoint: process.env.OCPI_ESARJ_URL || "", token: process.env.OCPI_ESARJ_TOKEN || "" },
+  { key: "trugo", name: "Trugo", countryCode: "TR", partyId: "TRU", endpoint: process.env.OCPI_TRUGO_URL || "", token: process.env.OCPI_TRUGO_TOKEN || "" },
 ];
+type PullLocation = {
+  id: string; country_code: string; party_id: string; name: string; address: string;
+  city: string; postal_code?: string; latitude: number; longitude: number;
+  evses: { uid: string; status: string; evse_id?: string; connectors: {
+    id: string; standard: string; format: string; power_type: string;
+    voltage: number; amperage: number; max_electric_power?: number;
+  }[] }[];
+};
 
 /**
  * Belirli bir CPO'dan OCPI Locations verilerini çeker (pull) ve veritabanını günceller.
@@ -45,16 +32,24 @@ export async function syncCpoLocations(cpoKey: string) {
   const cpo = REGISTERED_CPOS.find((c) => c.key === cpoKey);
   if (!cpo) throw new Error(`CPO bulunamadı: ${cpoKey}`);
 
-  // Canlı entegrasyonda burada CPO'nun OCPI endpoint'ine istek atılacak:
-  // const res = await fetch(cpo.endpoint, { headers: { Authorization: `Token ${cpo.token}` } });
-  // const locations = await res.json();
-  
-  // Şimdilik test ve demonstrasyon amaçlı örnek OCPI mock verisi üretiyoruz:
-  const mockLocations = generateMockOcpiLocations(cpo);
+  if (!cpo.endpoint || !cpo.token) throw new Error("OCPI bağlantısı yapılandırılmadı");
+  if (new URL(cpo.endpoint).protocol !== "https:") throw new Error("OCPI için HTTPS gerekli");
+  const response = await fetchJson<{ status_code: number; data: PullLocation[] }>(cpo.endpoint, {
+    headers: { authorization: `Token ${cpo.token}` }, timeoutMs: 20_000, retries: 1,
+  });
+  if (response.status_code !== 1000 || !Array.isArray(response.data) || response.data.length > 1000) throw new Error("Geçersiz OCPI yanıtı");
+  const locations = response.data;
+  // Validate the entire batch before any write. Never generate demo stations.
+  for (const loc of locations) {
+    if (loc.country_code !== cpo.countryCode || loc.party_id !== cpo.partyId || !loc.id || !loc.name || !loc.address ||
+      !Number.isFinite(Number(loc.latitude)) || Math.abs(Number(loc.latitude)) > 90 ||
+      !Number.isFinite(Number(loc.longitude)) || Math.abs(Number(loc.longitude)) > 180 ||
+      !Array.isArray(loc.evses) || loc.evses.length > 100 || loc.evses.some(evse => !Array.isArray(evse.connectors) || evse.connectors.length > 20)) throw new Error("OCPI konumu operatör veya veri kapsamı dışında");
+  }
 
   let updatedCount = 0;
 
-  for (const loc of mockLocations) {
+  for (const loc of locations) {
     // OcpiLocation kaydet
     const ocpiLocation = await prisma.ocpiLocation.upsert({
       where: {
@@ -69,8 +64,8 @@ export async function syncCpoLocations(cpoKey: string) {
         address: loc.address,
         city: loc.city,
         postalCode: loc.postal_code,
-        latitude: loc.latitude,
-        longitude: loc.longitude,
+        latitude: Number(loc.latitude),
+        longitude: Number(loc.longitude),
       },
       create: {
         countryCode: loc.country_code,
@@ -80,8 +75,8 @@ export async function syncCpoLocations(cpoKey: string) {
         address: loc.address,
         city: loc.city,
         postalCode: loc.postal_code,
-        latitude: loc.latitude,
-        longitude: loc.longitude,
+        latitude: Number(loc.latitude),
+        longitude: Number(loc.longitude),
       },
     });
 
@@ -92,13 +87,13 @@ export async function syncCpoLocations(cpoKey: string) {
     // EVSE'leri kaydet
     for (const evse of loc.evses) {
       const ocpiEvse = await prisma.ocpiEvse.upsert({
-        where: { uid: evse.uid },
+        where: { uid: `${cpo.countryCode}:${cpo.partyId}:${loc.id}:${evse.uid}` },
         update: {
           status: evse.status,
           evseId: evse.evse_id,
         },
         create: {
-          uid: evse.uid,
+          uid: `${cpo.countryCode}:${cpo.partyId}:${loc.id}:${evse.uid}`,
           evseId: evse.evse_id,
           status: evse.status,
           locationId: ocpiLocation.id,
@@ -117,14 +112,14 @@ export async function syncCpoLocations(cpoKey: string) {
             powerType: conn.power_type,
             voltage: conn.voltage,
             amperage: conn.amperage,
-            maxPowerKw: conn.max_power,
+            maxPowerKw: Number(conn.max_electric_power || 0) / 1000,
             evseId: ocpiEvse.id,
           },
         });
 
         totalSockets++;
         socketTypesSet.add(conn.standard);
-        maxPower = Math.max(maxPower, conn.max_power);
+        maxPower = Math.max(maxPower, Number(conn.max_electric_power || 0) / 1000);
       }
     }
 
@@ -137,8 +132,8 @@ export async function syncCpoLocations(cpoKey: string) {
         city: loc.city,
         district: loc.city,
         address: loc.address,
-        lat: loc.latitude,
-        lng: loc.longitude,
+        lat: Number(loc.latitude),
+        lng: Number(loc.longitude),
         socketCount: totalSockets || 2,
         socketTypes: Array.from(socketTypesSet),
         isFast: maxPower >= 50,
@@ -154,8 +149,8 @@ export async function syncCpoLocations(cpoKey: string) {
         city: loc.city,
         district: loc.city,
         address: loc.address,
-        lat: loc.latitude,
-        lng: loc.longitude,
+        lat: Number(loc.latitude),
+        lng: Number(loc.longitude),
         socketCount: totalSockets || 2,
         socketTypes: Array.from(socketTypesSet),
         isFast: maxPower >= 50,
@@ -176,6 +171,7 @@ export async function syncCpoLocations(cpoKey: string) {
 export async function syncAllCpos() {
   const results = [];
   for (const cpo of REGISTERED_CPOS) {
+    if (!cpo.endpoint || !cpo.token) { results.push({ cpo: cpo.name, skipped: true, reason: "Bağlantı yapılandırılmadı" }); continue; }
     try {
       const res = await syncCpoLocations(cpo.key);
       results.push(res);
@@ -184,78 +180,4 @@ export async function syncAllCpos() {
     }
   }
   return results;
-}
-
-// MOCK DATA GENERATOR FOR TURKISH CPO LOCATIONS
-function generateMockOcpiLocations(cpo: CpoConfig) {
-  // Türkiye genelindeki gerçek otoyol ve şehir merkezi koordinatları
-  const citiesData = [
-    { city: "Istanbul", lat: 41.1122, lng: 29.0224, name: "Maslak Plazalar DC" },
-    { city: "Istanbul", lat: 40.9902, lng: 29.0204, name: "Kadıköy Tepe Nautilus AVM" },
-    { city: "Istanbul", lat: 41.0742, lng: 28.2467, name: "Silivri Otoyol Dinlenme Tesisi" },
-    { city: "Bolu", lat: 40.7325, lng: 31.5204, name: "Bolu Dağı Highway Outlet DC" },
-    { city: "Ankara", lat: 39.9074, lng: 32.8057, name: "Çankaya Kentpark AVM" },
-    { city: "Ankara", lat: 39.9208, lng: 32.8541, name: "Kızılay Otopark Şarj" },
-    { city: "Kocaeli", lat: 40.7652, lng: 29.9407, name: "İzmit Tem Otoyolu Şarj Noktası" },
-    { city: "Bursa", lat: 40.2312, lng: 29.0124, name: "Nilüfer Carrefour AVM DC" },
-    { city: "Bursa", lat: 40.1824, lng: 29.0664, name: "Osmangazi Köprüsü Çıkışı ZES" },
-    { city: "Balıkesir", lat: 39.6484, lng: 27.8826, name: "Susurluk Otoyol Dinlenme Tesisi" },
-    { city: "Izmir", lat: 38.4192, lng: 27.1287, name: "Konak İskele Şarj İstasyonu" },
-    { city: "Izmir", lat: 38.4594, lng: 27.2091, name: "Bornova Forum AVM Trugo" },
-    { city: "Eskişehir", lat: 39.7824, lng: 30.5126, name: "Odunpazarı Espark AVM" },
-    { city: "Afyon", lat: 38.7564, lng: 30.5381, name: "Afyon Kolaylı Dinlenme Tesisi DC" },
-    { city: "Antalya", lat: 36.8524, lng: 30.7567, name: "Lara TerraCity AVM" },
-    { city: "Muğla", lat: 37.0341, lng: 27.4305, name: "Bodrum Marina Şarj İstasyonu" }
-  ];
-
-  return citiesData.map((d, index) => {
-    const locId = `LOC-${cpo.partyId}-${index + 1}`;
-    const maxPower = cpo.key === "trugo" ? 180 : 120; // Trugo 180 kW, ZES/Eşarj 120 kW
-    
-    return {
-      id: locId,
-      country_code: cpo.countryCode,
-      party_id: cpo.partyId,
-      name: `${cpo.name} - ${d.name}`,
-      address: `${d.city} Otoyol/Şehir Şarj Alanı No: ${index + 1}`,
-      city: d.city,
-      postal_code: "34000",
-      latitude: d.lat + (Math.random() - 0.5) * 0.005, // Daha yakın tutalım sapmayı
-      longitude: d.lng + (Math.random() - 0.5) * 0.005,
-      evses: [
-        {
-          uid: `${cpo.countryCode}*${cpo.partyId}*E${index}1`,
-          evse_id: `EVSE-${cpo.partyId}-${index}-1`,
-          status: Math.random() > 0.3 ? "AVAILABLE" : "CHARGING",
-          connectors: [
-            {
-              id: "1",
-              standard: "IEC_62196_T2_COMBO", // CCS2
-              format: "CABLE",
-              power_type: "DC",
-              voltage: 400,
-              amperage: 250,
-              max_power: maxPower,
-            }
-          ]
-        },
-        {
-          uid: `${cpo.countryCode}*${cpo.partyId}*E${index}2`,
-          evse_id: `EVSE-${cpo.partyId}-${index}-2`,
-          status: "AVAILABLE",
-          connectors: [
-            {
-              id: "1",
-              standard: "IEC_62196_T2", // Type 2
-              format: "SOCKET",
-              power_type: "AC_3_PHASE",
-              voltage: 400,
-              amperage: 32,
-              max_power: 22,
-            }
-          ]
-        }
-      ]
-    };
-  });
 }

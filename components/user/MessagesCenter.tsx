@@ -54,65 +54,36 @@ export default function MessagesCenter({ currentUserId, initialOtherUserId }: Pr
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 1. Konuşmaları yükle
-  async function loadConversations() {
-    try {
-      const res = await fetch("/api/messages");
-      const data = await res.json();
-      if (res.ok && data.conversations) {
-        setConversations(data.conversations);
-
-        // Eğer başlangıçta URL'den bir kullanıcı verilmişse onu seç
-        if (initialOtherUserId) {
-          const match = data.conversations.find(
-            (c: ConversationItem) => c.otherUser.id === initialOtherUserId
-          );
-          if (match) {
-            setSelectedUser(match.otherUser);
-          } else {
-            // Konuşma yoksa bile profili getirebiliriz
-            fetch(`/api/users/${initialOtherUserId}`)
-              .then((r) => r.json())
-              .then((d) => {
-                if (d.user) setSelectedUser(d.user);
-              })
-              .catch(() => {});
-          }
-        } else if (!selectedUser && data.conversations.length > 0) {
-          setSelectedUser(data.conversations[0].otherUser);
+  function loadConversations(signal?: AbortSignal) {
+    return fetch("/api/messages", { signal }).then(res => res.json()).then(async data => {
+      if (signal?.aborted || !data.conversations) return;
+      setConversations(data.conversations);
+      if (initialOtherUserId) {
+        const match = data.conversations.find((c: ConversationItem) => c.otherUser.id === initialOtherUserId);
+        if (match) setSelectedUser(match.otherUser);
+        else {
+          const profile = await fetch(`/api/users/${encodeURIComponent(initialOtherUserId)}`, { signal }).then(res => res.json());
+          if (!signal?.aborted && profile.user) setSelectedUser(profile.user);
         }
-      }
-    } catch (e) {
-      console.error("Konuşmalar yüklenemedi", e);
-    } finally {
-      setLoadingConv(false);
-    }
+      } else if (!selectedUser && data.conversations.length) setSelectedUser(data.conversations[0].otherUser);
+    }).catch(error => { if (!signal?.aborted) console.error("Konuşmalar yüklenemedi", error); })
+      .finally(() => { if (!signal?.aborted) setLoadingConv(false); });
   }
-
-  // 2. Seçili kullanıcı ile mesajları yükle
-  async function loadMessages(otherId: string) {
-    setLoadingMsgs(true);
-    try {
-      const res = await fetch(`/api/messages?userId=${otherId}`);
-      const data = await res.json();
-      if (res.ok && data.messages) {
-        setMessages(data.messages);
-      }
-    } catch (e) {
-      console.error("Mesajlar yüklenemedi", e);
-    } finally {
-      setLoadingMsgs(false);
-    }
+  function loadMessages(otherId: string, signal?: AbortSignal) {
+    return fetch(`/api/messages?userId=${encodeURIComponent(otherId)}`, { signal }).then(res => res.json()).then(data => {
+      if (!signal?.aborted && data.messages) setMessages(data.messages);
+    }).catch(error => { if (!signal?.aborted) console.error("Mesajlar yüklenemedi", error); })
+      .finally(() => { if (!signal?.aborted) setLoadingMsgs(false); });
   }
-
   useEffect(() => {
-    loadConversations();
+    const controller = new AbortController();
+    loadConversations(controller.signal);
+    return () => controller.abort();
   }, [initialOtherUserId]);
-
   useEffect(() => {
-    if (selectedUser) {
-      loadMessages(selectedUser.id);
-    }
+    const controller = new AbortController();
+    if (selectedUser) loadMessages(selectedUser.id, controller.signal);
+    return () => controller.abort();
   }, [selectedUser?.id]);
 
   useEffect(() => {

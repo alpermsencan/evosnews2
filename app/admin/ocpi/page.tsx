@@ -1,3 +1,6 @@
+import { randomBytes } from "node:crypto";
+import { cookies } from "next/headers";
+import { ADMIN_COOKIE, isAdminCookie } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -13,11 +16,13 @@ export default async function AdminOcpiPage() {
   // Server Action to generate a new OCPI Token
   async function handleGenerateToken(formData: FormData) {
     "use server";
+    if (!(await isAdminCookie((await cookies()).get(ADMIN_COOKIE)?.value))) throw new Error("Yetkisiz");
     const partyId = (formData.get("partyId") as string || "UNKNOWN").toUpperCase();
     const countryCode = (formData.get("countryCode") as string || "TR").toUpperCase();
     
+    if (!/^[A-Z0-9]{3}$/.test(partyId) || !/^[A-Z]{2}$/.test(countryCode)) throw new Error("Geçersiz operatör veya ülke kodu");
     // Generate a secure random hex token
-    const token = "EVS-" + Math.random().toString(36).substring(2, 12).toUpperCase();
+    const token = randomBytes(32).toString("hex");
 
     await prisma.ocpiToken.create({
       data: {
@@ -35,6 +40,7 @@ export default async function AdminOcpiPage() {
   // Server Action to delete a token
   async function handleDeleteToken(formData: FormData) {
     "use server";
+    if (!(await isAdminCookie((await cookies()).get(ADMIN_COOKIE)?.value))) throw new Error("Yetkisiz");
     const id = formData.get("id") as string;
     await prisma.ocpiToken.delete({
       where: { id },
@@ -98,7 +104,7 @@ export default async function AdminOcpiPage() {
           </div>
         </div>
         <p className="mt-4 text-[10px] leading-relaxed text-neutral-400">
-          * Diğer CPO'lar el sıkışmasını başlatmak için sitenizin <strong>Versions URL</strong>'sini kendi sistemlerine kaydeder.
+          * Diğer CPO&apos;lar el sıkışmasını başlatmak için sitenizin <strong>Versions URL</strong>&apos;sini kendi sistemlerine kaydeder.
         </p>
       </div>
 
@@ -138,7 +144,7 @@ export default async function AdminOcpiPage() {
               type="submit"
               className="mt-2 rounded bg-evos py-2 text-xs font-black text-white hover:bg-evos-dark transition cursor-pointer"
             >
-              YETKİ TOKEn'I ÜRET
+              YETKİ TOKEn&apos;I ÜRET
             </button>
           </form>
         </div>
@@ -160,7 +166,7 @@ export default async function AdminOcpiPage() {
                   <tr className="border-b border-neutral-200 text-neutral-400 font-bold">
                     <th className="py-2 pb-3">PARTY ID</th>
                     <th className="py-2 pb-3">ÜLKE</th>
-                    <th className="py-2 pb-3">YETKİ TOKEN'I (OCPI-TOKEN)</th>
+                    <th className="py-2 pb-3">YETKİ TOKEN&apos;I (OCPI-TOKEN)</th>
                     <th className="py-2 pb-3 text-right">EYLEM</th>
                   </tr>
                 </thead>

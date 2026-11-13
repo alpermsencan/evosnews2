@@ -120,7 +120,7 @@ export default async function ListingsPage({ searchParams }: { searchParams: SP 
         {listings.length > 0 ? (
           <div className="flex flex-col gap-3">
             {listings.map((l) => (
-              <ListingRowCard key={l.id} listing={l as any} />
+              <ListingRowCard key={l.id} listing={l} />
             ))}
           </div>
         ) : (

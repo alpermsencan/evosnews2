@@ -129,15 +129,14 @@ const SPECS: Spec[] = [
 
 export default function CompareTable() {
   const { items, remove, clear, ready } = useCompare();
-  const [rows, setRows] = useState<Row[] | null>(null);
-  const [loading, setLoading] = useState(false);
+  const queryKey = JSON.stringify(items);
+  const [result, setResult] = useState<{ key: string; rows: Row[] } | null>(null);
+  const rows = items.length === 0 ? [] : result?.key === queryKey ? result.rows : null;
+  const loading = ready && items.length > 0 && rows === null;
 
   useEffect(() => {
     if (!ready) return;
-    if (items.length === 0) {
-      setRows([]);
-      return;
-    }
+    if (items.length === 0) return;
 
     const vehicle = items.filter((i) => i.kind === "vehicle").map((i) => i.slug);
     const listing = items.filter((i) => i.kind === "listing").map((i) => i.slug);
@@ -145,13 +144,13 @@ export default function CompareTable() {
     if (vehicle.length) qs.set("vehicle", vehicle.join(","));
     if (listing.length) qs.set("listing", listing.join(","));
 
-    setLoading(true);
-    fetch(`/api/compare?${qs}`)
+    const controller = new AbortController();
+    fetch(`/api/compare?${qs}`, { signal: controller.signal })
       .then((r) => r.json())
-      .then((j) => setRows(j.rows ?? []))
-      .catch(() => setRows([]))
-      .finally(() => setLoading(false));
-  }, [items, ready]);
+      .then((j) => setResult({ key: queryKey, rows: j.rows ?? [] }))
+      .catch(() => { if (!controller.signal.aborted) setResult({ key: queryKey, rows: [] }); });
+    return () => controller.abort();
+  }, [items, ready, queryKey]);
 
   if (!ready || rows === null) {
     return <p className="rounded-lg bg-white p-8 text-center text-sm text-neutral-500">Yükleniyor…</p>;

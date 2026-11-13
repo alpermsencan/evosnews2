@@ -1,77 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/prisma";
+import { siteUrl } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
-
-/**
- * POST /api/ocpi/2.2.1/credentials
- * OCPI el sıkışması ve yetkilendirme token kaydı.
- */
 export async function POST(req: NextRequest) {
+  const clientToken = req.headers.get("authorization")?.match(/^Token ([^\s]+)$/)?.[1];
+  if (!clientToken || clientToken.length > 512) return NextResponse.json({ status_code: 2001, status_message: "Unauthorized" }, { status: 401 });
   try {
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Token ")) {
-      return NextResponse.json(
-        { status_code: 2001, status_message: "Missing token", timestamp: new Date().toISOString() },
-        { status: 401 }
-      );
-    }
-
-    const clientToken = authHeader.replace("Token ", "").trim();
+    // Only administrator-provisioned bootstrap tokens may establish trust.
+    const approved = await prisma.ocpiToken.findUnique({ where: { token: clientToken, version: 2 } });
+    if (!approved?.isActive) return NextResponse.json({ status_code: 2001, status_message: "Unauthorized" }, { status: 401 });
     const body = await req.json();
-
-    // CPO token kaydı yapılıyor
-    const { token, url, roles } = body;
-    if (!token) {
-      return NextResponse.json(
-        { status_code: 2002, status_message: "Missing credentials token", timestamp: new Date().toISOString() },
-        { status: 400 }
-      );
+    if (typeof body.token !== "string" || body.token.length < 16 || body.token.length > 512) return NextResponse.json({ status_code: 2002, status_message: "Invalid credentials" }, { status: 400 });
+    const roles = Array.isArray(body.roles) ? body.roles : [body];
+    if (!roles.some((role: { country_code?: string; party_id?: string }) => role.country_code === approved.countryCode && role.party_id === approved.partyId)) {
+      return NextResponse.json({ status_code: 2001, status_message: "Party mismatch" }, { status: 403 });
     }
-
-    // Gelen token'ı sisteme kaydet
-    await prisma.ocpiToken.upsert({
-      where: { token: clientToken },
-      update: {
-        partyId: body.party_id || "UNKNOWN",
-        countryCode: body.country_code || "TR",
-        isActive: true,
-      },
-      create: {
-        token: clientToken,
-        partyId: body.party_id || "UNKNOWN",
-        countryCode: body.country_code || "TR",
-        role: "CPO",
-        isActive: true,
-      },
-    });
-
-    const serverToken = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
-    // Bizim token'ımızı CPO'ya dönüyoruz
-    return NextResponse.json({
-      status_code: 1000,
-      status_message: "Handshake completed successfully",
-      timestamp: new Date().toISOString(),
-      data: {
-        token: serverToken,
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://e-aracim.com"}/api/ocpi/2.2.1`,
-        roles: [
-          {
-            role: "EMSP",
-            business_details: {
-              name: "e-aracım Charging Network",
-              website: "https://e-aracim.com"
-            },
-            party_id: "EVS",
-            country_code: "TR"
-          }
-        ]
-      }
-    });
-  } catch (error) {
-    return NextResponse.json(
-      { status_code: 3000, status_message: error instanceof Error ? error.message : "Internal error", timestamp: new Date().toISOString() },
-      { status: 500 }
-    );
-  }
+    const token = randomBytes(32).toString("hex");
+    await prisma.ocpiToken.update({ where: { id: approved.id }, data: { token } });
+    return NextResponse.json({ status_code: 1000, status_message: "Success", timestamp: new Date().toISOString(), data: {
+      token, url: `${siteUrl()}/api/ocpi/2.2.1`, roles: [{ role: "EMSP", party_id: "EVS", country_code: "TR", business_details: { name: "e-aracım", website: siteUrl() } }],
+    } }, { headers: { "Cache-Control": "no-store" } });
+  } catch { return NextResponse.json({ status_code: 3000, status_message: "Request failed" }, { status: 500 }); }
 }

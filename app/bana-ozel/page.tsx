@@ -259,7 +259,7 @@ export default async function BanaOzelPage({
                 </Link>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {bookmarks.map((b: any) => b.article && (
+                {bookmarks.map((b) => b.article && (
                   <NewsCard key={b.id} article={b.article} />
                 ))}
               </div>

@@ -1,3 +1,5 @@
+import { isAdminRequest } from "@/lib/admin-auth";
+import { PUBLIC_COMMENT_SELECT } from "@/lib/public-article";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, num, ok } from "@/lib/api";
@@ -17,13 +19,10 @@ export async function GET(req: NextRequest) {
 
   return handle(async () => {
     const items = await prisma.comment.findMany({
-      where: articleId ? { articleId } : undefined,
+      where: { ...(articleId ? { articleId } : {}), ...(await isAdminRequest(req) ? {} : { approved: true, article: { status: "PUBLISHED" } }) },
       orderBy: { createdAt: "desc" },
       take: limit,
-      include: {
-        article: { select: { title: true, slug: true } },
-        user: COMMENT_USER,
-      },
+      select: { ...PUBLIC_COMMENT_SELECT, article: { select: { title: true, slug: true } } },
     });
     return { items };
   });

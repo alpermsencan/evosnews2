@@ -452,6 +452,28 @@ model VehicleVariant {
   @@index([externalId])
 }
 
+model VehicleSyncLog {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  source          String
+  triggerType     String
+  status          String   @default("RUNNING")
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  durationMs      Int      @default(0)
+  fetched         Int      @default(0)
+  created         Int      @default(0)
+  updated         Int      @default(0)
+  unchanged       Int      @default(0)
+  imagesFound     Int      @default(0)
+  imagesUploaded  Int      @default(0)
+  imagesUnchanged Int      @default(0)
+  imageErrors     Int      @default(0)
+  errorMessage    String?
+
+  @@index([source, startedAt])
+  @@index([status, startedAt])
+}
+
 model VehiclePriceHistory {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   vehicleId             String   @db.ObjectId
@@ -920,6 +942,7 @@ model OcpiToken {
   countryCode String
   role        String   @default("CPO") // CPO, eMSP
   isActive    Boolean  @default(true)
+  version     Int      @default(2)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

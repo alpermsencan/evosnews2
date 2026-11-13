@@ -2,76 +2,39 @@ import type { NextRequest } from "next/server";
 import { SignJWT, jwtVerify } from "jose";
 
 export const ADMIN_COOKIE = "evos_admin";
-export const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || "alperx").trim();
-export const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || "ytung011").trim();
+export const ADMIN_USERNAME = (process.env.ADMIN_USERNAME || "admin").trim();
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "";
+const ISSUER = "evos";
+const AUDIENCE = "evos-admin-v2";
 
+export function isAuthConfigured(): boolean {
+  return (process.env.AUTH_SECRET?.length ?? 0) >= 32;
+}
 function getSecretKey() {
-  const secret =
-    process.env.AUTH_SECRET ||
-    "7c10b4f8a42f55cbcf43db0e08f51ab3520141f238ad9b92209bbbb969cb452f";
-  return new TextEncoder().encode(secret);
+  if (!isAuthConfigured()) throw new Error("Oturum güvenliği yapılandırılmamış");
+  return new TextEncoder().encode(process.env.AUTH_SECRET!);
 }
-
-/** Varsayılan yönetici parolası */
-export function adminPassword(): string {
-  return ADMIN_PASSWORD;
+function equal(a: string, b: string) {
+  let difference = a.length ^ b.length;
+  for (let i = 0; i < Math.max(a.length, b.length); i++) difference |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  return difference === 0;
 }
-
-/**
- * Yönetici kullanıcı adı ve parola doğrulama.
- * Yalnızca 'alperx' ve 'ytung011' kabul edilir.
- */
-export function isValidAdminCredentials(
-  username: string | undefined | null,
-  password: string | undefined | null
-): boolean {
-  if (!username || !password) return false;
-  const u = username.trim().toLowerCase();
-  const p = password.trim();
-
-  // Sabit veya env üzerinden tanımlı alperx & ytung011
-  const matchesEnv = u === ADMIN_USERNAME.toLowerCase() && p === ADMIN_PASSWORD;
-  const matchesDefault = u === "alperx" && p === "ytung011";
-
-  return matchesEnv || matchesDefault;
+export function isValidAdminCredentials(username: string | null | undefined, password: string | null | undefined): boolean {
+  if (!isAuthConfigured() || ADMIN_PASSWORD.length < 12 || !username || !password || password.length < 12 || password.length > 1024) return false;
+  return equal(username.trim().toLowerCase(), ADMIN_USERNAME.toLowerCase()) && equal(password, ADMIN_PASSWORD);
 }
-
-/**
- * Tek şifre kontrolü için (geriye dönük uyumluluk)
- */
-export function isValidAdminPassword(input: string | undefined | null): boolean {
-  if (!input) return false;
-  const p = input.trim();
-  return p === ADMIN_PASSWORD || p === "ytung011";
-}
-
-/**
- * Kriptografik olarak imzalanmış 30 günlük güvenli yönetici JWT token'ı
- */
 export async function adminToken(username: string = ADMIN_USERNAME): Promise<string> {
-  return new SignJWT({ role: "admin", username })
-    .setProtectedHeader({ alg: "HS256" })
-    .setSubject(username)
-    .setIssuedAt()
-    .setExpirationTime("30d")
-    .sign(getSecretKey());
+  return new SignJWT({ role: "admin", username, version: 2 })
+    .setProtectedHeader({ alg: "HS256" }).setIssuer(ISSUER).setAudience(AUDIENCE)
+    .setSubject(username).setIssuedAt().setExpirationTime("8h").sign(getSecretKey());
 }
-
-/**
- * Çerezdeki JWT token'ın kriptografik imza ve yetki kontrolü
- */
 export async function isAdminCookie(value: string | undefined): Promise<boolean> {
-  if (!value) return false;
-  const v = value.trim();
-
+  if (!value || !isAuthConfigured()) return false;
   try {
-    const { payload } = await jwtVerify(v, getSecretKey());
-    return payload.role === "admin" && String(payload.username).toLowerCase() === ADMIN_USERNAME.toLowerCase();
-  } catch {
-    return false;
-  }
+    const { payload } = await jwtVerify(value, getSecretKey(), { algorithms: ["HS256"], issuer: ISSUER, audience: AUDIENCE });
+    return payload.role === "admin" && payload.version === 2 && typeof payload.username === "string" && payload.username.length > 0 && payload.sub === payload.username;
+  } catch { return false; }
 }
-
 export async function isAdminRequest(req: NextRequest): Promise<boolean> {
   return isAdminCookie(req.cookies.get(ADMIN_COOKIE)?.value);
 }

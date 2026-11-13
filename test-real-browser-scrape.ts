@@ -45,8 +45,8 @@ async function main() {
       
       bodyText = await page.evaluate(() => document.body.innerText);
       break;
-    } catch (err: any) {
-      console.warn(`Attempt ${attempt} failed: ${err.message}`);
+    } catch (err) {
+      console.warn(`Attempt ${attempt} failed: ${err instanceof Error ? err.message : "Browser error"}`);
       await new Promise(r => setTimeout(r, 5000));
     }
   }
@@ -62,8 +62,8 @@ async function main() {
   try {
     await page.screenshot({ path: '/Users/alper/.gemini/antigravity/brain/d8e6ef01-cf93-48bf-af87-aa69b06457f7/scratch/r5-scrape-debug.png' });
     console.log("Saved debug screenshot.");
-  } catch (err: any) {
-    console.error("Screenshot failed:", err.message);
+  } catch (err) {
+    console.error("Screenshot failed:", err instanceof Error ? err.message : "Browser error");
   }
   
   await browser.close();

@@ -1,3 +1,4 @@
+import { rateLimit } from "@/lib/request-security";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok } from "@/lib/api";
@@ -12,6 +13,8 @@ const ORS_ENDPOINT = "https://api.openrouteservice.org/v2/directions/driving-car
 type Point = [number, number]; // [lng, lat]
 
 export async function GET(req: NextRequest) {
+  const limited = rateLimit(`app/api/route-calculator/route.ts:${req.headers.get("x-forwarded-for") || "unknown"}`, 30, 60_000);
+  if (limited) return limited;
   const sp = req.nextUrl.searchParams;
   const fromLat = Number(sp.get("fromLat"));
   const fromLng = Number(sp.get("fromLng"));

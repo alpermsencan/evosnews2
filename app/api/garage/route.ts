@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok } from "@/lib/api";
@@ -24,6 +25,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const b = await req.json();
     for (const f of ["brand", "model", "name"]) {
@@ -55,6 +57,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const id = req.nextUrl.searchParams.get("id");
   if (!id) return fail("id gerekli");
   try {

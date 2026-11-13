@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok } from "@/lib/api";
@@ -6,7 +7,8 @@ export const dynamic = "force-dynamic";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   return handle(async () => {
     const items = await prisma.subscriber.findMany({
       orderBy: { createdAt: "desc" },
@@ -39,6 +41,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const id = req.nextUrl.searchParams.get("id");
     if (!id) return fail("id zorunludur");

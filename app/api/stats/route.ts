@@ -1,10 +1,13 @@
+import { isAdminRequest } from "@/lib/admin-auth";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { handle } from "@/lib/api";
+import { fail, handle } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
 /** Admin panel özet istatistikleri */
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   return handle(async () => {
     const [
       articles,

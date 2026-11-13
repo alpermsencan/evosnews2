@@ -1,3 +1,4 @@
+import type { CommunityPost } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import RedditCommunity from "@/components/community/RedditCommunity";
@@ -12,7 +13,7 @@ export const metadata = {
 
 export default async function CommunityPage() {
   let viewer = null;
-  let posts: any[] = [];
+  let posts: CommunityPost[] = [];
   let topics: string[] = [];
 
   try {

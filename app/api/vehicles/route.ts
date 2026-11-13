@@ -1,3 +1,5 @@
+import { isAdminRequest } from "@/lib/admin-auth";
+import { publicIdFromUrl } from "@/lib/cloudinary";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, num, ok, slugify } from "@/lib/api";
@@ -67,6 +69,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const b = await req.json();
     if (!b.brand || !b.model) return fail("brand ve model zorunludur");
@@ -113,6 +116,7 @@ export async function POST(req: NextRequest) {
         data: {
           vehicleId: vehicle.id,
           url: b.image,
+          cloudinaryPublicId: publicIdFromUrl(String(b.image)) || "",
           type: "exterior",
           source: "admin",
           sourceUrl: b.image,
@@ -131,6 +135,7 @@ export async function POST(req: NextRequest) {
           data: {
             vehicleId: vehicle.id,
             url,
+            cloudinaryPublicId: publicIdFromUrl(String(url)) || "",
             type: "gallery",
             source: "admin",
             sourceUrl: url,

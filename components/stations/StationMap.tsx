@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { IconBolt, IconSearch, IconClose } from "@/components/ui/Icons";
 import { FALLBACK_STATIONS } from "@/lib/stations-fallback";
@@ -25,9 +25,7 @@ export type MapStation = {
   distanceKm?: number;
 };
 
-const GOOGLE_MAPS_API_KEY =
-  process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-  "AIzaSyDByVeAH6VK2aMi-AmD54WrC0oG3zbqtSE";
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 
 // Türkiye'deki En Popüler 18 Resmî Şarj Operatörü
 const OPERATORS = [
@@ -88,15 +86,22 @@ function createMarkerSvg(color: string, isHpc: boolean): string {
   `)}`;
 }
 
+declare global { interface Window { google?: typeof google } }
+function subscribeMaps(callback: () => void) {
+  window.addEventListener("evos-maps-ready", callback);
+  return () => window.removeEventListener("evos-maps-ready", callback);
+}
+function mapsReady() { return typeof window !== "undefined" && Boolean(window.google?.maps); }
+
 export default function StationMap({ stations: initialStations = [] }: { stations: MapStation[] }) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
-  const userMarkerRef = useRef<any>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
+  const markersRef = useRef<google.maps.Marker[]>([]);
+  const userMarkerRef = useRef<google.maps.Marker | null>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [mapsLoaded, setMapsLoaded] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const mapsLoaded = useSyncExternalStore(subscribeMaps, mapsReady, () => false);
+  const [loadError, setLoadError] = useState<string | null>(GOOGLE_MAPS_API_KEY ? null : "Harita servisi yapılandırılmadı. İstasyon listesini kullanabilirsiniz.");
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState(false);
   const [locationStatus, setLocationStatus] = useState<string | null>(null);
@@ -109,50 +114,28 @@ export default function StationMap({ stations: initialStations = [] }: { station
   const [selectedStation, setSelectedStation] = useState<MapStation | null>(null);
 
   // Canlı İstasyon Hafızası (Haritada gezinildikçe dinamik dolar)
-  const [activeStations, setActiveStations] = useState<MapStation[]>(() => {
-    if (initialStations && initialStations.length > 0) return initialStations;
-    return FALLBACK_STATIONS.map((s) => ({
-      id: s.id,
-      name: s.name,
-      operator: s.operator,
-      city: s.city,
-      district: s.district,
-      address: s.address,
-      lat: s.lat,
-      lng: s.lng,
-      maxPowerKw: s.maxPowerKw,
-      socketCount: s.socketCount,
-      isFast: s.isFast,
-      price: s.price,
-    }));
-  });
-
-  // initialStations senkronizasyonu (SSR verilerini hafızaya entegre et)
-  useEffect(() => {
-    if (initialStations && initialStations.length > 0) {
-      setActiveStations((prev) => {
-        const mapById = new Map<string, MapStation>();
-        prev.forEach((s) => mapById.set(s.id, s));
-        initialStations.forEach((s) => mapById.set(s.id, s));
-        return Array.from(mapById.values());
-      });
-    }
-  }, [initialStations]);
+  const [viewportStations, setActiveStations] = useState<MapStation[]>([]);
+  const activeStations = useMemo(() => {
+    const initial: MapStation[] = initialStations.length ? initialStations : FALLBACK_STATIONS;
+    const byId = new Map(viewportStations.map(s => [s.id, s]));
+    initial.forEach(s => byId.set(s.id, s));
+    return [...byId.values()];
+  }, [initialStations, viewportStations]);
 
   // 1. Google Maps JS SDK Loader
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !GOOGLE_MAPS_API_KEY) return;
 
-    if ((window as any).google && (window as any).google.maps) {
-      setMapsLoaded(true);
+    if (window.google && window.google.maps) {
+      window.dispatchEvent(new Event("evos-maps-ready"));
       return;
     }
 
     const scriptId = "google-maps-js-sdk";
     if (document.getElementById(scriptId)) {
       const checkInterval = setInterval(() => {
-        if ((window as any).google && (window as any).google.maps) {
-          setMapsLoaded(true);
+        if (window.google && window.google.maps) {
+          window.dispatchEvent(new Event("evos-maps-ready"));
           clearInterval(checkInterval);
         }
       }, 100);
@@ -164,7 +147,7 @@ export default function StationMap({ stations: initialStations = [] }: { station
     script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places,geometry&language=tr`;
     script.async = true;
     script.defer = true;
-    script.onload = () => setMapsLoaded(true);
+    script.onload = () => window.dispatchEvent(new Event("evos-maps-ready"));
     script.onerror = () =>
       setLoadError("Google Haritalar yüklenemedi. Lütfen internet bağlantınızı kontrol edin.");
     document.head.appendChild(script);
@@ -200,7 +183,7 @@ export default function StationMap({ stations: initialStations = [] }: { station
             // Var olan istasyonlarla yenileri birleştir (tekrarları önle)
             const mapById = new Map<string, MapStation>();
             prev.forEach((s) => mapById.set(s.id, s));
-            items.forEach((s: any) => {
+            items.forEach((s: MapStation & { pricePerKwh?: number | null }) => {
               mapById.set(String(s.id), {
                 id: String(s.id),
                 name: s.name,
@@ -235,7 +218,7 @@ export default function StationMap({ stations: initialStations = [] }: { station
   // 3. Initialize Google Map
   useEffect(() => {
     if (!mapsLoaded || !mapContainerRef.current) return;
-    const google = (window as any).google;
+    const google = window.google;
     if (!google || !google.maps) return;
 
     if (!mapInstanceRef.current) {
@@ -353,7 +336,7 @@ export default function StationMap({ stations: initialStations = [] }: { station
   // 6. Update Markers on Google Map (Kesinti veya sınır olmadan tüm istasyonları pinler)
   useEffect(() => {
     if (!mapInstanceRef.current) return;
-    const google = (window as any).google;
+    const google = window.google;
     if (!google || !google.maps) return;
 
     const map = mapInstanceRef.current;
@@ -413,7 +396,7 @@ export default function StationMap({ stations: initialStations = [] }: { station
         setLocationStatus(null);
 
         if (mapInstanceRef.current) {
-          const google = (window as any).google;
+          const google = window.google;
           const map = mapInstanceRef.current;
 
           // Pan and zoom to user
@@ -457,17 +440,17 @@ export default function StationMap({ stations: initialStations = [] }: { station
     e.preventDefault();
     if (!searchQuery.trim() || !mapInstanceRef.current) return;
 
-    const google = (window as any).google;
+    const google = window.google;
     if (!google || !google.maps) return;
 
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode(
       { address: `${searchQuery}, Türkiye` },
-      (results: any[], status: string) => {
-        if (status === "OK" && results[0]) {
+      (results: google.maps.GeocoderResult[] | null, status: string) => {
+        if (status === "OK" && results?.[0]) {
           const loc = results[0].geometry.location;
-          mapInstanceRef.current.panTo(loc);
-          mapInstanceRef.current.setZoom(13);
+          mapInstanceRef.current?.panTo(loc);
+          mapInstanceRef.current?.setZoom(13);
         }
       }
     );

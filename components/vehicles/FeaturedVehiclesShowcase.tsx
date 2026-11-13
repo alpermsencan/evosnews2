@@ -113,20 +113,20 @@ export default async function FeaturedVehiclesShowcase() {
 
   const dbMap = new Map(dbVehicles.map((v) => [v.slug, v]));
 
-  const vehicles: ShowcaseVehicle[] = SHOWCASE_CONFIGS.map((conf) => {
-    const dbItem = dbMap.get(conf.slug);
+  const vehicles: ShowcaseVehicle[] = SHOWCASE_CONFIGS.filter(conf => dbMap.has(conf.slug)).map((conf) => {
+    const dbItem = dbMap.get(conf.slug)!;
     return {
       brand: conf.brand,
       model: conf.model,
       slug: conf.slug,
-      tag: conf.tag,
+      tag: "Katalogda",
       tagColor: conf.tagColor,
-      price: dbItem?.price || conf.fallbackPrice,
-      range: dbItem?.rangeKm || conf.range,
-      power: dbItem?.motorPowerHp ? `${dbItem.motorPowerHp} HP` : conf.power,
-      dcSpeed: dbItem?.dcChargeKw ? `${dbItem.dcChargeKw} kW` : conf.dcSpeed,
-      body: dbItem?.bodyType || conf.body,
-      acceleration: dbItem?.acceleration ? `${dbItem.acceleration} sn` : conf.acceleration,
+      price: dbItem.price,
+      range: dbItem.rangeKm,
+      power: dbItem.motorPowerHp ? `${dbItem.motorPowerHp} HP` : "Güç bilgisi bekleniyor",
+      dcSpeed: dbItem.dcChargeKw ? `${dbItem.dcChargeKw} kW` : "Şarj bilgisi bekleniyor",
+      body: dbItem.bodyType,
+      acceleration: dbItem.acceleration ? `${dbItem.acceleration} sn` : "",
       image: dbItem?.image || conf.image,
     };
   });

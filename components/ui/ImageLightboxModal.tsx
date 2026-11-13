@@ -11,7 +11,7 @@ type Props = {
   alt?: string;
 };
 
-export default function ImageLightboxModal({
+function OpenImageLightbox({
   isOpen,
   onClose,
   images = [],
@@ -29,9 +29,6 @@ export default function ImageLightboxModal({
   // Modal açıldığında index'i eşitle ve zoom'u sıfırla
   useEffect(() => {
     if (isOpen) {
-      setActiveIdx(initialIndex);
-      setScale(1);
-      setPosition({ x: 0, y: 0 });
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -344,4 +341,8 @@ export default function ImageLightboxModal({
       </div>
     </div>
   );
+}
+
+export default function ImageLightboxModal(props: Props) {
+  return props.isOpen ? <OpenImageLightbox key={`${props.initialIndex || 0}:${props.images.join("|")}`} {...props} /> : null;
 }

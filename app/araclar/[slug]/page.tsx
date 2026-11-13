@@ -1,3 +1,4 @@
+import { calculateTax } from "@/lib/finance";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -9,7 +10,7 @@ import ModernVehicleSpecBadges from "@/components/vehicles/ModernVehicleSpecBadg
 import ModernVehicleSpecsGrid from "@/components/vehicles/ModernVehicleSpecsGrid";
 import VehicleTypeExplorer from "@/components/vehicles/VehicleTypeExplorer";
 import SectionTitle from "@/components/news/SectionTitle";
-import { calcOtv, formatTL } from "@/lib/utils";
+import { formatTL } from "@/lib/utils";
 
 export const revalidate = 60;
 
@@ -158,7 +159,7 @@ export default async function VehicleDetail({ params }: Props) {
   // ÖTV kırılımı
   const rate = vehicle.otvRate;
   const base = Math.round(vehicle.price / (1.2 * (1 + rate / 100)));
-  const breakdown = calcOtv(base, vehicle.motorPowerKw);
+  const breakdown = { ...calculateTax({ base, otvRate: rate }), rate };
 
   // Yakıt tasarrufu hesabı
   const yearlyKm = 20000;
@@ -368,7 +369,7 @@ export default async function VehicleDetail({ params }: Props) {
               >
                 <div>
                   <span className="text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-                    {st.network}
+                    {st.operator}
                   </span>
                   <h4 className="text-sm font-black text-neutral-900 mt-2 truncate">
                     {st.name}

@@ -81,7 +81,7 @@ const PARTS_LIST: { id: keyof ExpertiseData; label: string; area: string }[] = [
 const CYCLE_ORDER: PartStatus[] = ["ORIJINAL", "BOYALI", "DEGISEN", "SOKTAK", "LOKAL"];
 
 interface CarDamageReportProps {
-  value?: ExpertiseData | null;
+  value?: unknown;
   onChange?: (val: ExpertiseData) => void;
   editable?: boolean;
 }
@@ -498,4 +498,10 @@ export default function CarDamageReport({
       </div>
     </div>
   );
+}
+
+export function normalizeExpertise(value: unknown): ExpertiseData {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const allowed = new Set(PARTS_LIST.map(p => p.id));
+  return Object.fromEntries(Object.entries(value).filter(([part, status]) => allowed.has(part) && typeof status === "string" && Object.hasOwn(STATUS_CONFIG, status))) as ExpertiseData;
 }

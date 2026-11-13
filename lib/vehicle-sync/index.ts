@@ -1,3 +1,7 @@
+import { fetchToggPrices } from "./sources/togg";
+import { fetchBydPrices } from "./sources/byd";
+import { fetchTeslaPrices } from "./sources/tesla";
+import { fetchRenaultPrices } from "./sources/renault";
 import { prisma } from "@/lib/prisma";
 import { fetchKiaPrices } from "./sources/kia";
 import { fetchHyundaiPrices } from "./sources/hyundai";
@@ -11,7 +15,7 @@ import { uploadImageFromUrl, isCloudinaryReady } from "@/lib/cloudinary";
 /**
  * Runs pricing and package/image synchronization for a given brand source.
  */
-export async function syncBrandVehicles(sourceName: string): Promise<SyncResult> {
+async function performBrandSync(sourceName: string): Promise<SyncResult> {
   const startedAt = Date.now();
   let fetched = 0;
   let created = 0;
@@ -35,6 +39,14 @@ export async function syncBrandVehicles(sourceName: string): Promise<SyncResult>
       syncData = await fetchKiaPrices();
     } else if (sourceName === "hyundai-official") {
       syncData = await fetchHyundaiPrices();
+    } else if (sourceName === "togg-official") {
+      syncData = await fetchToggPrices();
+    } else if (sourceName === "byd-official") {
+      syncData = await fetchBydPrices();
+    } else if (sourceName === "tesla-official") {
+      syncData = await fetchTeslaPrices();
+    } else if (sourceName === "renault-official") {
+      syncData = await fetchRenaultPrices();
     } else {
       throw new Error(`Unsupported brand source: ${sourceName}`);
     }
@@ -363,4 +375,18 @@ export async function syncBrandVehicles(sourceName: string): Promise<SyncResult>
       message: error instanceof Error ? error.message : "Brand sync crashed",
     };
   }
+}
+
+export async function syncBrandVehicles(sourceName: string, triggerType: "MANUAL" | "CRON" = "CRON"): Promise<SyncResult> {
+  const log = await prisma.vehicleSyncLog.create({ data: { source: sourceName, triggerType } });
+  const result = await performBrandSync(sourceName);
+  await prisma.vehicleSyncLog.update({ where: { id: log.id }, data: {
+    status: result.status === "error" ? "FAILED" : result.failed || result.imageErrors ? "PARTIAL" : "SUCCESS",
+    completedAt: new Date(), durationMs: result.durationMs, fetched: result.fetched,
+    created: result.created, updated: result.updated, unchanged: result.unchanged,
+    imagesFound: result.imagesFound, imagesUploaded: result.imagesUploaded,
+    imagesUnchanged: result.imagesUnchanged, imageErrors: result.imageErrors,
+    errorMessage: result.message?.slice(0, 500) ?? null,
+  } });
+  return result;
 }

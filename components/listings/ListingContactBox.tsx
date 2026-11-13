@@ -64,8 +64,8 @@ export default function ListingContactBox({
 
       setSentSuccess(true);
       setContent("");
-    } catch (err: any) {
-      setError(err.message || "Mesaj iletilirken bir sorun oluştu.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Mesaj iletilirken bir sorun oluştu.");
     } finally {
       setSending(false);
     }

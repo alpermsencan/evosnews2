@@ -27,6 +27,7 @@ export async function GET(req: NextRequest, { params }: Ctx) {
 // POST: Add new image(s) manually (supports single url or multiple urls)
 export async function POST(req: NextRequest, { params }: Ctx) {
   if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const { id } = await params;
 
   try {
@@ -98,6 +99,7 @@ export async function POST(req: NextRequest, { params }: Ctx) {
 // PUT: Update an image's metadata (primary, type, etc.)
 export async function PUT(req: NextRequest, { params }: Ctx) {
   if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const { id } = await params;
 
   try {
@@ -141,6 +143,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
 
 // DELETE: Remove an image relation from database (without deleting file from Cloudinary)
 export async function DELETE(req: NextRequest, { params }: Ctx) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   const { id } = await params;
   const imageId = req.nextUrl.searchParams.get("imageId");

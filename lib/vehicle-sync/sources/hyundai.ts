@@ -183,7 +183,7 @@ export async function fetchHyundaiPrices(): Promise<VehicleSyncData[]> {
 
   for (const modelInfo of discoveredModels) {
     // Clean model name (e.g. "Yeni IONIQ 6" -> "IONIQ 6")
-    let model = modelInfo.name
+    const model = modelInfo.name
       .replace("Yeni ", "")
       .replace(" - Yerli Üretim", "")
       .trim();

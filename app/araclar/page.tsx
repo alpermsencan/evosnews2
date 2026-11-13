@@ -53,7 +53,7 @@ export default async function VehiclesPage({
   const sp = await searchParams;
 
   const where: Prisma.VehicleWhereInput = {};
-  if (sp.marka) where.brand = sp.marka;
+  if (sp.marka) where.brand = { equals: sp.marka, mode: "insensitive" };
   if (sp.segment) where.segment = sp.segment;
 
   // Kasa filtresi

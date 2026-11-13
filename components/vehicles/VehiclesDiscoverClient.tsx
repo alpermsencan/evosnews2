@@ -66,6 +66,19 @@ const getPopularityScore = (brand: string) => {
   return BRAND_POPULARITY[key] ?? 100;
 };
 
+  const getVehicleGallery = (v: Vehicle): string[] => {
+    const syncImages = (v.syncImages || []).filter(
+      (img) => img.type !== "ignored" && img.type !== "deleted"
+    );
+    if (syncImages.length > 0) {
+      const primary = syncImages.find((img) => img.isPrimary);
+      const remaining = syncImages.filter((img) => img !== primary).map((img) => img.url);
+      if (primary) return [primary.url, ...remaining];
+      return syncImages.map((img) => img.url);
+    }
+    return [v.image, ...(v.images || [])].filter(Boolean);
+  };
+
 export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverClientProps) {
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedSegment, setSelectedSegment] = useState("");
@@ -108,18 +121,7 @@ export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverCli
     return v.image || "/arac-placeholder.svg";
   };
 
-  const getVehicleGallery = (v: Vehicle): string[] => {
-    const syncImages = (v.syncImages || []).filter(
-      (img) => img.type !== "ignored" && img.type !== "deleted"
-    );
-    if (syncImages.length > 0) {
-      const primary = syncImages.find((img) => img.isPrimary);
-      const remaining = syncImages.filter((img) => img !== primary).map((img) => img.url);
-      if (primary) return [primary.url, ...remaining];
-      return syncImages.map((img) => img.url);
-    }
-    return [v.image, ...(v.images || [])].filter(Boolean);
-  };
+
 
   // Sort and Filter Logic
   const sortedVehicles = [...vehicles].sort((a, b) => {
@@ -183,7 +185,7 @@ export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverCli
           </button>
           {distinctBrands.map((brandName) => {
             const slugKey = brandName.toLowerCase().trim().replace(/\s+/g, '-');
-            const config = (BRANDS as any)[slugKey] || null;
+            const config = BRANDS[slugKey as keyof typeof BRANDS] || null;
             const hasLogo = config && config.logo;
 
             return (
@@ -303,8 +305,8 @@ export default function VehiclesDiscoverClient({ vehicles }: VehiclesDiscoverCli
               className="rounded border border-neutral-300 px-3 py-2 text-xs outline-none bg-white text-neutral-800"
             >
               <option value="">Tümü</option>
-              <option value="tr_var">Türkiye'de Var</option>
-              <option value="tr_yok">Türkiye'de Yok</option>
+              <option value="tr_var">Türkiye&apos;de Var</option>
+              <option value="tr_yok">Türkiye&apos;de Yok</option>
             </select>
           </div>
         </aside>
@@ -408,7 +410,7 @@ interface VehicleCardItemProps {
 function VehicleCardItem({ vehicle, displayImage, onGalleryClick }: VehicleCardItemProps) {
   const isTr = vehicle.marketStatus === "TR_YAYINDA" || vehicle.marketStatus === "TR_YAKINDA";
   const slugKey = vehicle.brand.toLowerCase().trim().replace(/\s+/g, '-');
-  const brandConfig = (BRANDS as any)[slugKey] || null;
+  const brandConfig = BRANDS[slugKey as keyof typeof BRANDS] || null;
   const hasBrandLogo = brandConfig && brandConfig.logo;
 
   const [imgSrc, setImgSrc] = useState(displayImage);

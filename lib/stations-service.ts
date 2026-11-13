@@ -3,6 +3,14 @@
  * Türkiye genelinde 16.900+ aktif, lisanslı şarj istasyonunu gerçek zamanlı sorgular.
  */
 
+type ProviderStation = {
+  id: string | number; name?: string; address?: string; brand?: string;
+  stationOperator?: string; networkOperatorName?: string;
+  maxSocketPowerKw?: number; maxDcPowerKw?: number; maxAcPowerKw?: number;
+  dcSocketCount?: number; acSocketCount?: number; latitude?: number; longitude?: number;
+  isGreenStation?: boolean; socketKinds?: string[];
+};
+
 export type LiveStation = {
   id: string;
   name: string;
@@ -175,7 +183,7 @@ export async function queryLiveChargingStations(
     const data = await res.json();
     if (!Array.isArray(data)) return [];
 
-    let stations: LiveStation[] = data.map((s: any) => {
+    let stations: LiveStation[] = data.map((s: ProviderStation) => {
       const { city, district } = parseCityAndDistrict(s.address);
       const op = formatOperatorName(s.brand || s.stationOperator || s.networkOperatorName);
       const maxKw = s.maxSocketPowerKw || s.maxDcPowerKw || s.maxAcPowerKw || null;
@@ -218,9 +226,9 @@ export async function queryLiveChargingStations(
     }
 
     return stations;
-  } catch (err: any) {
-    if (err.name !== "AbortError") {
-      console.error("[LiveStations] Error fetching stations:", err.message);
+  } catch (err) {
+    if (!(err instanceof Error) || err.name !== "AbortError") {
+      console.error("[LiveStations] Error fetching stations:", err instanceof Error ? err.message : "Servise erişilemiyor");
     }
     return [];
   }

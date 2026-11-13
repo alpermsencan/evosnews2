@@ -61,7 +61,7 @@ export default function ElevenLabsVoiceAdvisor() {
             <div className="flex flex-col gap-0.5">
               <span className="text-[9px] font-black text-sky-400 uppercase tracking-widest">Kullanıcı</span>
               <p className="text-xs text-neutral-200 italic leading-relaxed">
-                "2 milyon TL bütçem var. Günde 70 km yapıyorum. Evde şarj imkanım var. Hangi elektrikli aracı almalıyım?"
+                &quot;2 milyon TL bütçem var. Günde 70 km yapıyorum. Evde şarj imkanım var. Hangi elektrikli aracı almalıyım?&quot;
               </p>
             </div>
           </div>

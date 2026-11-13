@@ -1,3 +1,6 @@
+import { articleHtml } from "@/lib/html";
+import { isAdminRequest } from "@/lib/admin-auth";
+import { PUBLIC_ARTICLE_SELECT, PUBLIC_COMMENT_SELECT } from "@/lib/public-article";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok, slugify } from "@/lib/api";
@@ -7,18 +10,19 @@ export const dynamic = "force-dynamic";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-export async function GET(_req: NextRequest, { params }: Ctx) {
+export async function GET(req: NextRequest, { params }: Ctx) {
   const { id } = await params;
   const isId = /^[0-9a-fA-F]{24}$/.test(id);
   const article = await prisma.article.findFirst({
-    where: isId ? { OR: [{ id }, { slug: id }] } : { slug: id },
-    include: { category: true, author: true, comments: true },
+    where: { ...(isId ? { OR: [{ id }, { slug: id }] } : { slug: id }), ...(await isAdminRequest(req) ? {} : { status: "PUBLISHED" }) },
+    select: { ...PUBLIC_ARTICLE_SELECT, comments: { where: { approved: true }, select: PUBLIC_COMMENT_SELECT } },
   });
   if (!article) return fail("Haber bulunamadı", 404);
   return ok({ article });
 }
 
 export async function PUT(req: NextRequest, { params }: Ctx) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id } = await params;
     const body = await req.json();
@@ -47,7 +51,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
         ...(body.title !== undefined && { title: body.title }),
         ...(nextSlug !== undefined && { slug: nextSlug }),
         ...(body.spot !== undefined && { spot: body.spot }),
-        ...(body.content !== undefined && { content: body.content }),
+        ...(body.content !== undefined && { content: articleHtml(String(body.content)) }),
         ...(body.image !== undefined && { image: body.image }),
         ...(body.imageCredit !== undefined && { imageCredit: body.imageCredit }),
         ...(body.gallery !== undefined && { gallery: body.gallery }),
@@ -77,7 +81,8 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Ctx) {
+export async function DELETE(req: NextRequest, { params }: Ctx) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id } = await params;
     await prisma.comment.deleteMany({ where: { articleId: id } });

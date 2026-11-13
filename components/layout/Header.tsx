@@ -45,10 +45,10 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full select-none bg-white">
       {/* 1. ANA BAŞLIK: LOGO & ARAMA (SADE, MODERN & PROFESYONEL) */}
       <div className="border-b border-neutral-200/80 bg-white">
-        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-3 sm:px-4">
+        <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-1 px-2 sm:gap-4 sm:px-4">
           {/* Sol Kolon: Doğrudan Logo */}
-          <div className="flex items-center shrink-0">
-            <Logo size="md" theme="light" />
+          <div className="min-w-0 max-w-[calc(100%-120px)] sm:max-w-none flex items-center [&>a]:min-w-0 [&>a]:max-w-full [&>a>div]:min-w-0 [&>a>div]:max-w-full">
+            <Logo size="sm" theme="light" />
           </div>
 
           {/* Orta Kolon: Sade & Şık Arama Çubuğu (Desktop) */}

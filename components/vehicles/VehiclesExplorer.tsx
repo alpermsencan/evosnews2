@@ -13,7 +13,7 @@ type Props = {
   totalCount: number;
 };
 
-export default function VehiclesExplorer({
+function VehicleFilters({
   brands,
   segments,
   bodyTypes,
@@ -39,18 +39,6 @@ export default function VehiclesExplorer({
   const [minMenzil, setMinMenzil] = useState(current("minMenzil"));
   const [sirala, setSirala] = useState(current("sirala"));
   const [brandSearch, setBrandSearch] = useState("");
-
-  // Sync state when URL searchParams changes
-  useEffect(() => {
-    setMarka(current("marka"));
-    setSegment(current("segment"));
-    setKasa(current("kasa"));
-    setDurum(current("durum"));
-    setKampanya(current("kampanya"));
-    setMaxFiyat(current("maxFiyat"));
-    setMinMenzil(current("minMenzil"));
-    setSirala(current("sirala"));
-  }, [searchParams]);
 
   // Click outside listener to close open dropdown
   useEffect(() => {
@@ -1043,4 +1031,9 @@ export default function VehiclesExplorer({
       )}
     </div>
   );
+}
+
+export default function VehiclesExplorer(props: Props) {
+  const params = useSearchParams();
+  return <VehicleFilters key={params.toString()} {...props} />;
 }

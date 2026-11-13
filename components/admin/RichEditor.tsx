@@ -1,5 +1,7 @@
 "use client";
 
+import DOMPurify from "dompurify";
+import type Quill from "quill";
 import { useEffect, useRef, useState } from "react";
 import { uploadToCloudinary } from "@/lib/uploadClient";
 
@@ -15,10 +17,10 @@ export default function RichEditor({
   folder?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const quillRef = useRef<any>(null);
+  const quillRef = useRef<Quill | null>(null);
   const isInternalChangeRef = useRef(false);
   const folderRef = useRef(folder);
-  folderRef.current = folder;
+  useEffect(() => { folderRef.current = folder; }, [folder]);
 
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -81,12 +83,11 @@ export default function RichEditor({
                 },
               },
             },
-            clipboard: { matchVisual: false },
           },
         });
 
         if (value) {
-          quill.root.innerHTML = value;
+          quill.clipboard.dangerouslyPasteHTML(DOMPurify.sanitize(value));
         }
 
         quill.on("text-change", () => {
@@ -125,7 +126,7 @@ export default function RichEditor({
     const currentHtml = quillRef.current.root.innerHTML;
     const targetHtml = value || "";
     if (targetHtml !== currentHtml && (targetHtml || currentHtml !== "<p><br></p>")) {
-      quillRef.current.root.innerHTML = targetHtml;
+      quillRef.current.clipboard.dangerouslyPasteHTML(DOMPurify.sanitize(targetHtml));
     }
   }, [value]);
 

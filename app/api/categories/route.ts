@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok, slugify } from "@/lib/api";
@@ -16,6 +17,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const body = await req.json();
     if (!body.name) return fail("name zorunludur");

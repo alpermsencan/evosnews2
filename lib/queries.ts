@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { prisma } from "./prisma";
@@ -40,10 +41,10 @@ export const ALLOWED_EV_SOURCES = [
  * Yayın filtresi.
  * Yalnızca PUBLISHED ve onaylı elektrikli araç kaynaklarından olan içerikler görünür.
  */
-const PUBLISHED = {
+const PUBLISHED: Prisma.ArticleWhereInput = {
   status: "PUBLISHED",
   sourceName: { in: [...ALLOWED_EV_SOURCES] },
-} as const;
+};
 
 /**
  * ÖNBELLEKLEME NEDEN YOK

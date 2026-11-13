@@ -52,8 +52,8 @@ export default function RouteCalculatorClient({ vehicles }: { vehicles: VehicleD
   const [startCoords, setStartCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [destCoords, setDestCoords] = useState<{ lat: number; lng: number } | null>(null);
   
-  const [startSuggestions, setStartSuggestions] = useState<any[]>([]);
-  const [destSuggestions, setDestSuggestions] = useState<any[]>([]);
+  const [startSuggestions, setStartSuggestions] = useState<{ name: string; lat: number; lng: number }[]>([]);
+  const [destSuggestions, setDestSuggestions] = useState<{ name: string; lat: number; lng: number }[]>([]);
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

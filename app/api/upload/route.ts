@@ -1,3 +1,4 @@
+import { rateLimit } from "@/lib/request-security";
 import { NextRequest } from "next/server";
 import { fail, ok } from "@/lib/api";
 import { getRequestUser } from "@/lib/auth";
@@ -41,6 +42,8 @@ const MEMBER_FOLDERS: Record<string, string> = {
  * Video yüklemek için: FormData'ya type="video" eklenir.
  */
 export async function POST(req: NextRequest) {
+  const limited = rateLimit(`app/api/upload/route.ts:${req.headers.get("x-forwarded-for") || "unknown"}`, 20, 60_000);
+  if (limited) return limited;
   const admin = await isAdminRequest(req);
   const member = admin ? null : await getRequestUser(req);
   if (!admin && !member) return fail("Yetkisiz işlem", 401);

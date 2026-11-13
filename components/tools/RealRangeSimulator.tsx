@@ -248,7 +248,7 @@ export default function RealRangeSimulator({
               </label>
               <select
                 value={climateMode}
-                onChange={(e) => setClimateMode(e.target.value as any)}
+                onChange={(e) => setClimateMode(e.target.value as typeof climateMode)}
                 className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs font-bold text-neutral-700 outline-none focus:border-sky-500"
               >
                 <option value="heat_pump">Açık (Isı Pompalı Sistem)</option>
@@ -263,7 +263,7 @@ export default function RealRangeSimulator({
               </label>
               <select
                 value={load}
-                onChange={(e) => setLoad(e.target.value as any)}
+                onChange={(e) => setLoad(e.target.value as typeof load)}
                 className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-xs font-bold text-neutral-700 outline-none focus:border-sky-500"
               >
                 <option value="single">Yalnızca Sürücü (1 Kişi)</option>

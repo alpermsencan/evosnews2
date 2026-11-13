@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok } from "@/lib/api";
@@ -24,6 +25,7 @@ export async function POST(_req: NextRequest, { params }: Ctx) {
 }
 
 export async function PUT(req: NextRequest, { params }: Ctx) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id } = await params;
     const b = await req.json();
@@ -43,7 +45,8 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Ctx) {
+export async function DELETE(req: NextRequest, { params }: Ctx) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id } = await params;
     await prisma.communityPost.delete({ where: { id } });

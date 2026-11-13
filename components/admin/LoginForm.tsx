@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { safeReturnPath } from "@/lib/return-path";
 import { useState } from "react";
 import Logo from "@/components/ui/Logo";
 import { IconLock, IconUser } from "@/components/ui/Icons";
@@ -8,7 +9,7 @@ import { IconLock, IconUser } from "@/components/ui/Icons";
 export default function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const [username, setUsername] = useState("alperx");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ export default function LoginForm() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Giriş başarısız");
 
-      const target = params.get("devam") || "/admin";
+      const target = safeReturnPath(params.get("devam"), "/admin");
       window.location.href = target;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Giriş başarısız");
@@ -72,7 +73,7 @@ export default function LoginForm() {
               required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="alperx"
+              placeholder="Yönetici kullanıcı adı"
               className="w-full rounded-xl border border-neutral-300 pl-9 pr-3.5 py-2.5 text-sm font-semibold outline-none focus:border-neutral-900 focus:ring-2 focus:ring-neutral-100"
             />
           </div>

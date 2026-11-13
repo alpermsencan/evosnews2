@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { fail, ok } from "@/lib/api";
 import { upsertBatteryReport, verifyBatteryReport } from "@/lib/listings";
@@ -14,6 +15,7 @@ export const runtime = "nodejs";
  * her rapora "risk: düşük" yazılmasının önünü açardı.
  */
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id } = await params;
     const b = await req.json();
@@ -49,6 +51,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
 /** PUT — raporu doğrular; rozet ve puan etkisi ancak bundan sonra devreye girer. */
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id } = await params;
     const b = await req.json().catch(() => ({}));

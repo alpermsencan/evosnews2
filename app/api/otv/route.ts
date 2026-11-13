@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, handle, ok } from "@/lib/api";
@@ -15,6 +16,7 @@ export async function GET() {
 
 /** POST /api/otv -> { basePrice, motorKw } => ÖTV + KDV hesabı */
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { basePrice, motorKw } = await req.json();
     const base = Number(basePrice);

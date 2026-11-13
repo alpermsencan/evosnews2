@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok } from "@/lib/api";
@@ -12,6 +13,7 @@ export const dynamic = "force-dynamic";
  * POST { id, action: "publish" | "reject" | "draft" }
  */
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id, action } = await req.json();
     if (!id) return fail("id zorunludur");
@@ -55,6 +57,7 @@ export async function POST(req: NextRequest) {
 
 /** DELETE /api/moderation?id=... : taslağı tamamen sil */
 export async function DELETE(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const id = req.nextUrl.searchParams.get("id");
     if (!id) return fail("id zorunludur");

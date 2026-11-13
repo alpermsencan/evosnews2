@@ -1,88 +1,45 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fail } from "@/lib/api";
-import {
-  ADMIN_COOKIE,
-  ADMIN_USERNAME,
-  ADMIN_PASSWORD,
-  adminToken,
-  isValidAdminCredentials,
-  isValidAdminPassword,
-} from "@/lib/admin-auth";
+import { ADMIN_COOKIE, ADMIN_USERNAME, adminToken, isAuthConfigured, isValidAdminCredentials } from "@/lib/admin-auth";
+import { rateLimit, sameOrigin } from "@/lib/request-security";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 export const dynamic = "force-dynamic";
-
-/** POST /api/auth -> { username, password } : admin girişi */
 export async function POST(req: NextRequest) {
+  if (!sameOrigin(req)) return fail("İzin verilmeyen kaynak", 403);
+  if (!isAuthConfigured()) return fail("Yönetim girişi yapılandırılmamış", 503);
   try {
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json();
     const username = String(body.username || ADMIN_USERNAME).trim();
-    const password = String(body.password || "").trim();
-
-    if (!password) {
-      return fail("Şifre boş olamaz.", 400);
-    }
-
-    let isAuthorized = false;
-
-    // 1. Env / doğrudan kimlik kontrolü (alperx & ytung011)
-    if (
-      isValidAdminCredentials(username, password) ||
-      isValidAdminPassword(password) ||
-      (username.toLowerCase() === "alperx" && password === "ytung011") ||
-      (username.toLowerCase() === ADMIN_USERNAME.toLowerCase() && password === ADMIN_PASSWORD)
-    ) {
-      isAuthorized = true;
-    }
-
-    // 2. Veritabanındaki admin kullanıcısı kontrolü (varsa bcrypt ile doğrula)
-    if (!isAuthorized) {
-      try {
-        const dbUser = await prisma.user.findFirst({
-          where: {
-            role: "admin",
-            OR: [
-              { username: { equals: username, mode: "insensitive" } },
-              { email: { equals: username, mode: "insensitive" } },
-            ],
-          },
-        });
-
-        if (dbUser && dbUser.passwordHash) {
-          const match = await bcrypt.compare(password, dbUser.passwordHash);
-          if (match && !dbUser.isBanned) {
-            isAuthorized = true;
-          }
-        }
-      } catch (dbErr) {
-        console.error("Admin DB auth check error:", dbErr);
+    const password = String(body.password || "");
+    if (!username || username.length > 120 || !password || password.length > 1024) return fail("Geçerli kullanıcı adı ve şifre gerekli", 400);
+    const limited = rateLimit(`admin:${username.toLowerCase()}`);
+    if (limited) return limited;
+    if (password.length < 12) return fail("Geçersiz yönetici kullanıcı adı veya şifre.", 401);
+    let authorized = isValidAdminCredentials(username, password);
+    let canonicalUsername = ADMIN_USERNAME;
+    if (!authorized) {
+      const user = await prisma.user.findFirst({ where: {
+        role: "admin", isBanned: false,
+        OR: [{ username: { equals: username, mode: "insensitive" } }, { email: { equals: username, mode: "insensitive" } }],
+      } });
+      if (user && await bcrypt.compare(password, user.passwordHash)) {
+        authorized = true;
+        canonicalUsername = user.username;
       }
     }
-
-    if (!isAuthorized) {
-      return fail("Geçersiz yönetici kullanıcı adı veya şifre.", 401);
-    }
-
-    const token = await adminToken(username);
+    if (!authorized) return fail("Geçersiz yönetici kullanıcı adı veya şifre.", 401);
     const res = NextResponse.json({ success: true, redirect: "/admin" });
-
-    res.cookies.set(ADMIN_COOKIE, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 30, // 30 gün
+    res.cookies.set(ADMIN_COOKIE, await adminToken(canonicalUsername), {
+      httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 8 * 60 * 60,
     });
-
+    res.headers.set("Cache-Control", "no-store");
     return res;
-  } catch {
-    return fail("Giriş işlemi gerçekleştirilemedi.", 500);
-  }
+  } catch { return fail("Giriş işlemi gerçekleştirilemedi.", 500); }
 }
-
-/** DELETE /api/auth : çıkış */
-export async function DELETE() {
+export async function DELETE(req: NextRequest) {
+  if (!sameOrigin(req)) return fail("İzin verilmeyen kaynak", 403);
   const res = NextResponse.json({ success: true });
   res.cookies.set(ADMIN_COOKIE, "", { path: "/", maxAge: 0 });
   return res;

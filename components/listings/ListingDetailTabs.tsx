@@ -26,7 +26,7 @@ export type ListingDetailData = {
   damage?: string | null;
   batteryHealth?: number | null;
   description?: string | null;
-  expertise?: any;
+  expertise?: unknown;
   vehicle?: {
     batteryKwh?: number | null;
     rangeKm?: number | null;

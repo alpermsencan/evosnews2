@@ -1,3 +1,4 @@
+import { rateLimit } from "@/lib/request-security";
 import { NextRequest } from "next/server";
 import { fail, ok } from "@/lib/api";
 import { fetchWithRetry } from "@/lib/ingest/http";
@@ -26,11 +27,14 @@ type OrsResponse = {
 };
 
 const coord = (raw: string | null, max: number) => {
+  if (raw == null || !raw.trim()) return null;
   const n = Number(raw);
   return Number.isFinite(n) && Math.abs(n) <= max ? n : null;
 };
 
 export async function GET(req: NextRequest) {
+  const limited = rateLimit(`app/api/route-to/route.ts:${req.headers.get("x-forwarded-for") || "unknown"}`, 60, 60_000);
+  if (limited) return limited;
   const sp = req.nextUrl.searchParams;
   const fromLat = coord(sp.get("fromLat"), 90);
   const fromLng = coord(sp.get("fromLng"), 180);

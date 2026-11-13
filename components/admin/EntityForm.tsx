@@ -35,7 +35,7 @@ export type Field = {
   folder?: string;
 };
 
-type Value = string | number | boolean | string[] | Record<string, any> | null | undefined;
+type Value = string | number | boolean | string[] | Record<string, unknown> | null | undefined;
 
 /** Quill boş içerikte "<p><br></p>" döndürür */
 function isEmptyHtml(html: string) {
@@ -223,8 +223,8 @@ export default function EntityForm({
     if (f.type === "expertise")
       return (
         <CarDamageReport
-          value={(values[f.name] as any) || {}}
-          onChange={(val) => set(f.name, val as any)}
+          value={values[f.name] || {}}
+          onChange={(val) => set(f.name, val)}
           editable={true}
         />
       );

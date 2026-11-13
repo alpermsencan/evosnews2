@@ -4,6 +4,7 @@ export interface FallbackStation {
   operator: string;
   city: string;
   district: string;
+  address?: string;
   lat: number;
   lng: number;
   maxPowerKw: number;
@@ -240,7 +241,8 @@ export const FALLBACK_STATIONS: FallbackStation[] = [
   {
     id: "fb-esk-1",
     name: "Eşarj - Eskişehir Vega Outlet DC",
-    operator: "Eskişehir",
+    operator: "Eşarj",
+    city: "Eskişehir",
     district: "Tepebaşı",
     lat: 39.7891,
     lng: 30.5012,

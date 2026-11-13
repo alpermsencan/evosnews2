@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok, slugify } from "@/lib/api";
@@ -10,13 +11,14 @@ type Ctx = { params: Promise<{ id: string }> };
 export async function GET(_req: NextRequest, { params }: Ctx) {
   const { id } = await params;
   const station = await prisma.chargeStation.findFirst({
-    where: { OR: [{ id }, { slug: id }] },
+    where: /^[0-9a-fA-F]{24}$/.test(id) ? { OR: [{ id }, { slug: id }] } : { slug: id },
   });
   if (!station) return fail("İstasyon bulunamadı", 404);
   return ok({ station });
 }
 
 export async function PUT(req: NextRequest, { params }: Ctx) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id } = await params;
     const b = await req.json();
@@ -48,7 +50,8 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Ctx) {
+export async function DELETE(req: NextRequest, { params }: Ctx) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { id } = await params;
     await prisma.chargeStation.delete({ where: { id } });

@@ -1,3 +1,5 @@
+import { otvRate } from "./otv";
+
 export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -132,12 +134,7 @@ export function contentToHtml(text: string) {
 
 /** Basit ÖTV + KDV hesaplayıcı (elektrikli araçlar, motor gücü bazlı) */
 export function calcOtv(basePrice: number, motorKw: number) {
-  let rate = 10;
-  if (motorKw <= 160) {
-    rate = basePrice <= 1_450_000 ? 10 : 40;
-  } else {
-    rate = basePrice <= 1_350_000 ? 50 : 60;
-  }
+  const rate = otvRate(basePrice, motorKw);
   const otv = Math.round((basePrice * rate) / 100);
   const kdvBase = basePrice + otv;
   const kdv = Math.round(kdvBase * 0.2);

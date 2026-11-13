@@ -1,3 +1,4 @@
+import { OTV_BASE_THRESHOLD, OTV_RATES } from "@/lib/otv";
 import Link from "next/link";
 import Image from "next/image";
 import HeroCarousel from "@/components/home/HeroCarousel";
@@ -228,12 +229,12 @@ export default async function HomePage() {
                         EN AVANTAJLI
                       </span>
                     </div>
-                    <span className="text-xs font-black text-emerald-900 mt-0.5">Matrah ≤ 1.650.000 ₺</span>
+                    <span className="text-xs font-black text-emerald-900 mt-0.5">Matrah ≤ {OTV_BASE_THRESHOLD.toLocaleString("tr-TR")} ₺</span>
                     <span className="text-[11px] text-neutral-600 font-bold mt-0.5">Togg T10X, Tesla Model Y RWD, Atto 3</span>
                   </div>
                   <div className="flex flex-col items-end shrink-0 pl-2">
                     <span className="rounded-xl bg-emerald-600 px-3 py-1.5 text-sm font-black text-white shadow-xs">
-                      %25 ÖTV
+                      %{OTV_RATES.lowPowerLowBase} ÖTV
                     </span>
                   </div>
                 </div>
@@ -243,12 +244,12 @@ export default async function HomePage() {
               <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor ≤ 160 kW</span>
-                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.650.000 ₺</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; {OTV_BASE_THRESHOLD.toLocaleString("tr-TR")} ₺</span>
                   <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Yüksek donanımlı tek motorlu modeller</span>
                 </div>
                 <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-100 border border-neutral-300 px-3 py-1.5 text-sm font-black text-neutral-950">
-                    %55 ÖTV
+                    %{OTV_RATES.lowPowerHighBase} ÖTV
                   </span>
                 </div>
               </div>
@@ -257,12 +258,12 @@ export default async function HomePage() {
               <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor &gt; 160 kW</span>
-                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah ≤ 1.650.000 ₺</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah ≤ {OTV_BASE_THRESHOLD.toLocaleString("tr-TR")} ₺</span>
                   <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Çift motor AWD giriş versiyonları</span>
                 </div>
                 <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-100 border border-neutral-300 px-3 py-1.5 text-sm font-black text-neutral-950">
-                    %65 ÖTV
+                    %{OTV_RATES.highPowerLowBase} ÖTV
                   </span>
                 </div>
               </div>
@@ -271,12 +272,12 @@ export default async function HomePage() {
               <div className="flex items-center justify-between p-3.5 hover:bg-neutral-50 transition rounded-xl">
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-neutral-950">Motor &gt; 160 kW</span>
-                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; 1.650.000 ₺</span>
+                  <span className="text-xs font-bold text-neutral-700 mt-0.5">Matrah &gt; {OTV_BASE_THRESHOLD.toLocaleString("tr-TR")} ₺</span>
                   <span className="text-[11px] text-neutral-400 font-semibold mt-0.5">Premium &amp; Yüksek Performans AWD</span>
                 </div>
                 <div className="flex flex-col items-end shrink-0 pl-2">
                   <span className="rounded-xl bg-neutral-950 text-white px-3 py-1.5 text-sm font-black">
-                    %75 ÖTV
+                    %{OTV_RATES.highPowerHighBase} ÖTV
                   </span>
                 </div>
               </div>

@@ -1,3 +1,4 @@
+import { isAdminRequest } from "@/lib/admin-auth";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail, ok } from "@/lib/api";
@@ -24,6 +25,7 @@ const TAGS_BY_KIND: Record<string, CacheTag[]> = {
  * POST { key }  → kaynağı hemen çalıştır
  */
 export async function PUT(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const b = await req.json();
     if (!b.id) return fail("id zorunludur");
@@ -51,6 +53,7 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest(req))) return fail("Yetkisiz işlem", 401);
   try {
     const { key } = await req.json();
     if (!key) return fail("key zorunludur");

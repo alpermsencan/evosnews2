@@ -4,9 +4,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 
 /**
@@ -39,9 +38,8 @@ type Ctx = {
 
 const CompareContext = createContext<Ctx | null>(null);
 
-function read(): CompareItem[] {
+function read(raw: string | null): CompareItem[] {
   try {
-    const raw = localStorage.getItem(KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -54,32 +52,24 @@ function read(): CompareItem[] {
   }
 }
 
+let memory: string | null = null;
+let storageUnavailable = false;
+function snapshot() { if (storageUnavailable) return memory; try { return localStorage.getItem(KEY); } catch { return memory; } }
+function subscribe(callback: () => void) {
+  const changed = (event: StorageEvent) => { if (event.key === KEY || event.key === null) callback(); };
+  window.addEventListener("storage", changed);
+  window.addEventListener("evos-compare-change", callback);
+  return () => { window.removeEventListener("storage", changed); window.removeEventListener("evos-compare-change", callback); };
+}
+
 export default function CompareProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CompareItem[]>([]);
-  // Sunucu render'ında localStorage yok; ilk okuma tamamlanana kadar
-  // düğmeler "seçili" görünmesin diye hazır olma durumu tutulur.
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setItems(read());
-    setReady(true);
-
-    // Aynı siteyi iki sekmede açan kullanıcıda sepet ayrışmasın.
-    const sync = (e: StorageEvent) => {
-      if (e.key === KEY) setItems(read());
-    };
-    window.addEventListener("storage", sync);
-    return () => window.removeEventListener("storage", sync);
-  }, []);
-
+  const raw = useSyncExternalStore(subscribe, snapshot, () => null);
+  const ready = useSyncExternalStore(subscribe, () => true, () => false);
+  const items = useMemo(() => read(raw), [raw]);
   const persist = useCallback((next: CompareItem[]) => {
-    setItems(next);
-    try {
-      localStorage.setItem(KEY, JSON.stringify(next));
-    } catch {
-      // Depolama kotası dolu veya gizli sekmede kapalı olabilir; sepet o
-      // oturumda bellekte çalışmaya devam eder.
-    }
+    memory = JSON.stringify(next);
+    try { localStorage.setItem(KEY, memory); storageUnavailable = false; } catch { storageUnavailable = true; }
+    window.dispatchEvent(new Event("evos-compare-change"));
   }, []);
 
   const has = useCallback(

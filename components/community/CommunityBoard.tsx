@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { timeAgo } from "@/lib/utils";
-import { IconBolt, IconClose, IconMessage, IconShare, IconUsers } from "@/components/ui/Icons";
+import { IconBolt, IconClose, IconComment, IconShare, IconUsers } from "@/components/ui/Icons";
 
 export type Post = {
   id: string;

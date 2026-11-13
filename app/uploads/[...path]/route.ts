@@ -25,22 +25,31 @@ export async function GET(
     return new NextResponse("Not Found", { status: 404 });
   }
 
-  // Prevent path traversal
-  const safePath = pathSegments
-    .map((s) => s.replace(/[^a-zA-Z0-9._-]/g, ""))
-    .join(path.sep);
-
-  const filePath = path.join(process.cwd(), "public", "uploads", safePath);
+  if (pathSegments.some(segment => !/^[a-zA-Z0-9._-]+$/.test(segment) || segment === "." || segment === "..")) {
+    return new NextResponse("Not Found", { status: 404 });
+  }
+  const root = process.env.UPLOADS_DIR ? path.resolve(process.env.UPLOADS_DIR) : path.resolve(process.cwd(), "public", "uploads");
+  const filePath = path.resolve(root, ...pathSegments);
+  const ext = path.extname(filePath).toLowerCase();
+  if (!filePath.startsWith(root + path.sep) || !MIME_TYPES[ext]) {
+    return new NextResponse("Not Found", { status: 404 });
+  }
 
   try {
-    const file = await fs.readFile(filePath);
-    const ext = path.extname(filePath).toLowerCase();
+    const realRoot = await fs.realpath(root);
+    const realFile = await fs.realpath(filePath);
+    if (!realFile.startsWith(realRoot + path.sep)) return new NextResponse("Not Found", { status: 404 });
+    const stat = await fs.stat(realFile);
+    if (!stat.isFile() || stat.size > 80 * 1024 * 1024) return new NextResponse("Not Found", { status: 404 });
+    const file = await fs.readFile(realFile);
     const contentType = MIME_TYPES[ext] || "application/octet-stream";
 
     return new NextResponse(file, {
       status: 200,
       headers: {
         "Content-Type": contentType,
+        "X-Content-Type-Options": "nosniff",
+        ...(ext === ".svg" ? { "Content-Security-Policy": "default-src 'none'; sandbox" } : {}),
         "Cache-Control": "public, max-age=31536000, immutable",
       },
     });

@@ -25,10 +25,9 @@ export async function PUT(req: NextRequest, ctx: { params: Params }) {
       );
     }
     const tokenStr = authHeader.replace("Token ", "").trim();
-    const tokenExists = await prisma.ocpiToken.findFirst({ where: { token: tokenStr, isActive: true } });
+    const tokenExists = await prisma.ocpiToken.findFirst({ where: { token: tokenStr, isActive: true, version: 2 } });
     
-    // Test amaçlı localde token olmasa bile geçici izin veriyoruz
-    if (!tokenExists && process.env.NODE_ENV === "production") {
+    if (!tokenExists) {
       return NextResponse.json(
         { status_code: 2001, status_message: "Unauthorized token", timestamp: new Date().toISOString() },
         { status: 401 }
@@ -36,7 +35,17 @@ export async function PUT(req: NextRequest, ctx: { params: Params }) {
     }
 
     const { country_code, party_id, location_id } = await ctx.params;
+    if (tokenExists.role !== "CPO" || tokenExists.countryCode !== country_code || tokenExists.partyId !== party_id) {
+      return NextResponse.json({ status_code: 2001, status_message: "Party mismatch" }, { status: 403 });
+    }
+    if (!/^[A-Z]{2}$/.test(country_code) || !/^[A-Z0-9]{3}$/.test(party_id) || !/^[a-zA-Z0-9._:-]{1,64}$/.test(location_id)) {
+      return NextResponse.json({ status_code: 2002, status_message: "Invalid location identifier" }, { status: 400 });
+    }
     const body = await req.json();
+    const lat = Number(body.latitude), lng = Number(body.longitude);
+    if (!Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(lng) || Math.abs(lng) > 180 || !Array.isArray(body.evses ?? []) || (body.evses?.length ?? 0) > 100) {
+      return NextResponse.json({ status_code: 2002, status_message: "Invalid location data" }, { status: 400 });
+    }
 
     if (!body.name || !body.latitude || !body.longitude || !body.address) {
       return NextResponse.json(
@@ -85,13 +94,13 @@ export async function PUT(req: NextRequest, ctx: { params: Params }) {
         if (!evse.uid) continue;
         
         const ocpiEvse = await prisma.ocpiEvse.upsert({
-          where: { uid: evse.uid },
+          where: { uid: `${country_code}:${party_id}:${location_id}:${evse.uid}` },
           update: {
             status: evse.status || "AVAILABLE",
             evseId: evse.evse_id || null,
           },
           create: {
-            uid: evse.uid,
+            uid: `${country_code}:${party_id}:${location_id}:${evse.uid}`,
             evseId: evse.evse_id || null,
             status: evse.status || "AVAILABLE",
             locationId: ocpiLocation.id,
@@ -99,7 +108,7 @@ export async function PUT(req: NextRequest, ctx: { params: Params }) {
         });
 
         // Connector listesini güncelle
-        if (Array.isArray(evse.connectors)) {
+        if (Array.isArray(evse.connectors) && evse.connectors.length <= 20) {
           // Önceki konnektörleri silip yenilerini ekleyelim (basitlik için)
           await prisma.ocpiConnector.deleteMany({ where: { evseId: ocpiEvse.id } });
 
@@ -112,14 +121,14 @@ export async function PUT(req: NextRequest, ctx: { params: Params }) {
                 powerType: conn.power_type || "DC",
                 voltage: Number(conn.voltage) || 400,
                 amperage: Number(conn.amperage) || 125,
-                maxPowerKw: Number(conn.max_power) || 50,
+                maxPowerKw: conn.max_electric_power != null ? Number(conn.max_electric_power) / 1000 : Number(conn.max_power) || 0,
                 evseId: ocpiEvse.id,
               },
             });
 
             totalSockets++;
             socketTypesSet.add(conn.standard || "CCS2");
-            maxPower = Math.max(maxPower, Number(conn.max_power) || 50);
+            maxPower = Math.max(maxPower, conn.max_electric_power != null ? Number(conn.max_electric_power) / 1000 : Number(conn.max_power) || 0);
           }
         }
       }
@@ -127,8 +136,10 @@ export async function PUT(req: NextRequest, ctx: { params: Params }) {
 
     // 3. Mevcut ChargeStation tablosu ile Senkronize Et (Geriye Dönük Harita Uyumu)
     const operatorName = party_id.toUpperCase();
+    const existing = await prisma.chargeStation.findFirst({ where: { source: "ocpi", externalId: location_id, operator: operatorName } });
+    const stationSlug = existing?.slug || slugify(`${country_code}-${party_id}-${location_id}`);
     await prisma.chargeStation.upsert({
-      where: { slug: slugify(`${operatorName}-${body.name}`) },
+      where: { slug: stationSlug },
       update: {
         name: body.name,
         operator: operatorName,
@@ -147,7 +158,7 @@ export async function PUT(req: NextRequest, ctx: { params: Params }) {
       },
       create: {
         name: body.name,
-        slug: slugify(`${operatorName}-${body.name}-${location_id}`),
+        slug: stationSlug,
         operator: operatorName,
         city: body.city || "Belirtilmemiş",
         district: body.city || "Belirtilmemiş",
@@ -169,9 +180,9 @@ export async function PUT(req: NextRequest, ctx: { params: Params }) {
       status_message: "Location successfully processed",
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { status_code: 3000, status_message: error instanceof Error ? error.message : "Internal error" },
+      { status_code: 3000, status_message: "Request failed" },
       { status: 500 }
     );
   }

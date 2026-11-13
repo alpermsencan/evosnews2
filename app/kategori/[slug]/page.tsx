@@ -1,3 +1,4 @@
+import { BUILTIN_CATEGORIES } from "@/lib/category-defaults";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -21,7 +22,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const cat = await getCategoryBySlug(slug);
+  const cat = await getCategoryBySlug(slug) ?? BUILTIN_CATEGORIES.map(c => ({ ...c, description: null })).find(c => c.slug === slug);
   if (!cat) return { title: "Kategori bulunamadı" };
   return { title: cat.name, description: cat.description ?? undefined };
 }
@@ -31,7 +32,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const { sayfa } = await searchParams;
   const page = Math.max(1, Number(sayfa) || 1);
 
-  const cat = await getCategoryBySlug(slug);
+  const cat = await getCategoryBySlug(slug) ?? BUILTIN_CATEGORIES.map(c => ({ ...c, description: null })).find(c => c.slug === slug);
   if (!cat) notFound();
 
   const [articles, total, mostRead] = await Promise.all([

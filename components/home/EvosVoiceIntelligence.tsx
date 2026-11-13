@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IconSparkles } from "@/components/ui/Icons";
 
@@ -8,11 +8,11 @@ export default function EvosVoiceIntelligence() {
   const router = useRouter();
   const [listening, setListening] = useState(false);
   const [text, setText] = useState("");
-  const [recognition, setRecognition] = useState<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
     // Tarayıcı ses tanıma desteği kontrolü
-    const SpeechVal = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechVal = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechVal) {
       const rec = new SpeechVal();
       rec.continuous = false;
@@ -24,7 +24,7 @@ export default function EvosVoiceIntelligence() {
         setText("Dinleniyor...");
       };
 
-      rec.onresult = (event: any) => {
+      rec.onresult = (event: SpeechRecognitionEvent) => {
         const resultText = event.results[0][0].transcript;
         setText(resultText);
         setListening(false);
@@ -34,7 +34,7 @@ export default function EvosVoiceIntelligence() {
         }, 1200);
       };
 
-      rec.onerror = (e: any) => {
+      rec.onerror = (e: SpeechRecognitionErrorEvent) => {
         console.error("Ses tanıma hatası:", e);
         setListening(false);
         setText("Hata oluştu. Lütfen tekrar deneyin.");
@@ -44,11 +44,13 @@ export default function EvosVoiceIntelligence() {
         setListening(false);
       };
 
-      setRecognition(rec);
+      recognitionRef.current = rec;
+      return () => { rec.abort(); recognitionRef.current = null; };
     }
   }, [router]);
 
   const toggleListening = () => {
+    const recognition = recognitionRef.current;
     if (!recognition) {
       alert("Tarayıcınız ses tanıma özelliğini desteklemiyor. Lütfen aşağıdaki arama kutusunu kullanın.");
       return;

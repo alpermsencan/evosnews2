@@ -1,3 +1,5 @@
+import { rateLimit, sameOrigin } from "@/lib/request-security";
+import { isAuthConfigured } from "@/lib/admin-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { fail } from "@/lib/api";
@@ -14,6 +16,8 @@ export const runtime = "nodejs";
 
 /** POST /api/account/register — yeni üye kaydı, ardından otomatik giriş */
 export async function POST(req: NextRequest) {
+  if (!sameOrigin(req)) return fail("İzin verilmeyen kaynak", 403);
+  if (!isAuthConfigured()) return fail("Oturum güvenliği yapılandırılmamış", 503);
   try {
     const body = await req.json();
     const email = String(body.email ?? "").trim().toLowerCase();
@@ -21,9 +25,12 @@ export async function POST(req: NextRequest) {
     const password = String(body.password ?? "");
     const wanted = String(body.username ?? "").trim().toLowerCase();
 
+    if (email.length > 120 || name.length > 60 || password.length > 1024) return fail("Geçersiz kayıt bilgileri", 400);
+    const limited = rateLimit(`register:${email}`, 5, 60 * 60_000);
+    if (limited) return limited;
     if (!name || name.length < 2) return fail("Ad soyad en az 2 karakter olmalı");
     if (!isValidEmail(email)) return fail("Geçerli bir e-posta adresi girin");
-    if (password.length < 6) return fail("Şifre en az 6 karakter olmalı");
+    if (password.length < 12) return fail("Şifre en az 12 karakter olmalı");
     if (wanted && !isValidUsername(wanted))
       return fail(
         "Kullanıcı adı 3-20 karakter olmalı; sadece küçük harf, rakam ve _ kullanın"

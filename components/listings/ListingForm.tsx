@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ListingImageUpload from "./ListingImageUpload";
-import CarDamageReport, { ExpertiseState } from "./CarDamageReport";
+import CarDamageReport, { ExpertiseData } from "./CarDamageReport";
 
 /**
  * İlan verme formu.
@@ -28,7 +28,7 @@ export default function ListingForm({ vehicles }: { vehicles: VehicleOption[] })
   const [error, setError] = useState("");
   const [image, setImage] = useState("");
   const [condition, setCondition] = useState("IKINCI_EL");
-  const [expertise, setExpertise] = useState<ExpertiseState>({});
+  const [expertise, setExpertise] = useState<ExpertiseData>({});
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -194,7 +194,7 @@ export default function ListingForm({ vehicles }: { vehicles: VehicleOption[] })
           <Link href="/yasal/ilan-verme-kurallari" target="_blank" className="font-bold text-neutral-600 hover:underline">
             İlan Yayınlama Kuralları
           </Link>
-          'nı ve e-Devlet kimlik doğrulama/mevzuat sorumluluklarımı okudum, kabul ediyorum.
+          &apos;nı ve e-Devlet kimlik doğrulama/mevzuat sorumluluklarımı okudum, kabul ediyorum.
         </span>
       </label>
 

@@ -1,3 +1,4 @@
+import { rateLimit } from "@/lib/request-security";
 import { NextRequest, NextResponse } from "next/server";
 import { fail, ok } from "@/lib/api";
 import { fetchWithRetry } from "@/lib/ingest/http";
@@ -7,6 +8,8 @@ export const dynamic = "force-dynamic";
 const GEOCODE_ENDPOINT = "https://api.openrouteservice.org/geocode/search";
 
 export async function GET(req: NextRequest) {
+  const limited = rateLimit(`app/api/geocode/route.ts:${req.headers.get("x-forwarded-for") || "unknown"}`, 60, 60_000);
+  if (limited) return limited;
   const sp = req.nextUrl.searchParams;
   const text = sp.get("text");
 
@@ -53,7 +56,7 @@ export async function GET(req: NextRequest) {
     );
 
     const data = await res.json();
-    const results = (data.features || []).map((feat: any) => ({
+    const results = (data.features || []).map((feat: { properties: { label?: string; name?: string }; geometry: { coordinates: [number, number] } }) => ({
       name: feat.properties.label || feat.properties.name,
       lat: feat.geometry.coordinates[1],
       lng: feat.geometry.coordinates[0],
